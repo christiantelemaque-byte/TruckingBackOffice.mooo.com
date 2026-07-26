@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Wordwell – Checkout</title>
+
+    <!-- ===== FONTS ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ----- RESET & BASE ----- */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #f5c842;
+            --gold-dark: #c9a020;
+            --red: #e94560;
+            --red-dark: #c0392b;
+            --bg: #0b0a0a;
+            --bg-card: #141212;
+            --bg-input: #1e1b1b;
+            --text: #f0ede8;
+            --text-muted: #a8a39a;
+            --border: #2a2626;
+            --radius: 12px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        a:hover {
+            color: var(--red);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ----- SCROLLBAR ----- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+
+        /* ----- TYPOGRAPHY ----- */
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .gold {
+            color: var(--gold);
+        }
+        .red {
+            color: var(--red);
+        }
+
+        /* ----- HEADER / NAV ----- */
+        header {
+            padding: 20px 0 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(11, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo .red {
+            font-style: italic;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--text);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .lang-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .lang-toggle:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* ----- CHECKOUT ----- */
+        .checkout {
+            padding: 50px 0 80px;
+        }
+
+        .checkout-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 50px;
+            margin-top: 30px;
+        }
+
+        .checkout-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px 28px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .checkout-summary h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .checkout-summary .plan-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checkout-summary .plan-detail:last-child {
+            border-bottom: none;
+        }
+
+        .checkout-summary .plan-detail .label {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .checkout-summary .plan-detail .value {
+            font-weight: 600;
+        }
+
+        .checkout-summary .total {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-top: 12px;
+            text-align: right;
+        }
+
+        .checkout-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px 28px;
+        }
+
+        .checkout-form h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.12);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-submit {
+            background: var(--gold);
+            color: #0b0a0a;
+            font-weight: 700;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #e6b832;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 200, 66, 0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .form-status {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            display: none;
+        }
+        .form-status.success {
+            display: block;
+            background: rgba(245, 200, 66, 0.12);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+        .form-status.error {
+            display: block;
+            background: rgba(233, 69, 96, 0.12);
+            border: 1px solid var(--red);
+            color: var(--red);
+        }
+
+        /* ----- FOOTER ----- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+        footer .gold {
+            font-weight: 500;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 820px) {
+            .checkout-wrapper {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .checkout-summary {
+                position: static;
+            }
+            .header-inner {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-links {
+                gap: 16px;
+                font-size: 0.75rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+            .checkout-form,
+            .checkout-summary {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="container header-inner">
+            <div class="logo">
+                Word<span class="red">well</span>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="pricing-plans.html" data-i18n="nav_pricing">Pricing</a>
+                <a href="index.html#contact" data-i18n="nav_contact">Contact</a>
+                <button class="lang-toggle" id="langToggle">🌐</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== CHECKOUT ===== -->
+    <section class="checkout">
+        <div class="container">
+            <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;margin-bottom:4px;" data-i18n="checkout_title">Checkout</h1>
+            <p style="color:var(--text-muted);font-weight:300;margin-bottom:8px;" data-i18n="checkout_sub">Complete your purchase to unlock your plan.</p>
+
+            <div class="checkout-wrapper">
+                <!-- Order Summary -->
+                <div class="checkout-summary">
+                    <h2 data-i18n="order_summary">Order Summary</h2>
+                    <div class="plan-detail">
+                        <span class="label" data-i18n="order_plan">Plan</span>
+                        <span class="value" id="orderPlan">—</span>
+                    </div>
+                    <div class="plan-detail">
+                        <span class="label" data-i18n="order_price">Price</span>
+                        <span class="value" id="orderPrice">—</span>
+                    </div>
+                    <div class="plan-detail">
+                        <span class="label" data-i18n="order_billing">Billing</span>
+                        <span class="value" data-i18n="order_monthly">Monthly</span>
+                    </div>
+                    <div class="total" id="orderTotal">$0.00</div>
+                </div>
+
+                <!-- Billing Form -->
+                <div class="checkout-form">
+                    <h2 data-i18n="billing_info">Billing Information</h2>
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label for="fullName" data-i18n="form_fullname">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="John Doe" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email" data-i18n="form_email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="john@example.com" required />
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cardNumber" data-i18n="form_card">Card Number</label>
+                                <input type="text" id="cardNumber" name="cardNumber" placeholder="4242 4242 4242 4242" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="cardExpiry" data-i18n="form_expiry">Expiry</label>
+                                <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY" required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cardCvc" data-i18n="form_cvc">CVC</label>
+                                <input type="text" id="cardCvc" name="cardCvc" placeholder="123" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="country" data-i18n="form_country">Country</label>
+                                <select id="country" name="country" required>
+                                    <option value="" data-i18n="form_select_country">Select Country</option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option>
+                                    <option value="ES">Spain</option>
+                                    <option value="IT">Italy</option>
+                                    <option value="AU">Australia</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <span data-i18n="form_submit">✧ Complete Purchase</span>
+                        </button>
+
+                        <div class="form-status" id="formStatus"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <div>&copy; 2000 <span class="gold">Wordwell</span> &mdash;
+            <span data-i18n="footer_tagline">Only Elite. Only the Few. Only Wordwell.</span></div>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT – i18n + Checkout + Language Detection ===== -->
+    <!-- ============================================================ -->
+
+    <script>
+        (function() {
+            'use strict';
+
+            // =========================================================
+            //  🌐 TRANSLATIONS
+            // =========================================================
+            const translations = {
+                en: {
+                    nav_home: 'Home', nav_pricing: 'Pricing', nav_contact: 'Contact',
+                    checkout_title: 'Checkout',
+                    checkout_sub: 'Complete your purchase to unlock your plan.',
+                    order_summary: 'Order Summary',
+                    order_plan: 'Plan',
+                    order_price: 'Price',
+                    order_billing: 'Billing',
+                    order_monthly: 'Monthly',
+                    billing_info: 'Billing Information',
+                    form_fullname: 'Full Name',
+                    form_email: 'Email Address',
+                    form_card: 'Card Number',
+                    form_expiry: 'Expiry',
+                    form_cvc: 'CVC',
+                    form_country: 'Country',
+                    form_select_country: 'Select Country',
+                    form_submit: '✧ Complete Purchase',
+                    footer_tagline: 'Only Elite. Only the Few. Only Wordwell.'
+                },
+                es: {
+                    nav_home: 'Inicio', nav_pricing: 'Precios', nav_contact: 'Contacto',
+                    checkout_title: 'Pago',
+                    checkout_sub: 'Completa tu compra para desbloquear tu plan.',
+                    order_summary: 'Resumen del Pedido',
+                    order_plan: 'Plan',
+                    order_price: 'Precio',
+                    order_billing: 'Facturación',
+                    order_monthly: 'Mensual',
+                    billing_info: 'Información de Facturación',
+                    form_fullname: 'Nombre Completo',
+                    form_email: 'Correo Electrónico',
+                    form_card: 'Número de Tarjeta',
+                    form_expiry: 'Vencimiento',
+                    form_cvc: 'CVC',
+                    form_country: 'País',
+                    form_select_country: 'Seleccionar País',
+                    form_submit: '✧ Completar Compra',
+                    footer_tagline: 'Solo Élite. Solo los Pocos. Solo Wordwell.'
+                },
+                fa: {
+                    nav_home: 'خانه', nav_pricing: 'قیمت‌ها', nav_contact: 'تماس',
+                    checkout_title: 'تسویه حساب',
+                    checkout_sub: 'خرید خود را تکمیل کنید تا طرح خود را باز کنید.',
+                    order_summary: 'خلاصه سفارش',
+                    order_plan: 'طرح',
+                    order_price: 'قیمت',
+                    order_billing: 'صورتحساب',
+                    order_monthly: 'ماهانه',
+                    billing_info: 'اطلاعات صورتحساب',
+                    form_fullname: 'نام کامل',
+                    form_email: 'آدرس ایمیل',
+                    form_card: 'شماره کارت',
+                    form_expiry: 'تاریخ انقضا',
+                    form_cvc: 'CVC',
+                    form_country: 'کشور',
+                    form_select_country: 'انتخاب کشور',
+                    form_submit: '✧ تکمیل خرید',
+                    footer_tagline: 'فقط نخبگان. فقط تعداد معدود. فقط وردول.'
+                },
+                ko: {
+                    nav_home: '홈', nav_pricing: '가격', nav_contact: '연락처',
+                    checkout_title: '결제',
+                    checkout_sub: '구매를 완료하여 플랜을 잠금 해제하세요.',
+                    order_summary: '주문 요약',
+                    order_plan: '플랜',
+                    order_price: '가격',
+                    order_billing: '청구',
+                    order_monthly: '월간',
+                    billing_info: '청구 정보',
+                    form_fullname: '이름',
+                    form_email: '이메일 주소',
+                    form_card: '카드 번호',
+                    form_expiry: '만료일',
+                    form_cvc: 'CVC',
+                    form_country: '국가',
+                    form_select_country: '국가 선택',
+                    form_submit: '✧ 구매 완료',
+                    footer_tagline: '오직 엘리트. 오직 소수. 오직 워드웰.'
+                },
+                ar: {
+                    nav_home: 'الرئيسية', nav_pricing: 'الأسعار', nav_contact: 'اتصل',
+                    checkout_title: 'الدفع',
+                    checkout_sub: 'أكمل عملية الشراء لفتح خطتك.',
+                    order_summary: 'ملخص الطلب',
+                    order_plan: 'الخطة',
+                    order_price: 'السعر',
+                    order_billing: 'الفواتير',
+                    order_monthly: 'شهري',
+                    billing_info: 'معلومات الفواتير',
+                    form_fullname: 'الاسم الكامل',
+                    form_email: 'البريد الإلكتروني',
+                    form_card: 'رقم البطاقة',
+                    form_expiry: 'تاريخ الانتهاء',
+                    form_cvc: 'CVC',
+                    form_country: 'البلد',
+                    form_select_country: 'اختر البلد',
+                    form_submit: '✧ إكمال الشراء',
+                    footer_tagline: 'النخبة فقط. القليلون فقط. ووردويل فقط.'
+                },
+                ru: {
+                    nav_home: 'Главная', nav_pricing: 'Цены', nav_contact: 'Контакты',
+                    checkout_title: 'Оплата',
+                    checkout_sub: 'Завершите покупку, чтобы разблокировать свой план.',
+                    order_summary: 'Сводка заказа',
+                    order_plan: 'План',
+                    order_price: 'Цена',
+                    order_billing: 'Оплата',
+                    order_monthly: 'Ежемесячно',
+                    billing_info: 'Платежная информация',
+                    form_fullname: 'Полное имя',
+                    form_email: 'Адрес электронной почты',
+                    form_card: 'Номер карты',
+                    form_expiry: 'Срок действия',
+                    form_cvc: 'CVC',
+                    form_country: 'Страна',
+                    form_select_country: 'Выберите страну',
+                    form_submit: '✧ Завершить покупку',
+                    footer_tagline: 'Только элита. Только избранные. Только Вордвелл.'
+                },
+                zh: {
+                    nav_home: '首页', nav_pricing: '价格', nav_contact: '联系我们',
+                    checkout_title: '结账',
+                    checkout_sub: '完成购买以解锁您的计划。',
+                    order_summary: '订单摘要',
+                    order_plan: '计划',
+                    order_price: '价格',
+                    order_billing: '账单',
+                    order_monthly: '每月',
+                    billing_info: '账单信息',
+                    form_fullname: '全名',
+                    form_email: '电子邮箱',
+                    form_card: '卡号',
+                    form_expiry: '有效期',
+                    form_cvc: 'CVC',
+                    form_country: '国家',
+                    form_select_country: '选择国家',
+                    form_submit: '✧ 完成购买',
+                    footer_tagline: '唯有精英。唯有少数。唯有沃德韦尔。'
+                },
+                so: {
+                    nav_home: 'Bogga Hore', nav_pricing: 'Qiimaha', nav_contact: 'Nala Soo Xiriir',
+                    checkout_title: 'Bixinta',
+                    checkout_sub: 'Dhammeystir iibsigaaga si aad u furto qorshahaaga.',
+                    order_summary: 'Soo Koobida Dalabka',
+                    order_plan: 'Qorshaha',
+                    order_price: 'Qiimaha',
+                    order_billing: 'Bixinta',
+                    order_monthly: 'Bil kasta',
+                    billing_info: 'Macluumaadka Bixinta',
+                    form_fullname: 'Magac Oo Dhameystiran',
+                    form_email: 'Ciwaanka Iimaylka',
+                    form_card: 'Lambarka Kaadhka',
+                    form_expiry: 'Taariikhda Dhamaadka',
+                    form_cvc: 'CVC',
+                    form_country: 'Dalka',
+                    form_select_country: 'Dooro Dalka',
+                    form_submit: '✧ Dhammeystir Iibsiga',
+                    footer_tagline: 'Kaliya Elite. Kaliya kuwa yar. Kaliya Wordwell.'
+                }
+            };
+
+            // =========================================================
+            //  🔍 DETECT LANGUAGE
+            // =========================================================
+            function detectLanguage() {
+                let raw = navigator.language;
+                if (!raw || raw === '') {
+                    raw = navigator.languages?.[0] || 'en';
+                }
+                const map = {
+                    'es': 'es', 'fa': 'fa', 'ko': 'ko', 'ar': 'ar',
+                    'ru': 'ru', 'zh': 'zh', 'so': 'so', 'en': 'en'
+                };
+                let detected = 'en';
+                if (map[raw]) {
+                    detected = map[raw];
+                } else {
+                    const prefix = raw.substring(0, 2);
+                    if (map[prefix]) {
+                        detected = map[prefix];
+                    }
+                }
+                return detected;
+            }
+
+            // =========================================================
+            //  🌐 APPLY TRANSLATIONS
+            // =========================================================
+            function applyLanguage(lang) {
+                const t = translations[lang] || translations.en;
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (t[key] !== undefined) {
+                        if (el.querySelector('strong, span, br')) {
+                            el.innerHTML = t[key];
+                        } else {
+                            el.textContent = t[key];
+                        }
+                    }
+                });
+                document.documentElement.lang = lang;
+                window.__currentLang = lang;
+            }
+
+            // =========================================================
+            //  🔄 LANGUAGE TOGGLE
+            // =========================================================
+            const langCycle = ['en', 'es', 'fa', 'ko', 'ar', 'ru', 'zh', 'so'];
+            document.getElementById('langToggle').addEventListener('click', function() {
+                const current = window.__currentLang || 'en';
+                let idx = langCycle.indexOf(current);
+                if (idx === -1) idx = 0;
+                idx = (idx + 1) % langCycle.length;
+                applyLanguage(langCycle[idx]);
+            });
+
+            // =========================================================
+            //  📋 PLAN LOOKUP
+            // =========================================================
+            const planNames = {
+                'crown-talk-fan': 'Crown Talk Fan',
+                'league-insider': 'League Insider',
+                'franchise-builder': 'Franchise Builder',
+                'university-athlete': 'University Athlete',
+                'university-season-athlete': 'University Season Athlete',
+                'cta-program': 'CTA Program'
+            };
+            const planPrices = {
+                'crown-talk-fan': '4.99',
+                'league-insider': '9.99',
+                'franchise-builder': '19.99',
+                'university-athlete': '24.99',
+                'university-season-athlete': '79.99',
+                'cta-program': '14.99'
+            };
+
+            // =========================================================
+            //  🚀 INIT – get plan from URL
+            // =========================================================
+            function initCheckout() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const checkoutId = urlParams.get('checkoutId') || 'N/A';
+                const planId = urlParams.get('plan') || 'crown-talk-fan';
+
+                const planName = planNames[planId] || 'Unknown Plan';
+                const planPrice = planPrices[planId] || '0.00';
+
+                document.getElementById('orderPlan').textContent = planName;
+                document.getElementById('orderPrice').textContent = '$' + planPrice + ' / month';
+                document.getElementById('orderTotal').textContent = '$' + planPrice;
+
+                // Store plan info for form submission
+                window.__checkoutData = { planId, planName, planPrice, checkoutId };
+            }
+
+            // =========================================================
+            //  📧 FORM SUBMISSION (demo)
+            // =========================================================
+            const form = document.getElementById('checkoutForm');
+            const status = document.getElementById('formStatus');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function setStatus(message, type) {
+                status.textContent = message;
+                status.className = 'form-status ' + type;
+                status.style.display = 'block';
+            }
+
+            function resetStatus() {
+                status.className = 'form-status';
+                status.style.display = 'none';
+                status.textContent = '';
+            }
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const card = document.getElementById('cardNumber').value.trim();
+                const expiry = document.getElementById('cardExpiry').value.trim();
+                const cvc = document.getElementById('cardCvc').value.trim();
+                const country = document.getElementById('country').value;
+
+                if (!name || !email || !card || !expiry || !cvc || !country) {
+                    const lang = window.__currentLang || 'en';
+                    const errorMsg = lang === 'es' ? 'Por favor, completa todos los campos.' :
+                                     lang === 'fa' ? 'لطفاً تمام فیلدها را پر کنید.' :
+                                     lang === 'ko' ? '모든 필드를 입력해주세요.' :
+                                     lang === 'ar' ? 'يرجى ملء جميع الحقول.' :
+                                     lang === 'ru' ? 'Пожалуйста, заполните все поля.' :
+                                     lang === 'zh' ? '请填写所有字段。' :
+                                     lang === 'so' ? 'Fadlan buuxi dhammaan goobaha.' :
+                                     'Please fill in all fields.';
+                    setStatus(errorMsg, 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                const lang = window.__currentLang || 'en';
+                const sendingText = lang === 'es' ? '✧ Procesando...' :
+                                     lang === 'fa' ? '✧ در حال پردازش...' :
+                                     lang === 'ko' ? '✧ 처리 중...' :
+                                     lang === 'ar' ? '✧ جاري المعالجة...' :
+                                     lang === 'ru' ? '✧ Обработка...' :
+                                     lang === 'zh' ? '✧ 处理中...' :
+                                     lang === 'so' ? '✧ Hawl gelin...' :
+                                     '✧ Processing...';
+                submitBtn.innerHTML = sendingText;
+                resetStatus();
+
+                // Simulate payment processing
+                setTimeout(function() {
+                    const lang = window.__currentLang || 'en';
+                    const successMsg = lang === 'es' ? '✓ ¡Pago completado! Recibirás un correo de confirmación.' :
+                                        lang === 'fa' ? '✓ پرداخت تکمیل شد! ایمیل تأیید دریافت خواهید کرد.' :
+                                        lang === 'ko' ? '✓ 결제가 완료되었습니다! 확인 이메일을 받으실 수 있습니다.' :
+                                        lang === 'ar' ? '✓ تم إتمام الدفع! ستصلك رسالة تأكيد عبر البريد الإلكتروني.' :
+                                        lang === 'ru' ? '✓ Оплата завершена! Вы получите письмо с подтверждением.' :
+                                        lang === 'zh' ? '✓ 付款已完成！您将收到确认邮件。' :
+                                        lang === 'so' ? '✓ Bixinta waa la dhammeeyey! Waxaad heli doontaa iimayl xaqiijin.' :
+                                        '✓ Payment completed! You will receive a confirmation email.';
+                    setStatus(successMsg, 'success');
+                    submitBtn.disabled = false;
+                    const submitText = lang === 'es' ? '✧ Completar Compra' :
+                                        lang === 'fa' ? '✧ تکمیل خرید' :
+                                        lang === 'ko' ? '✧ 구매 완료' :
+                                        lang === 'ar' ? '✧ إكمال الشراء' :
+                                        lang === 'ru' ? '✧ Завершить покупку' :
+                                        lang === 'zh' ? '✧ 完成购买' :
+                                        lang === 'so' ? '✧ Dhammeystir Iibsiga' :
+                                        '✧ Complete Purchase';
+                    submitBtn.innerHTML = submitText;
+                    form.reset();
+                }, 1500);
+            });
+
+            // =========================================================
+            //  🚀 INIT
+            // =========================================================
+            function init() {
+                const detected = detectLanguage();
+                applyLanguage(detected);
+                initCheckout();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
