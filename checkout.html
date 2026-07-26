@@ -254,8 +254,7 @@
             margin-bottom: 4px;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input {
             width: 100%;
             padding: 12px 16px;
             background: var(--bg-input);
@@ -268,8 +267,7 @@
             outline: none;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             border-color: var(--gold);
             box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.12);
         }
@@ -326,6 +324,17 @@
             background: rgba(233, 69, 96, 0.12);
             border: 1px solid var(--red);
             color: var(--red);
+        }
+
+        .stripe-product-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            display: inline-block;
+            border: 1px solid var(--border);
         }
 
         /* ----- FOOTER ----- */
@@ -416,6 +425,8 @@
                         <span class="value" data-i18n="order_monthly">Monthly</span>
                     </div>
                     <div class="total" id="orderTotal">$0.00</div>
+                    <!-- Display Stripe Product ID (for reference) -->
+                    <div class="stripe-product-id" id="stripeProductDisplay">🔗 Stripe Product ID: <span id="stripeProductId">—</span></div>
                 </div>
 
                 <!-- Billing Form -->
@@ -446,18 +457,8 @@
                                 <input type="text" id="cardCvc" name="cardCvc" placeholder="123" required />
                             </div>
                             <div class="form-group">
-                                <label for="country" data-i18n="form_country">Country</label>
-                                <select id="country" name="country" required>
-                                    <option value="" data-i18n="form_select_country">Select Country</option>
-                                    <option value="US">United States</option>
-                                    <option value="CA">Canada</option>
-                                    <option value="UK">United Kingdom</option>
-                                    <option value="DE">Germany</option>
-                                    <option value="FR">France</option>
-                                    <option value="ES">Spain</option>
-                                    <option value="IT">Italy</option>
-                                    <option value="AU">Australia</option>
-                                </select>
+                                <label for="zipCode" data-i18n="form_zip">Zip / Postal Code</label>
+                                <input type="text" id="zipCode" name="zipCode" placeholder="10001" required />
                             </div>
                         </div>
 
@@ -489,7 +490,7 @@
             'use strict';
 
             // =========================================================
-            //  🌐 TRANSLATIONS
+            //  🌐 TRANSLATIONS (add new key: form_zip)
             // =========================================================
             const translations = {
                 en: {
@@ -507,8 +508,7 @@
                     form_card: 'Card Number',
                     form_expiry: 'Expiry',
                     form_cvc: 'CVC',
-                    form_country: 'Country',
-                    form_select_country: 'Select Country',
+                    form_zip: 'Zip / Postal Code',
                     form_submit: '✧ Complete Purchase',
                     footer_tagline: 'Only Elite. Only the Few. Only Wordwell.'
                 },
@@ -527,8 +527,7 @@
                     form_card: 'Número de Tarjeta',
                     form_expiry: 'Vencimiento',
                     form_cvc: 'CVC',
-                    form_country: 'País',
-                    form_select_country: 'Seleccionar País',
+                    form_zip: 'Código Postal',
                     form_submit: '✧ Completar Compra',
                     footer_tagline: 'Solo Élite. Solo los Pocos. Solo Wordwell.'
                 },
@@ -547,8 +546,7 @@
                     form_card: 'شماره کارت',
                     form_expiry: 'تاریخ انقضا',
                     form_cvc: 'CVC',
-                    form_country: 'کشور',
-                    form_select_country: 'انتخاب کشور',
+                    form_zip: 'کد پستی',
                     form_submit: '✧ تکمیل خرید',
                     footer_tagline: 'فقط نخبگان. فقط تعداد معدود. فقط وردول.'
                 },
@@ -567,8 +565,7 @@
                     form_card: '카드 번호',
                     form_expiry: '만료일',
                     form_cvc: 'CVC',
-                    form_country: '국가',
-                    form_select_country: '국가 선택',
+                    form_zip: '우편번호',
                     form_submit: '✧ 구매 완료',
                     footer_tagline: '오직 엘리트. 오직 소수. 오직 워드웰.'
                 },
@@ -587,8 +584,7 @@
                     form_card: 'رقم البطاقة',
                     form_expiry: 'تاريخ الانتهاء',
                     form_cvc: 'CVC',
-                    form_country: 'البلد',
-                    form_select_country: 'اختر البلد',
+                    form_zip: 'الرمز البريدي',
                     form_submit: '✧ إكمال الشراء',
                     footer_tagline: 'النخبة فقط. القليلون فقط. ووردويل فقط.'
                 },
@@ -607,8 +603,7 @@
                     form_card: 'Номер карты',
                     form_expiry: 'Срок действия',
                     form_cvc: 'CVC',
-                    form_country: 'Страна',
-                    form_select_country: 'Выберите страну',
+                    form_zip: 'Почтовый индекс',
                     form_submit: '✧ Завершить покупку',
                     footer_tagline: 'Только элита. Только избранные. Только Вордвелл.'
                 },
@@ -627,8 +622,7 @@
                     form_card: '卡号',
                     form_expiry: '有效期',
                     form_cvc: 'CVC',
-                    form_country: '国家',
-                    form_select_country: '选择国家',
+                    form_zip: '邮政编码',
                     form_submit: '✧ 完成购买',
                     footer_tagline: '唯有精英。唯有少数。唯有沃德韦尔。'
                 },
@@ -647,8 +641,7 @@
                     form_card: 'Lambarka Kaadhka',
                     form_expiry: 'Taariikhda Dhamaadka',
                     form_cvc: 'CVC',
-                    form_country: 'Dalka',
-                    form_select_country: 'Dooro Dalka',
+                    form_zip: 'Koodhka Boostada',
                     form_submit: '✧ Dhammeystir Iibsiga',
                     footer_tagline: 'Kaliya Elite. Kaliya kuwa yar. Kaliya Wordwell.'
                 }
@@ -710,23 +703,15 @@
             });
 
             // =========================================================
-            //  📋 PLAN LOOKUP
+            //  📋 PLAN LOOKUP with Stripe Product IDs
             // =========================================================
-            const planNames = {
-                'crown-talk-fan': 'Crown Talk Fan',
-                'league-insider': 'League Insider',
-                'franchise-builder': 'Franchise Builder',
-                'university-athlete': 'University Athlete',
-                'university-season-athlete': 'University Season Athlete',
-                'cta-program': 'CTA Program'
-            };
-            const planPrices = {
-                'crown-talk-fan': '4.99',
-                'league-insider': '9.99',
-                'franchise-builder': '19.99',
-                'university-athlete': '24.99',
-                'university-season-athlete': '79.99',
-                'cta-program': '14.99'
+            const planData = {
+                'crown-talk-fan': { name: 'Crown Talk Fan', price: '4.99', productId: 'prod_UxRZOXFPbyDiMp' },
+                'league-insider': { name: 'League Insider', price: '9.99', productId: 'prod_UxRei8fPSz9H3Z' },
+                'franchise-builder': { name: 'Franchise Builder', price: '19.99', productId: 'prod_UxRgpz9sjdFGux' },
+                'university-athlete': { name: 'University Athlete', price: '24.99', productId: 'prod_UxRi6nCLPwK4oo' },
+                'university-season-athlete': { name: 'University Season Athlete', price: '79.99', productId: 'prod_UxRjJ5P2GPsyGd' },
+                'cta-program': { name: 'CTA Program', price: '14.99', productId: 'prod_UxRkjyGLOBDwhP' }
             };
 
             // =========================================================
@@ -737,19 +722,27 @@
                 const checkoutId = urlParams.get('checkoutId') || 'N/A';
                 const planId = urlParams.get('plan') || 'crown-talk-fan';
 
-                const planName = planNames[planId] || 'Unknown Plan';
-                const planPrice = planPrices[planId] || '0.00';
+                const plan = planData[planId];
+                if (!plan) {
+                    // fallback
+                    document.getElementById('orderPlan').textContent = 'Unknown Plan';
+                    document.getElementById('orderPrice').textContent = '$0.00 / month';
+                    document.getElementById('orderTotal').textContent = '$0.00';
+                    document.getElementById('stripeProductId').textContent = '—';
+                    return;
+                }
 
-                document.getElementById('orderPlan').textContent = planName;
-                document.getElementById('orderPrice').textContent = '$' + planPrice + ' / month';
-                document.getElementById('orderTotal').textContent = '$' + planPrice;
+                document.getElementById('orderPlan').textContent = plan.name;
+                document.getElementById('orderPrice').textContent = '$' + plan.price + ' / month';
+                document.getElementById('orderTotal').textContent = '$' + plan.price;
+                document.getElementById('stripeProductId').textContent = plan.productId;
 
-                // Store plan info for form submission
-                window.__checkoutData = { planId, planName, planPrice, checkoutId };
+                // Store for form submission
+                window.__checkoutData = { planId, planName: plan.name, planPrice: plan.price, productId: plan.productId, checkoutId };
             }
 
             // =========================================================
-            //  📧 FORM SUBMISSION (demo)
+            //  📧 FORM SUBMISSION (simulate Stripe Checkout)
             // =========================================================
             const form = document.getElementById('checkoutForm');
             const status = document.getElementById('formStatus');
@@ -775,9 +768,9 @@
                 const card = document.getElementById('cardNumber').value.trim();
                 const expiry = document.getElementById('cardExpiry').value.trim();
                 const cvc = document.getElementById('cardCvc').value.trim();
-                const country = document.getElementById('country').value;
+                const zip = document.getElementById('zipCode').value.trim();
 
-                if (!name || !email || !card || !expiry || !cvc || !country) {
+                if (!name || !email || !card || !expiry || !cvc || !zip) {
                     const lang = window.__currentLang || 'en';
                     const errorMsg = lang === 'es' ? 'Por favor, completa todos los campos.' :
                                      lang === 'fa' ? 'لطفاً تمام فیلدها را پر کنید.' :
@@ -807,14 +800,14 @@
                 // Simulate payment processing
                 setTimeout(function() {
                     const lang = window.__currentLang || 'en';
-                    const successMsg = lang === 'es' ? '✓ ¡Pago completado! Recibirás un correo de confirmación.' :
-                                        lang === 'fa' ? '✓ پرداخت تکمیل شد! ایمیل تأیید دریافت خواهید کرد.' :
-                                        lang === 'ko' ? '✓ 결제가 완료되었습니다! 확인 이메일을 받으실 수 있습니다.' :
-                                        lang === 'ar' ? '✓ تم إتمام الدفع! ستصلك رسالة تأكيد عبر البريد الإلكتروني.' :
-                                        lang === 'ru' ? '✓ Оплата завершена! Вы получите письмо с подтверждением.' :
-                                        lang === 'zh' ? '✓ 付款已完成！您将收到确认邮件。' :
-                                        lang === 'so' ? '✓ Bixinta waa la dhammeeyey! Waxaad heli doontaa iimayl xaqiijin.' :
-                                        '✓ Payment completed! You will receive a confirmation email.';
+                    const successMsg = lang === 'es' ? '✓ ¡Pago completado! Redirigiendo a Stripe...' :
+                                        lang === 'fa' ? '✓ پرداخت تکمیل شد! در حال انتقال به Stripe...' :
+                                        lang === 'ko' ? '✓ 결제가 완료되었습니다! Stripe로 리디렉션 중...' :
+                                        lang === 'ar' ? '✓ تم إتمام الدفع! جاري التوجيه إلى Stripe...' :
+                                        lang === 'ru' ? '✓ Оплата завершена! Перенаправление на Stripe...' :
+                                        lang === 'zh' ? '✓ 付款已完成！正在重定向到 Stripe...' :
+                                        lang === 'so' ? '✓ Bixinta waa la dhammeeyey! Loo wareejinayaa Stripe...' :
+                                        '✓ Payment completed! Redirecting to Stripe...';
                     setStatus(successMsg, 'success');
                     submitBtn.disabled = false;
                     const submitText = lang === 'es' ? '✧ Completar Compra' :
@@ -827,6 +820,21 @@
                                         '✧ Complete Purchase';
                     submitBtn.innerHTML = submitText;
                     form.reset();
+
+                    // In a real implementation, you would redirect to Stripe Checkout using the product ID
+                    // For demo, we open a new window with a Stripe product page (or you can replace with your actual checkout URL)
+                    // Example: window.location.href = 'https://buy.stripe.com/test_...';
+                    // For now, we just show a link
+                    const productId = window.__checkoutData?.productId || '';
+                    if (productId) {
+                        // Simulate redirect to Stripe Checkout (you need to create a session server-side)
+                        // For demonstration, we'll just show an alert with the product ID
+                        setTimeout(function() {
+                            alert('Redirect to Stripe Checkout for product: ' + productId + '\n\nIn production, this would redirect to your Stripe Checkout session URL.');
+                            // Optionally redirect to a Stripe product page (public view)
+                            // window.location.href = 'https://buy.stripe.com/' + productId;
+                        }, 500);
+                    }
                 }, 1500);
             });
 
