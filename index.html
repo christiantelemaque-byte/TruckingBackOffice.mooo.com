@@ -116,6 +116,26 @@
             font-style: italic;
         }
 
+        /* ----- DEBUG BANNER (visible at top) ----- */
+        .debug-banner {
+            background: #ff4444;
+            color: white;
+            text-align: center;
+            padding: 10px 16px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-bottom: 2px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .debug-banner span {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin: 0 6px;
+        }
+
         /* ----- HEADER / NAV ----- */
         header {
             padding: 20px 0 16px;
@@ -673,19 +693,6 @@
             font-weight: 500;
         }
 
-        /* Debug badge */
-        .debug-lang {
-            display: inline-block;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            padding: 4px 14px;
-            font-size: 0.7rem;
-            color: var(--gold);
-            letter-spacing: 1px;
-            margin-top: 8px;
-        }
-
         /* ----- RESPONSIVE ----- */
         @media (max-width: 820px) {
             .contact-wrapper {
@@ -739,6 +746,12 @@
     </style>
 </head>
 <body>
+
+    <!-- ===== DEBUG BANNER (visible at top) ===== -->
+    <div class="debug-banner" id="debugBanner">
+        🐞 DEBUG: Detected language: <span id="debugLangDisplay">---</span> 
+        | Raw: <span id="debugRawDisplay">---</span>
+    </div>
 
     <!-- ===== HEADER ===== -->
     <header>
@@ -974,8 +987,6 @@
         <div class="container">
             <div>&copy; 2026 <span class="gold">Wordwell</span> &mdash; 
             <span data-i18n="footer_tagline">Only Elite. Only the Few. Only Wordwell.</span></div>
-            <!-- DEBUG BADGE: shows detected language -->
-            <div class="debug-lang" id="debugLangBadge">🌐 Detected: --</div>
         </div>
     </footer>
 
@@ -1306,7 +1317,7 @@
             };
 
             // =========================================================
-            //  🔍 DETECT LANGUAGE
+            //  🔍 DETECT LANGUAGE (with alert and visible debug)
             // =========================================================
             function detectLanguage() {
                 // Try multiple sources
@@ -1314,28 +1325,46 @@
                 if (!raw || raw === '') {
                     raw = navigator.languages?.[0] || 'en';
                 }
-                console.log('🔍 Raw browser language:', raw);
+                // Also check if language is in the URL query string (for testing)
+                const urlParams = new URLSearchParams(window.location.search);
+                const forced = urlParams.get('lang');
+                if (forced && ['en','es','fa','ko','ar','ru','zh','so'].includes(forced)) {
+                    raw = forced;
+                    console.log('🔍 Forced language from URL:', raw);
+                }
 
                 const map = {
                     'es': 'es', 'fa': 'fa', 'ko': 'ko', 'ar': 'ar',
                     'ru': 'ru', 'zh': 'zh', 'so': 'so', 'en': 'en'
                 };
 
-                // Try exact match
+                let detected = 'en';
                 if (map[raw]) {
-                    console.log('✅ Exact match:', map[raw]);
-                    return map[raw];
+                    detected = map[raw];
+                } else {
+                    const prefix = raw.substring(0, 2);
+                    if (map[prefix]) {
+                        detected = map[prefix];
+                    }
                 }
 
-                // Try prefix (e.g., 'es-ES' -> 'es')
-                const prefix = raw.substring(0, 2);
-                if (map[prefix]) {
-                    console.log('✅ Prefix match:', map[prefix]);
-                    return map[prefix];
+                console.log('🔍 Raw browser language:', raw, '→ mapped to:', detected);
+
+                // Show alert for debugging
+                alert('🌐 Language detection:\n\nRaw: ' + raw + '\nMapped: ' + detected + '\n\nIf this is not Spanish, check your browser language settings.');
+
+                // Update debug banner
+                const debugLang = document.getElementById('debugLangDisplay');
+                const debugRaw = document.getElementById('debugRawDisplay');
+                if (debugLang) {
+                    const langNames = { en: 'English', es: 'Español', fa: 'فارسی', ko: '한국어', ar: 'العربية', ru: 'Русский', zh: '中文', so: 'Soomaali' };
+                    debugLang.textContent = langNames[detected] || detected.toUpperCase();
+                }
+                if (debugRaw) {
+                    debugRaw.textContent = raw;
                 }
 
-                console.log('⚠️ No match, falling back to English');
-                return 'en';
+                return detected;
             }
 
             // =========================================================
@@ -1358,17 +1387,7 @@
                     }
                 });
 
-                // Update the html lang attribute
                 document.documentElement.lang = lang;
-
-                // Update the debug badge in the footer
-                const badge = document.getElementById('debugLangBadge');
-                if (badge) {
-                    const langNames = { en: 'English', es: 'Español', fa: 'فارسی', ko: '한국어', ar: 'العربية', ru: 'Русский', zh: '中文', so: 'Soomaali' };
-                    badge.textContent = '🌐 Detected: ' + (langNames[lang] || lang.toUpperCase());
-                }
-
-                // Store current language
                 window.__currentLang = lang;
             }
 
@@ -1376,34 +1395,38 @@
             //  🔄 LANGUAGE TOGGLE
             // =========================================================
             const langCycle = ['en', 'es', 'fa', 'ko', 'ar', 'ru', 'zh', 'so'];
-            let langIndex = 0;
-
             document.getElementById('langToggle').addEventListener('click', function() {
-                // Find current index
                 const current = window.__currentLang || 'en';
                 let idx = langCycle.indexOf(current);
                 if (idx === -1) idx = 0;
                 idx = (idx + 1) % langCycle.length;
-                applyLanguage(langCycle[idx]);
+                const nextLang = langCycle[idx];
+                applyLanguage(nextLang);
+                // Update debug banner to reflect manual change
+                const debugLang = document.getElementById('debugLangDisplay');
+                if (debugLang) {
+                    const langNames = { en: 'English', es: 'Español', fa: 'فارسی', ko: '한국어', ar: 'العربية', ru: 'Русский', zh: '中文', so: 'Soomaali' };
+                    debugLang.textContent = langNames[nextLang] || nextLang.toUpperCase() + ' (manual)';
+                }
+                alert('🌐 Language manually changed to: ' + (langNames[nextLang] || nextLang.toUpperCase()));
             });
 
             // =========================================================
             //  🚀 INITIAL LOAD – DETECT AND APPLY
             // =========================================================
-            // Run immediately if DOM is ready, otherwise wait for DOMContentLoaded
-            function initLanguage() {
+            function init() {
                 const detected = detectLanguage();
                 applyLanguage(detected);
             }
 
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initLanguage);
+                document.addEventListener('DOMContentLoaded', init);
             } else {
-                initLanguage();
+                init();
             }
 
-            // Also run again after a tiny delay to catch any late-loading elements
-            setTimeout(initLanguage, 100);
+            // Force re-apply after 500ms to catch any late elements
+            setTimeout(init, 500);
 
             // =========================================================
             //  ⏱️ COUNTDOWN TIMER (August 1, 2026)
