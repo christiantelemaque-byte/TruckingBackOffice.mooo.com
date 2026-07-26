@@ -10,10 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-    <!-- ===== EMAILJS (for secure sending) ===== -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-    </script>
-
     <style>
         /* ----- RESET & BASE ----- */
         *,
@@ -84,10 +80,6 @@
 
         .gold {
             color: var(--gold);
-        }
-
-        .gold-border {
-            border-color: var(--gold);
         }
 
         .section-label {
@@ -235,7 +227,7 @@
             font-size: 1.2rem;
         }
 
-        /* ----- SERVICES (3 columns) ----- */
+        /* ----- SERVICES ----- */
         .services {
             padding: 80px 0 60px;
             border-bottom: 1px solid var(--border);
@@ -280,7 +272,7 @@
             font-weight: 300;
         }
 
-        /* ----- PORTFOLIO / SAMPLES ----- */
+        /* ----- PORTFOLIO ----- */
         .portfolio {
             padding: 80px 0 60px;
             border-bottom: 1px solid var(--border);
@@ -693,7 +685,7 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT – EmailJS (Secure, uses OAuth2 on backend) ===== -->
+    <!-- ===== JAVASCRIPT – Sends data to Google Apps Script ===== -->
     <!-- ============================================================ -->
 
     <script>
@@ -701,42 +693,16 @@
             'use strict';
 
             // =========================================================
-            //  🔑  STEP 1: Get these 4 values from your EmailJS account
-            //  (https://dashboard.emailjs.com)
+            //  🔑  REPLACE THIS URL with your Google Apps Script Web App URL
+            //  (Step 2 from the deployment)
             // =========================================================
-
-            // After you sign up and connect Gmail via OAuth2:
-            const PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';   // Found in "Integration" tab
-            const SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';   // Found in "Email Services"
-            const TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';  // Found in "Email Templates"
-
-            // For auto-reply – create a second template
-            const AUTOREPLY_TEMPLATE_ID = 'YOUR_AUTOREPLY_TEMPLATE_ID';
-
-            // =========================================================
-            //  🚀  STEP 2: How to connect your Gmail to EmailJS safely:
-            //  1. Go to Email Services → Add New Service → Gmail
-            //  2. Click "Connect" – you'll log in via Google OAuth2
-            //  3. Copy the Service ID that appears
-            //  4. Create 2 templates (main + auto-reply)
-            //  5. Copy your Public Key from the Integration page
-            // =========================================================
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbyn4MirbcMdJkfVNeH9wenmrEvQq-Z7wBNR2F4we89abcjq4f8Q3LFuGbg0ZjoO5jF6/exec';
 
             // =========================================================
 
             const form = document.getElementById('contactForm');
             const status = document.getElementById('formStatus');
             const submitBtn = document.getElementById('submitBtn');
-
-            // --- initialise EmailJS ---
-            if (PUBLIC_KEY && PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
-                emailjs.init({
-                    publicKey: PUBLIC_KEY,
-                    blockHeadless: true,
-                });
-            } else {
-                console.warn('EmailJS: Please replace YOUR_EMAILJS_PUBLIC_KEY with your actual key.');
-            }
 
             // --- helper: show status ---
             function setStatus(message, type) {
@@ -749,32 +715,6 @@
                 status.className = 'form-status';
                 status.style.display = 'none';
                 status.textContent = '';
-            }
-
-            // --- helper: send auto-reply ---
-            function sendAutoReply(userName, userEmail) {
-                if (!AUTOREPLY_TEMPLATE_ID ||
-                    AUTOREPLY_TEMPLATE_ID === 'YOUR_AUTOREPLY_TEMPLATE_ID') {
-                    // No auto-reply template configured – skip silently
-                    return Promise.resolve();
-                }
-
-                const templateParams = {
-                    to_name: userName,
-                    to_email: userEmail,
-                    from_name: 'Christian Télémaque',
-                    from_email: 'christiantelemaquecanada@gmail.com',
-                    message: 'Thank you for reaching out! I\'ll respond within 24 hours.',
-                };
-
-                return emailjs.send(
-                    SERVICE_ID,
-                    AUTOREPLY_TEMPLATE_ID,
-                    templateParams
-                ).catch(function(err) {
-                    // Auto-reply failing isn't critical — log but don't block
-                    console.warn('Auto-reply failed (non-critical):', err);
-                });
             }
 
             // --- main submit ---
@@ -796,38 +736,34 @@
                 submitBtn.textContent = '✧ Sending...';
                 resetStatus();
 
-                // --- prepare data for EmailJS ---
-                const templateParams = {
-                    from_name: name,
-                    from_email: email,
-                    message: message,
-                    to_email: 'christiantelemaque@gmail.com', // your inbox
-                };
-
-                // --- send the main email ---
-                emailjs.send(
-                    SERVICE_ID,
-                    TEMPLATE_ID,
-                    templateParams
-                )
+                // --- send data to Google Apps Script ---
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // required for Google Apps Script web apps
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        message: message
+                    })
+                })
                 .then(function() {
+                    // Because of 'no-cors', we can't read the response.
+                    // We assume success if no network error.
                     setStatus(
                         '✓ Message sent! You\'ll receive a reply within 24 hours.',
                         'success'
                     );
                     form.reset();
-
-                    // --- send auto-reply in the background ---
-                    sendAutoReply(name, email);
-
-                    // re-enable button
                     submitBtn.disabled = false;
                     submitBtn.textContent = '✧ Send message';
                 })
                 .catch(function(err) {
-                    console.error('EmailJS error:', err);
+                    console.error('Error:', err);
                     setStatus(
-                        'Something went wrong. Please try again or email me directly at christiantelemaque@gmail.com.',
+                        'Something went wrong. Please try again or email me directly at christiantelemaquecanada@gmail.com.',
                         'error'
                     );
                     submitBtn.disabled = false;
