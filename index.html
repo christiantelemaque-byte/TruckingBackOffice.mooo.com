@@ -1,809 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Word Well — Christian Télémaque | Freelance Content Writing</title>
-  <style>
-    /* ---------- RESET & BASE (classic/editorial) ---------- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Word Well | Christian Télémaque – Content Writer & Strategist</title>
 
-    body {
-      background: #FCF9F5;   /* warm ivory background — quiet luxury */
-      color: #1C1A1A;
-      line-height: 1.5;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-    }
+    <!-- ===== FONTS ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-    /* refined serif for headings — classic editorial feel */
-    h1, h2, h3, .logo, .blog-title, .author-info h3 {
-      font-family: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
-      font-weight: 500;
-      letter-spacing: -0.01em;
-    }
+    <!-- ===== EMAILJS (for secure sending) ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
 
-    /* ---------- TYPOGRAPHY (modern CSS best practices) ---------- */
-    h1 {
-      font-size: clamp(2.8rem, 6vw, 4.5rem);
-      line-height: 1.2;
-      font-weight: 500;
-    }
-    h2 {
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      font-weight: 500;
-      margin: 1.5rem 0 1rem 0;
-      letter-spacing: -0.01em;
-      border-left: 4px solid #C6A43B;
-      padding-left: 1.2rem;
-    }
-    .blog-title {
-      font-size: 1.5rem;
-      font-weight: 500;
-      line-height: 1.3;
-    }
-    body, p, .blog-excerpt, .nav-btn, .btn, input, textarea {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    }
-    /* improved readability */
-    p, .blog-excerpt, .author-info p {
-      max-width: 70ch;
-      color: #3A3A3A;
-    }
-    /* text-wrap balance for elegant headings */
-    .banner-text h1, .blog-title, h2 {
-      text-wrap: balance;
-    }
+    <style>
+        /* ----- RESET & BASE ----- */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* ---------- BANNER with integrated custom image ---------- */
-    .hero-banner {
-      width: 100%;
-      height: 480px;
-      background-size: cover;
-      background-position: center 40%;
-      background-repeat: no-repeat;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #2C3A2A;  /* fallback deep forest */
-    }
-    /* subtle overlay for text contrast */
-    .banner-overlay {
-      background: rgba(0, 0, 0, 0.38);
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      backdrop-filter: brightness(0.96);
-    }
-    .banner-text {
-      max-width: 800px;
-      padding: 0 1rem;
-    }
-    .banner-text h1 {
-      color: #FFFFFF;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
-      font-weight: 500;
-      letter-spacing: -0.02em;
-    }
-    .banner-text p {
-      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-      color: #F3E9D2;
-      margin-top: 0.75rem;
-      font-weight: 400;
-      max-width: 100%;
-    }
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e8d5a3;
+            --gold-dark: #a8892e;
+            --bg: #0b0a0a;
+            --bg-card: #141212;
+            --bg-input: #1e1b1b;
+            --text: #f0ede8;
+            --text-muted: #a8a39a;
+            --border: #2a2626;
+            --radius: 12px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
 
-    /* ---------- NAVBAR (clean, sharp, minimal) ---------- */
-    .navbar {
-      background: rgba(255, 255, 245, 0.98);
-      backdrop-filter: blur(0px);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-      padding: 1rem 2rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid #EBE3D5;
-    }
-    .logo {
-      font-size: 1.9rem;
-      font-weight: 500;
-      color: #1E2F21;
-      letter-spacing: -0.3px;
-      background: none;
-      -webkit-background-clip: unset;
-      background-clip: unset;
-      color: #1E2F21;
-    }
-    .nav-links {
-      display: flex;
-      gap: 1.8rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .nav-btn {
-      background: none;
-      border: none;
-      font-weight: 450;
-      font-size: 0.95rem;
-      cursor: pointer;
-      padding: 0.4rem 0.2rem;
-      transition: 0.2s ease;
-      border-radius: 0px;
-      color: #2C3E2F;
-      letter-spacing: -0.2px;
-      border-bottom: 1px solid transparent;
-    }
-    .nav-btn:hover {
-      border-bottom-color: #C6A43B;
-      background: none;
-      transform: translateY(-1px);
-    }
-    .btn-primary {
-      background: #1E2F21;
-      color: white;
-      border-radius: 40px;
-      padding: 0.5rem 1.3rem;
-      border: none;
-      font-weight: 500;
-    }
-    .btn-primary:hover {
-      background: #2C4A2E;
-      transform: none;
-      border-bottom: none;
-    }
-    .btn-primary-outline {
-      border: 1px solid #2C3E2F;
-      background: transparent;
-      color: #2C3E2F;
-      border-radius: 40px;
-      padding: 0.5rem 1.2rem;
-    }
-    .btn-primary-outline:hover {
-      background: #2C3E2F10;
-      border-bottom: 1px solid #2C3E2F;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    /* main container (max-width & padding) */
-    .container {
-      max-width: 1280px;
-      margin: 2.5rem auto;
-      padding: 0 2rem;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    /* ---------- AUTHOR CARD (elevated classic style) ---------- */
-    .author-card {
-      background: #FFFFFF;
-      border-radius: 28px;
-      padding: 2rem;
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-      margin-bottom: 2.8rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
-      border: 1px solid #EBE3D5;
-      transition: box-shadow 0.2s;
-    }
-    .profile-pic {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #C6A43B;
-      background: #F2EBE0;
-    }
-    .author-info h3 {
-      font-size: 1.9rem;
-      font-weight: 500;
-      margin-bottom: 0.3rem;
-      color: #1A2A1C;
-    }
-    .social-links {
-      margin-top: 0.8rem;
-    }
-    .social-links a {
-      text-decoration: none;
-      color: #6F5B3E;
-      margin-right: 1.5rem;
-      font-weight: 500;
-      font-size: 0.9rem;
-      border-bottom: 1px dotted #DBCEBC;
-      transition: 0.2s;
-    }
-    .social-links a:hover {
-      color: #C6A43B;
-      border-bottom-color: #C6A43B;
-    }
+        a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        a:hover {
+            color: var(--gold-light);
+        }
 
-    /* ---------- BLOG GRID (clean, generous spacing) ---------- */
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 2.2rem;
-      margin: 2rem 0 2rem;
-    }
-    .blog-card {
-      background: #FFFFFF;
-      border-radius: 24px;
-      overflow: hidden;
-      transition: all 0.25s ease;
-      border: 1px solid #EFE8DE;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    }
-    .blog-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.08);
-      border-color: #E2D6C8;
-    }
-    .blog-img {
-      width: 100%;
-      height: 210px;
-      object-fit: cover;
-      background: #E9E0D2;
-      transition: transform 0.4s ease;
-    }
-    .blog-card:hover .blog-img {
-      transform: scale(1.02);
-    }
-    .blog-card-content {
-      padding: 1.6rem;
-    }
-    .blog-title {
-      font-size: 1.45rem;
-      margin-bottom: 0.6rem;
-      line-height: 1.3;
-    }
-    .blog-excerpt {
-      color: #4A4A4A;
-      font-size: 0.9rem;
-      line-height: 1.45;
-      margin-bottom: 1.2rem;
-    }
-    .read-link {
-      background: none;
-      border: none;
-      color: #C6A43B;
-      font-weight: 550;
-      cursor: pointer;
-      font-size: 0.85rem;
-      letter-spacing: 0.3px;
-      padding: 0;
-      transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .read-link:hover {
-      color: #8B6C2E;
-      gap: 0.6rem;
-    }
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
 
-    /* panels & forms (classic minimal) */
-    .panel {
-      background: #FFFFFF;
-      border-radius: 28px;
-      padding: 2rem;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
-      margin: 1.5rem 0;
-      border: 1px solid #EBE3D5;
-    }
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-    label {
-      font-weight: 500;
-      display: block;
-      margin-bottom: 0.4rem;
-      color: #2C3E2F;
-      font-size: 0.85rem;
-      letter-spacing: 0.3px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      border-radius: 18px;
-      border: 1px solid #E2D6C8;
-      background: #FEFCF8;
-      font-size: 0.95rem;
-      transition: 0.2s;
-    }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #C6A43B;
-      box-shadow: 0 0 0 3px rgba(198, 164, 59, 0.1);
-    }
-    button {
-      cursor: pointer;
-    }
-    .btn {
-      padding: 0.7rem 1.6rem;
-      border-radius: 40px;
-      border: none;
-      font-weight: 500;
-      background: #F1EAE0;
-      transition: 0.2s;
-    }
-    .btn-dark {
-      background: #1E2F21;
-      color: white;
-    }
-    .btn-dark:hover {
-      background: #2C4A2E;
-      transform: translateY(-2px);
-    }
-    .subscription-badge {
-      background: #F5F0E8;
-      padding: 0.4rem 1rem;
-      border-radius: 40px;
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #6F5B3E;
-    }
-    .error {
-      color: #B1624B;
-      font-size: 0.85rem;
-      margin-top: 0.3rem;
-    }
-    footer {
-      background: #EFEADF;
-      color: #4A3A2A;
-      text-align: center;
-      padding: 2rem;
-      margin-top: 4rem;
-      border-top: 1px solid #DDD2C0;
-      font-size: 0.85rem;
-    }
-    hr {
-      margin: 1.5rem 0;
-      border: 0;
-      height: 1px;
-      background: #EBE3D5;
-    }
-    .flex-between {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    /* utility */
-    @media (max-width: 720px) {
-      .navbar { flex-direction: column; gap: 0.8rem; align-items: stretch; text-align: center; }
-      .nav-links { justify-content: center; }
-      .container { padding: 0 1.2rem; }
-      .author-card { flex-direction: column; text-align: center; }
-      .blog-grid { gap: 1.5rem; }
-      h2 { border-left: none; padding-left: 0; }
-    }
-  </style>
+        /* ----- SCROLLBAR ----- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+
+        /* ----- TYPOGRAPHY ----- */
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .gold {
+            color: var(--gold);
+        }
+
+        .gold-border {
+            border-color: var(--gold);
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .section-title .gold {
+            font-style: italic;
+        }
+
+        /* ----- HEADER / NAV ----- */
+        header {
+            padding: 28px 0 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(11, 10, 10, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo .gold {
+            font-style: italic;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: var(--gold);
+            transition: var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--text);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ----- HERO ----- */
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 50px;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.6rem, 7vw, 4.8rem);
+            font-weight: 700;
+            line-height: 1.08;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 .gold {
+            font-style: italic;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 36px;
+            font-weight: 300;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gold);
+            color: #0b0a0a;
+            font-weight: 600;
+            padding: 14px 42px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        .hero-cta:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(201, 168, 76, 0.25);
+        }
+
+        .hero-cta i {
+            font-style: normal;
+            font-size: 1.2rem;
+        }
+
+        /* ----- SERVICES (3 columns) ----- */
+        .services {
+            padding: 80px 0 60px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            padding: 36px 28px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .service-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .service-card .icon {
+            font-size: 2.2rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .service-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        /* ----- PORTFOLIO / SAMPLES ----- */
+        .portfolio {
+            padding: 80px 0 60px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-top: 40px;
+        }
+
+        .portfolio-item {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .portfolio-item:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        .portfolio-item .thumb {
+            height: 180px;
+            background: linear-gradient(135deg, #1e1b1b, #2a2626);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--gold);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .portfolio-item .info {
+            padding: 22px 24px 26px;
+        }
+
+        .portfolio-item .info h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .portfolio-item .info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 300;
+            margin-bottom: 12px;
+        }
+
+        .portfolio-item .info a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* ----- CONTACT ----- */
+        .contact {
+            padding: 80px 0 100px;
+        }
+
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 60px;
+            align-items: start;
+            margin-top: 40px;
+        }
+
+        .contact-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .contact-info p {
+            color: var(--text-muted);
+            font-weight: 300;
+            margin-bottom: 28px;
+        }
+
+        .contact-info .detail {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .contact-info .detail strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* ----- FORM ----- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            background: var(--gold);
+            color: #0b0a0a;
+            font-weight: 600;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+        .btn-submit:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(201, 168, 76, 0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .form-status {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            display: none;
+        }
+        .form-status.success {
+            display: block;
+            background: rgba(201, 168, 76, 0.12);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+        }
+        .form-status.error {
+            display: block;
+            background: rgba(255, 70, 70, 0.1);
+            border: 1px solid #cc4444;
+            color: #ff8888;
+        }
+
+        /* ----- FOOTER ----- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        footer .gold {
+            font-weight: 500;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 820px) {
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .header-inner {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-links {
+                gap: 20px;
+                font-size: 0.8rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .hero {
+                padding: 50px 0 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- BANNER section with integrated custom image from GitHub (raw) -->
-<div class="hero-banner" id="heroBanner">
-  <div class="banner-overlay">
-    <div class="banner-text">
-      <h1>Word Well</h1>
-      <p>Freelance Content Writer | SEO Blog Posts, Copywriting & Ghostwriting</p>
-    </div>
-  </div>
-</div>
-
-<!-- NAVBAR -->
-<div class="navbar">
-  <div class="logo">✍️ Word Well</div>
-  <div class="nav-links">
-    <button class="nav-btn" data-nav="home">📖 Journal</button>
-    <button class="nav-btn" data-nav="account">👤 Account</button>
-    <button id="adminNavBtn" class="nav-btn" style="display: none;">⚙️ Write</button>
-    <button id="loginNavBtn" class="nav-btn btn-primary-outline">🔐 Log in</button>
-    <button id="registerNavBtn" class="nav-btn btn-primary">Join</button>
-    <button id="logoutBtn" class="nav-btn" style="display: none;">Log out</button>
-  </div>
-</div>
-
-<!-- MAIN DYNAMIC VIEW -->
-<div id="appContainer" class="container"></div>
-
-<footer>
-  <p>© 2025 Word Well — Freelance Content Writing by Christian Télémaque</p>
-  <p id="footerLinks">🔗 <a id="linkedinFooter" href="#" target="_blank" style="color:#6F5B3E; text-decoration: none; border-bottom: 1px dotted;">LinkedIn</a> &nbsp;| ✉️ <span id="emailFooter"></span></p>
-</footer>
-
-<script>
-  // ====================== CONFIGURATION (YOUR BRAND) ==================
-  const CONFIG = {
-    // DIRECT RAW BANNER IMAGE URL (from your GitHub)
-    bannerImageURL: "https://raw.githubusercontent.com/christiantelemaque-byte/WordWell.mooo.com/main/luxecompanions-images/ChatGPT%20Image%20May%2012%2C%202026%2C%2006_25_11%20PM.png",
-    profilePictureURL: "https://ui-avatars.com/api/?background=2b5e2f&color=fff&name=Christian+Télémaque&size=128&bold=true",
-    linkedIn: "https://www.linkedin.com/in/christian-telemaque-writer",
-    email: "christiantelemaque@gmail.com",
-    writerName: "Christian Télémaque"
-  };
-
-  // apply banner background with RAW image
-  const bannerDiv = document.getElementById('heroBanner');
-  if (CONFIG.bannerImageURL) {
-    bannerDiv.style.backgroundImage = `url(${CONFIG.bannerImageURL})`;
-    bannerDiv.style.backgroundSize = "cover";
-  } else {
-    bannerDiv.style.background = "linear-gradient(135deg, #1f3b2c, #ab8e5c)";
-  }
-
-  // Footer dynamic links
-  const linkedinFooter = document.getElementById('linkedinFooter');
-  if(linkedinFooter) linkedinFooter.href = CONFIG.linkedIn;
-  const emailFooterSpan = document.getElementById('emailFooter');
-  if(emailFooterSpan) emailFooterSpan.innerText = CONFIG.email;
-  
-  // ========== DATA MODELS (localStorage) ==========
-  let users = [];
-  let posts = [];
-  let currentUser = null;
-
-  function loadData() {
-    const storedUsers = localStorage.getItem('wordwell_users');
-    const storedPosts = localStorage.getItem('wordwell_posts');
-    users = storedUsers ? JSON.parse(storedUsers) : [];
-    posts = storedPosts ? JSON.parse(storedPosts) : [];
-    if (users.length === 0) {
-      users.push({
-        id: "u1",
-        name: CONFIG.writerName,
-        email: CONFIG.email,
-        password: "Admin123",
-        isAdmin: true,
-        subscription: { active: false, expiryDate: null, plan: null }
-      });
-      users.push({
-        id: "u2",
-        name: "Reader Demo",
-        email: "reader@example.com",
-        password: "reader123",
-        isAdmin: false,
-        subscription: { active: false, expiryDate: null, plan: null }
-      });
-      localStorage.setItem('wordwell_users', JSON.stringify(users));
-    }
-    if (posts.length === 0) {
-      posts = [
-        { id: "p1", title: "The art of authentic storytelling", content: "In a world flooded with generic content, genuine human narrative creates emotional connection. As a freelance writer, I craft each sentence with care — blending SEO strategy with natural storytelling. Whether you need website copy, blog posts, or ghostwriting, Word Well delivers words that resonate. This is the core of what I do: words that feel honest, sound like you, and speak directly to your audience.", date: "2025-04-01", author: CONFIG.writerName, imageUrl: "https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800" },
-        { id: "p2", title: "SEO writing that reads like a conversation", content: "Search engines love relevance, but humans love personality. Combining both is an art. I provide SEO-optimised content that doesn't sound robotic — from long-form articles to persuasive landing pages. Monthly subscribers get exclusive templates, SEO checklists, and early access to new articles. Subscribe to support independent writing that actually performs.", date: "2025-04-05", author: CONFIG.writerName, imageUrl: "https://images.pexels.com/photos/270404/pexels-photo-270404.jpeg?auto=compress&cs=tinysrgb&w=800" },
-        { id: "p3", title: "Ghostwriting: bringing your voice to life", content: "You have ideas, but not the time to write. Ghostwriting bridges that gap. I've helped executives, founders, and creators produce authentic LinkedIn posts, newsletters, and even entire books. Every piece sounds like you — just more polished. Let's collaborate on your next project. Quiet, professional, and always tailored.", date: "2025-04-10", author: CONFIG.writerName, imageUrl: "https://images.pexels.com/photos/4145190/pexels-photo-4145190.jpeg?auto=compress&cs=tinysrgb&w=800" }
-      ];
-      localStorage.setItem('wordwell_posts', JSON.stringify(posts));
-    }
-    const storedCurrent = localStorage.getItem('wordwell_currentUser');
-    if (storedCurrent) currentUser = JSON.parse(storedCurrent);
-    else currentUser = null;
-  }
-
-  function saveUsers() { localStorage.setItem('wordwell_users', JSON.stringify(users)); }
-  function savePosts() { localStorage.setItem('wordwell_posts', JSON.stringify(posts)); }
-  function saveCurrentUser() {
-    if (currentUser) localStorage.setItem('wordwell_currentUser', JSON.stringify(currentUser));
-    else localStorage.removeItem('wordwell_currentUser');
-  }
-
-  function findUserByEmail(email) { return users.find(u => u.email === email); }
-
-  function setUserSubscription(userId, active, months = 1) {
-    const userIndex = users.findIndex(u => u.id === userId);
-    if (userIndex === -1) return false;
-    let expiry = null;
-    if (active) {
-      const date = new Date();
-      date.setMonth(date.getMonth() + months);
-      expiry = date.toISOString();
-    }
-    users[userIndex].subscription = { active, expiryDate: expiry, plan: active ? 'monthly' : null };
-    saveUsers();
-    if (currentUser && currentUser.id === userId) {
-      currentUser = users[userIndex];
-      saveCurrentUser();
-    }
-    return true;
-  }
-
-  function isSubscriptionValid(user) {
-    if (!user.subscription.active) return false;
-    if (!user.subscription.expiryDate) return false;
-    const expiry = new Date(user.subscription.expiryDate);
-    return expiry > new Date();
-  }
-
-  // ========== RENDER ENGINE ==========
-  let currentView = "home";
-
-  function render() {
-    const container = document.getElementById('appContainer');
-    if (!container) return;
-
-    const loginBtn = document.getElementById('loginNavBtn');
-    const registerBtn = document.getElementById('registerNavBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminNav = document.getElementById('adminNavBtn');
-    if (currentUser) {
-      loginBtn.style.display = 'none';
-      registerBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-      adminNav.style.display = currentUser.isAdmin ? 'inline-block' : 'none';
-    } else {
-      loginBtn.style.display = 'inline-block';
-      registerBtn.style.display = 'inline-block';
-      logoutBtn.style.display = 'none';
-      adminNav.style.display = 'none';
-    }
-
-    if (currentView === "home") renderHome(container);
-    else if (currentView === "account") renderAccount(container);
-    else if (currentView === "admin") {
-      if (currentUser && currentUser.isAdmin) renderAdminPanel(container);
-      else { alert("Admin access only."); currentView = "home"; render(); }
-    }
-    else if (currentView === "blogDetail") renderBlogDetail(container);
-    else if (currentView === "login") renderLogin(container);
-    else if (currentView === "register") renderRegister(container);
-    else renderHome(container);
-  }
-
-  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-  function getExcerpt(content, len=115) { return content.length > len ? content.slice(0, len) + "…" : content; }
-
-  function renderHome(container) {
-    if (!posts.length) {
-      container.innerHTML = `<div class="panel"><p>No published articles yet. Check back soon.</p></div>`;
-      return;
-    }
-    let html = `<div class="author-card">
-      <img class="profile-pic" src="${CONFIG.profilePictureURL}" alt="Christian Télémaque">
-      <div class="author-info">
-        <h3>${CONFIG.writerName}</h3>
-        <p>Freelance content writer & strategist. Human-first, SEO-smart storytelling. I help brands find their voice and readers find meaning.</p>
-        <div class="social-links">
-          <a href="${CONFIG.linkedIn}" target="_blank">🔗 LinkedIn</a>
-          <a href="mailto:${CONFIG.email}">✉️ ${CONFIG.email}</a>
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="container header-inner">
+            <div class="logo">
+                Word<span class="gold">Well</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#services">Services</a>
+                <a href="#portfolio">Portfolio</a>
+                <a href="#contact">Contact</a>
+            </nav>
         </div>
-      </div>
-    </div>
-    <h2>From the desk</h2>
-    <div class="blog-grid">`;
-    
-    posts.slice().reverse().forEach(post => {
-      html += `
-        <div class="blog-card">
-          <img class="blog-img" src="${post.imageUrl || 'https://images.pexels.com/photos/256514/pexels-photo-256514.jpeg?auto=compress&cs=tinysrgb&w=600'}" alt="essay visual" onerror="this.src='https://placehold.co/600x400/F2EBE0/1E2F21?text=Word+Well'">
-          <div class="blog-card-content">
-            <div class="blog-title">${escapeHtml(post.title)}</div>
-            <div class="blog-excerpt">${escapeHtml(getExcerpt(post.content, 90))}</div>
-            <button class="read-link" data-postid="${post.id}">Read full story →</button>
-            <div style="font-size:0.7rem; margin-top:12px; color:#9B8C74;">${post.date} — ${escapeHtml(post.author)}</div>
-          </div>
-        </div>`;
-    });
-    html += `</div>`;
-    container.innerHTML = html;
-    document.querySelectorAll('.read-link').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const postId = btn.getAttribute('data-postid');
-        if (!currentUser) {
-          alert("🔐 Please log in or create a free account to read full articles.");
-          currentView = "login";
-          render();
-          return;
-        }
-        currentView = "blogDetail";
-        window.selectedPostId = postId;
-        render();
-      });
-    });
-  }
+    </header>
 
-  function renderBlogDetail(container) {
-    const postId = window.selectedPostId;
-    const post = posts.find(p => p.id === postId);
-    if (!post) { container.innerHTML = `<div class="panel">Essay not found</div>`; return; }
-    container.innerHTML = `
-      <div class="panel">
-        <button class="btn" id="backHomeBtn" style="margin-bottom:1rem;">← Back to Journal</button>
-        <h1 style="font-size:clamp(2rem,5vw,3rem);">${escapeHtml(post.title)}</h1>
-        <p style="color:#8F7A5C; margin:0.5rem 0 1rem 0;">By ${escapeHtml(post.author)} • ${post.date}</p>
-        ${post.imageUrl ? `<img src="${post.imageUrl}" style="width:100%; max-height:420px; object-fit:cover; border-radius:24px; margin:1.2rem 0;" alt="featured" onerror="this.style.display='none'">` : ''}
-        <div style="white-space: pre-wrap; line-height:1.65; font-size:1.05rem; color:#2B2B2B;">${escapeHtml(post.content)}</div>
-        <hr />
-        <p style="font-style:italic;">✍️ Enjoyed this? <strong>Subscribe monthly</strong> to support independent writing and get exclusive resources.</p>
-      </div>
-    `;
-    document.getElementById('backHomeBtn')?.addEventListener('click', () => {
-      currentView = "home";
-      render();
-    });
-  }
-
-  function renderAccount(container) {
-    if (!currentUser) {
-      container.innerHTML = `<div class="panel"><p>Please log in to view your library.</p><button class="btn btn-dark" id="gotoLogin">Log in</button></div>`;
-      document.getElementById('gotoLogin')?.addEventListener('click',()=>{ currentView="login"; render(); });
-      return;
-    }
-    const validSub = isSubscriptionValid(currentUser);
-    const subStatus = validSub ? `✅ Active until ${new Date(currentUser.subscription.expiryDate).toDateString()}` : (currentUser.subscription.active ? 'Expired' : 'No active subscription');
-    container.innerHTML = `
-      <div class="panel">
-        <h2>Welcome, ${escapeHtml(currentUser.name)}</h2>
-        <p><strong>Email:</strong> ${escapeHtml(currentUser.email)}</p>
-        <p><strong>Role:</strong> ${currentUser.isAdmin ? "Writer & Admin" : "Reader"}</p>
-        <div class="subscription-badge" style="margin: 1rem 0;">📖 Subscription: ${subStatus}</div>
-        <div style="background:#F9F5EF; padding:1.5rem; border-radius:24px;">
-          <h3>✍️ Support Word Well — Monthly Membership</h3>
-          <p>Subscribe for $9.99/month and unlock writing tips, early essays, and help sustain authentic content.</p>
-          ${validSub ? `<button class="btn" id="cancelSubBtn">Cancel Membership</button>` : `<button class="btn btn-dark" id="startSubBtn">Become a Member (Demo)</button>`}
-          <p style="font-size:0.75rem; margin-top:0.75rem;">*Demo: one-click mock subscription, no real payment.</p>
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="container">
+            <span class="hero-badge">✦ Freelance Content Writer</span>
+            <h1>
+                Human-first,<br />
+                <span class="gold">SEO-smart</span> storytelling.
+            </h1>
+            <p>
+                I help brands find their voice — and readers find meaning.
+                Ghostwriting, SEO content, and authentic storytelling for the
+                US market.
+            </p>
+            <a href="#contact" class="hero-cta">
+                <i>✧</i> Let's work together
+            </a>
         </div>
-      </div>
-    `;
-    if (validSub) {
-      document.getElementById('cancelSubBtn')?.addEventListener('click', () => {
-        setUserSubscription(currentUser.id, false);
-        alert("Membership cancelled. You can resubscribe anytime.");
-        render();
-      });
-    } else {
-      document.getElementById('startSubBtn')?.addEventListener('click', () => {
-        setUserSubscription(currentUser.id, true, 1);
-        alert("🎉 Membership activated! Valid for 30 days (demo). Thank you for supporting Word Well!");
-        render();
-      });
-    }
-  }
+    </section>
 
-  // ADMIN PANEL: classic writer's dashboard
-  function renderAdminPanel(container) {
-    if (!currentUser || !currentUser.isAdmin) { container.innerHTML = `<div>Access denied</div>`; return; }
-    let html = `<div class="panel"><div class="flex-between"><h2>Writer’s Desk</h2><button class="btn btn-dark" id="newPostBtn">+ New Essay</button></div><div id="adminPostsList"></div></div>`;
-    container.innerHTML = html;
-    function renderPostList() {
-      const listDiv = document.getElementById('adminPostsList');
-      if (!listDiv) return;
-      if (posts.length === 0) { listDiv.innerHTML = '<p>No essays yet. Begin writing.</p>'; return; }
-      let listHtml = `<div style="margin-top:1.5rem;">`;
-      posts.forEach(post => {
-        listHtml += `<div style="border-bottom:1px solid #F0E7DC; padding:1rem 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-          <span><strong>${escapeHtml(post.title)}</strong> <span style="color:#9F8B6F;">(${post.date})</span></span>
-          <div><button class="btn editPostBtn" data-id="${post.id}" style="margin-right:8px;">✏️ Edit</button> <button class="btn deletePostBtn" data-id="${post.id}" style="background:#E9DFD3;">🗑 Delete</button></div>
-        </div>`;
-      });
-      listHtml += `</div>`;
-      listDiv.innerHTML = listHtml;
-      document.querySelectorAll('.editPostBtn').forEach(btn => {
-        btn.addEventListener('click', (e) => { editPostForm(btn.getAttribute('data-id')); });
-      });
-      document.querySelectorAll('.deletePostBtn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          if (confirm("Permanently delete this essay?")) {
-            posts = posts.filter(p => p.id !== btn.getAttribute('data-id'));
-            savePosts();
-            renderAdminPanel(container);
-          }
-        });
-      });
-    }
-    renderPostList();
-    document.getElementById('newPostBtn')?.addEventListener('click', () => showPostForm(null));
-    function showPostForm(postToEdit = null) {
-      const isEdit = !!postToEdit;
-      const formHtml = `
-        <div class="panel" id="postFormModal" style="margin-top:1rem;">
-          <h3>${isEdit ? 'Revise Essay' : 'Draft New Essay'}</h3>
-          <div class="form-group"><label>Title</label><input id="postTitle" value="${escapeHtml(isEdit ? postToEdit.title : '')}" /></div>
-          <div class="form-group"><label>Full text</label><textarea id="postContent" rows="6">${escapeHtml(isEdit ? postToEdit.content : '')}</textarea></div>
-          <div class="form-group"><label>Image URL (optional)</label><input id="postImage" value="${escapeHtml(isEdit ? (postToEdit.imageUrl || '') : '')}" placeholder="https://..." /></div>
-          <button class="btn btn-dark" id="savePostBtn">Save</button>
-          <button class="btn" id="cancelPostBtn">Cancel</button>
-        </div>`;
-      const existing = document.getElementById('postFormModal');
-      if(existing) existing.remove();
-      container.insertAdjacentHTML('beforeend', formHtml);
-      document.getElementById('savePostBtn')?.addEventListener('click', () => {
-        const title = document.getElementById('postTitle').value.trim();
-        const content = document.getElementById('postContent').value.trim();
-        const imageUrl = document.getElementById('postImage').value.trim();
-        if (!title || !content) { alert("Title and content required."); return; }
-        if (isEdit) {
-          postToEdit.title = title;
-          postToEdit.content = content;
-          postToEdit.imageUrl = imageUrl || null;
-          savePosts();
-        } else {
-          const newPost = { id: "p" + Date.now(), title, content, imageUrl: imageUrl || null, date: new Date().toISOString().slice(0,10), author: currentUser.name };
-          posts.unshift(newPost);
-          savePosts();
-        }
-        document.getElementById('postFormModal')?.remove();
-        renderAdminPanel(container);
-      });
-      document.getElementById('cancelPostBtn')?.addEventListener('click', () => { document.getElementById('postFormModal')?.remove(); });
-    }
-    function editPostForm(postId) {
-      const post = posts.find(p => p.id === postId);
-      if(post) showPostForm(post);
-    }
-  }
+    <!-- ===== SERVICES ===== -->
+    <section class="services" id="services">
+        <div class="container">
+            <span class="section-label">✦ What I do</span>
+            <h2 class="section-title">
+                Services <span class="gold">that move</span> the needle.
+            </h2>
 
-  // AUTH VIEWS
-  function renderLogin(container) {
-    container.innerHTML = `<div class="panel"><h2>Log in to Word Well</h2><div id="loginError" class="error"></div>
-    <div class="form-group"><label>Email</label><input id="loginEmail" type="email" /></div>
-    <div class="form-group"><label>Password</label><input id="loginPassword" type="password" /></div>
-    <button class="btn btn-dark" id="doLoginBtn">Access library</button>
-    <p style="margin-top:1rem;">No account? <button class="nav-btn" id="switchToReg">Create profile</button></p></div>`;
-    document.getElementById('doLoginBtn')?.addEventListener('click', () => {
-      const email = document.getElementById('loginEmail').value.trim();
-      const pwd = document.getElementById('loginPassword').value.trim();
-      const user = users.find(u => u.email === email && u.password === pwd);
-      if (user) { currentUser = { ...user }; saveCurrentUser(); currentView = "home"; render(); } 
-      else { document.getElementById('loginError').innerText = "Invalid credentials."; }
-    });
-    document.getElementById('switchToReg')?.addEventListener('click', () => { currentView = "register"; render(); });
-  }
+            <div class="services-grid">
+                <div class="service-card">
+                    <span class="icon">✍️</span>
+                    <h3>Ghostwriting</h3>
+                    <p>
+                        Your voice, my pen. I capture your ideas and turn them
+                        into compelling articles, LinkedIn posts, and thought
+                        leadership pieces.
+                    </p>
+                </div>
+                <div class="service-card">
+                    <span class="icon">📈</span>
+                    <h3>SEO Content</h3>
+                    <p>
+                        Search engines love relevance — humans love personality.
+                        I blend both to drive traffic and build trust.
+                    </p>
+                </div>
+                <div class="service-card">
+                    <span class="icon">🎯</span>
+                    <h3>Authentic Storytelling</h3>
+                    <p>
+                        Generic content is noise. Genuine human narrative creates
+                        emotional connection and lasting impact.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  function renderRegister(container) {
-    container.innerHTML = `<div class="panel"><h2>Become a reader</h2><div id="regError" class="error"></div>
-    <div class="form-group"><label>Full name</label><input id="regName" /></div>
-    <div class="form-group"><label>Email</label><input id="regEmail" type="email" /></div>
-    <div class="form-group"><label>Password</label><input id="regPassword" type="password" /></div>
-    <button class="btn btn-dark" id="doRegBtn">Sign up — free</button>
-    <p>Already a reader? <button class="nav-btn" id="switchToLogin">Log in</button></p></div>`;
-    document.getElementById('doRegBtn')?.addEventListener('click', () => {
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const pass = document.getElementById('regPassword').value.trim();
-      if (!name || !email || !pass) { document.getElementById('regError').innerText = "All fields required."; return; }
-      if (findUserByEmail(email)) { document.getElementById('regError').innerText = "Email already registered."; return; }
-      const newUser = { id: "u"+Date.now(), name, email, password: pass, isAdmin: false, subscription: { active: false, expiryDate: null, plan: null } };
-      users.push(newUser);
-      saveUsers();
-      currentUser = { ...newUser };
-      saveCurrentUser();
-      currentView = "home";
-      render();
-    });
-    document.getElementById('switchToLogin')?.addEventListener('click', () => { currentView = "login"; render(); });
-  }
+    <!-- ===== PORTFOLIO ===== -->
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <span class="section-label">✦ Featured work</span>
+            <h2 class="section-title">
+                Writing that <span class="gold">resonates</span>.
+            </h2>
 
-  function bindNavEvents() {
-    document.querySelectorAll('[data-nav]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const nav = btn.getAttribute('data-nav');
-        if (nav === 'home') currentView = "home";
-        else if (nav === 'account') currentView = "account";
-        else if (nav === 'admin') { if (currentUser && currentUser.isAdmin) currentView = "admin"; else alert("Admin only"); }
-        render();
-      });
-    });
-    document.getElementById('loginNavBtn')?.addEventListener('click', () => { currentView = "login"; render(); });
-    document.getElementById('registerNavBtn')?.addEventListener('click', () => { currentView = "register"; render(); });
-    document.getElementById('logoutBtn')?.addEventListener('click', () => { currentUser = null; localStorage.removeItem('wordwell_currentUser'); currentView = "home"; render(); });
-  }
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="thumb">📄</div>
+                    <div class="info">
+                        <h4>Ghostwriting Spotlight</h4>
+                        <p>Bringing an executive's voice to life on LinkedIn.</p>
+                        <a href="#">View sample →</a>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="thumb">🔍</div>
+                    <div class="info">
+                        <h4>SEO Deep Dive</h4>
+                        <p>Ranking #1 for competitive keywords with human-first content.</p>
+                        <a href="#">View sample →</a>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="thumb">💡</div>
+                    <div class="info">
+                        <h4>Brand Narrative</h4>
+                        <p>Helping a startup define its authentic voice from scratch.</p>
+                        <a href="#">View sample →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  function init() {
-    loadData();
-    bindNavEvents();
-    render();
-  }
-  init();
-</script>
+    <!-- ===== CONTACT ===== -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <span class="section-label">✦ Get in touch</span>
+            <h2 class="section-title">
+                Let's create <span class="gold">something</span> great.
+            </h2>
+
+            <div class="contact-wrapper">
+                <!-- left: info -->
+                <div class="contact-info">
+                    <h3>Ready to elevate your content?</h3>
+                    <p>
+                        Whether you need a ghostwriter, SEO-driven articles, or
+                        a full content strategy — I'm here to help you stand out
+                        in the US market.
+                    </p>
+                    <div class="detail">
+                        <span>📧</span>
+                        <span><strong>Email:</strong> christiantelemaquecanada@gmail.com</span>
+                    </div>
+                    <div class="detail">
+                        <span>⏱️</span>
+                        <span><strong>Response:</strong> Within 24 hours</span>
+                    </div>
+                </div>
+
+                <!-- right: form -->
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full name</label>
+                            <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" name="email" placeholder="jane@company.com" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Your message</label>
+                        <textarea id="message" name="message" placeholder="Tell me about your project..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        ✧ Send message
+                    </button>
+
+                    <div class="form-status" id="formStatus"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            &copy; 2026 <span class="gold">Word Well</span> &mdash; Christian Télémaque.
+            Crafted with purpose.
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT – EmailJS (Secure, uses OAuth2 on backend) ===== -->
+    <!-- ============================================================ -->
+
+    <script>
+        (function() {
+            'use strict';
+
+            // =========================================================
+            //  🔑  STEP 1: Get these 4 values from your EmailJS account
+            //  (https://dashboard.emailjs.com)
+            // =========================================================
+
+            // After you sign up and connect Gmail via OAuth2:
+            const PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';   // Found in "Integration" tab
+            const SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';   // Found in "Email Services"
+            const TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';  // Found in "Email Templates"
+
+            // For auto-reply – create a second template
+            const AUTOREPLY_TEMPLATE_ID = 'YOUR_AUTOREPLY_TEMPLATE_ID';
+
+            // =========================================================
+            //  🚀  STEP 2: How to connect your Gmail to EmailJS safely:
+            //  1. Go to Email Services → Add New Service → Gmail
+            //  2. Click "Connect" – you'll log in via Google OAuth2
+            //  3. Copy the Service ID that appears
+            //  4. Create 2 templates (main + auto-reply)
+            //  5. Copy your Public Key from the Integration page
+            // =========================================================
+
+            // =========================================================
+
+            const form = document.getElementById('contactForm');
+            const status = document.getElementById('formStatus');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // --- initialise EmailJS ---
+            if (PUBLIC_KEY && PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+                emailjs.init({
+                    publicKey: PUBLIC_KEY,
+                    blockHeadless: true,
+                });
+            } else {
+                console.warn('EmailJS: Please replace YOUR_EMAILJS_PUBLIC_KEY with your actual key.');
+            }
+
+            // --- helper: show status ---
+            function setStatus(message, type) {
+                status.textContent = message;
+                status.className = 'form-status ' + type;
+                status.style.display = 'block';
+            }
+
+            function resetStatus() {
+                status.className = 'form-status';
+                status.style.display = 'none';
+                status.textContent = '';
+            }
+
+            // --- helper: send auto-reply ---
+            function sendAutoReply(userName, userEmail) {
+                if (!AUTOREPLY_TEMPLATE_ID ||
+                    AUTOREPLY_TEMPLATE_ID === 'YOUR_AUTOREPLY_TEMPLATE_ID') {
+                    // No auto-reply template configured – skip silently
+                    return Promise.resolve();
+                }
+
+                const templateParams = {
+                    to_name: userName,
+                    to_email: userEmail,
+                    from_name: 'Christian Télémaque',
+                    from_email: 'christiantelemaquecanada@gmail.com',
+                    message: 'Thank you for reaching out! I\'ll respond within 24 hours.',
+                };
+
+                return emailjs.send(
+                    SERVICE_ID,
+                    AUTOREPLY_TEMPLATE_ID,
+                    templateParams
+                ).catch(function(err) {
+                    // Auto-reply failing isn't critical — log but don't block
+                    console.warn('Auto-reply failed (non-critical):', err);
+                });
+            }
+
+            // --- main submit ---
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // grab values
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const message = document.getElementById('message').value.trim();
+
+                if (!name || !email || !message) {
+                    setStatus('Please fill in all fields.', 'error');
+                    return;
+                }
+
+                // disable button
+                submitBtn.disabled = true;
+                submitBtn.textContent = '✧ Sending...';
+                resetStatus();
+
+                // --- prepare data for EmailJS ---
+                const templateParams = {
+                    from_name: name,
+                    from_email: email,
+                    message: message,
+                    to_email: 'christiantelemaquecanada@gmail.com', // your inbox
+                };
+
+                // --- send the main email ---
+                emailjs.send(
+                    SERVICE_ID,
+                    TEMPLATE_ID,
+                    templateParams
+                )
+                .then(function() {
+                    setStatus(
+                        '✓ Message sent! You\'ll receive a reply within 24 hours.',
+                        'success'
+                    );
+                    form.reset();
+
+                    // --- send auto-reply in the background ---
+                    sendAutoReply(name, email);
+
+                    // re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '✧ Send message';
+                })
+                .catch(function(err) {
+                    console.error('EmailJS error:', err);
+                    setStatus(
+                        'Something went wrong. Please try again or email me directly at christiantelemaquecanada@gmail.com.',
+                        'error'
+                    );
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '✧ Send message';
+                });
+            });
+
+        })();
+    </script>
+
 </body>
-  </html>
+</html>
