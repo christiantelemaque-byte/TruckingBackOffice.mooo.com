@@ -1288,31 +1288,27 @@
             };
 
             // =========================================================
-            //  🔍 DETECT LANGUAGE (improved with console log)
+            //  🔍 DETECT LANGUAGE (with fallback to English)
             // =========================================================
-            function getBrowserLanguage() {
-                const rawLang = navigator.language || navigator.languages?.[0] || 'en';
-                let detected = 'en';
-
-                // Map of language codes to our keys
-                const langMap = {
+            function detectLanguage() {
+                // Get the browser language (e.g., 'en-US', 'es-ES', 'fa', etc.)
+                let raw = navigator.language || navigator.languages?.[0] || 'en';
+                // Map to our supported language codes
+                const map = {
                     'es': 'es', 'fa': 'fa', 'ko': 'ko', 'ar': 'ar',
                     'ru': 'ru', 'zh': 'zh', 'so': 'so', 'en': 'en'
                 };
-
-                // Check if rawLang starts with any of our keys
-                for (const [code, mapped] of Object.entries(langMap)) {
-                    if (rawLang.startsWith(code)) {
-                        detected = mapped;
-                        break;
-                    }
-                }
-
-                console.log('🌐 Browser language detected:', rawLang, '→ mapped to:', detected);
-                return detected;
+                // Try exact match first
+                if (map[raw]) return map[raw];
+                // Try prefix match
+                const prefix = raw.substring(0, 2);
+                if (map[prefix]) return map[prefix];
+                // Fallback to English
+                return 'en';
             }
 
-            let currentLang = getBrowserLanguage();
+            let currentLang = detectLanguage();
+            console.log('🌐 Detected language:', currentLang);
 
             // =========================================================
             //  🌐 APPLY TRANSLATIONS
@@ -1338,9 +1334,10 @@
                         strong.textContent = t.contact_response + ':';
                     }
                 }
-                currentLang = lang;
+                // Update the html lang attribute
                 document.documentElement.lang = lang;
-                console.log('🌐 Language applied:', lang);
+                currentLang = lang;
+                console.log('🌐 Applied language:', lang);
             }
 
             // =========================================================
@@ -1357,9 +1354,17 @@
             });
 
             // =========================================================
-            //  🚀 INITIAL LOAD
+            //  🚀 INITIAL LOAD – apply detected language
             // =========================================================
-            applyLanguage(getBrowserLanguage());
+            // Ensure the DOM is fully loaded before applying
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    applyLanguage(detectLanguage());
+                });
+            } else {
+                // DOM already loaded
+                applyLanguage(detectLanguage());
+            }
 
             // =========================================================
             //  ⏱️ COUNTDOWN TIMER (August 1, 2026)
