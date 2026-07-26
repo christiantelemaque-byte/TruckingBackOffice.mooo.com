@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Wordwell – Pricing Plans</title>
+
+    <!-- ===== FONTS ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ----- RESET & BASE ----- */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #f5c842;
+            --gold-dark: #c9a020;
+            --red: #e94560;
+            --red-dark: #c0392b;
+            --bg: #0b0a0a;
+            --bg-card: #141212;
+            --bg-input: #1e1b1b;
+            --text: #f0ede8;
+            --text-muted: #a8a39a;
+            --border: #2a2626;
+            --radius: 12px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        a:hover {
+            color: var(--red);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ----- SCROLLBAR ----- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+
+        /* ----- TYPOGRAPHY ----- */
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .gold {
+            color: var(--gold);
+        }
+        .red {
+            color: var(--red);
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .section-title .gold {
+            font-style: italic;
+        }
+
+        /* ----- HEADER / NAV ----- */
+        header {
+            padding: 20px 0 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(11, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo .red {
+            font-style: italic;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--text);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .lang-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .lang-toggle:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* ----- HERO / PAGE TITLE ----- */
+        .page-hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--bg) 0%, #1a1410 100%);
+        }
+
+        .page-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+        .page-hero h1 .gold {
+            font-style: italic;
+        }
+
+        .page-hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        /* ----- PRICING GRID ----- */
+        .pricing {
+            padding: 60px 0 80px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 24px 28px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .pricing-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .pricing-card .badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--gold);
+            color: #0b0a0a;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 16px;
+            border-radius: 50px;
+        }
+
+        .pricing-card .plan-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .pricing-card .plan-price {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 8px 0 4px;
+        }
+        .pricing-card .plan-price small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .pricing-card .plan-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+            margin-bottom: 16px;
+            min-height: 44px;
+        }
+
+        .pricing-card .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            flex: 1;
+        }
+        .pricing-card .plan-features li {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pricing-card .plan-features li:last-child {
+            border-bottom: none;
+        }
+        .pricing-card .plan-features li .check {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .pricing-card .btn-select {
+            display: inline-block;
+            background: var(--gold);
+            color: #0b0a0a;
+            font-weight: 700;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .pricing-card .btn-select:hover {
+            background: #e6b832;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 200, 66, 0.25);
+        }
+
+        .pricing-card .btn-select:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ----- FOOTER ----- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+        footer .gold {
+            font-weight: 500;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 820px) {
+            .header-inner {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-links {
+                gap: 16px;
+                font-size: 0.75rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            .container {
+                padding: 0 16px;
+            }
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="container header-inner">
+            <div class="logo">
+                Word<span class="red">well</span>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="pricing-plans.html" data-i18n="nav_pricing">Pricing</a>
+                <a href="index.html#contact" data-i18n="nav_contact">Contact</a>
+                <button class="lang-toggle" id="langToggle">🌐</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== PAGE HERO ===== -->
+    <section class="page-hero">
+        <div class="container">
+            <h1 data-i18n="pricing_title">Choose Your <span class="gold">Pricing Plan</span></h1>
+            <p data-i18n="pricing_sub">Find one that works for you.</p>
+        </div>
+    </section>
+
+    <!-- ===== PRICING GRID ===== -->
+    <section class="pricing">
+        <div class="container">
+            <div class="pricing-grid" id="pricingGrid">
+                <!-- Plans will be injected by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <div>&copy; 2000 <span class="gold">Wordwell</span> &mdash;
+            <span data-i18n="footer_tagline">Only Elite. Only the Few. Only Wordwell.</span></div>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT – i18n + Pricing + Language Detection ===== -->
+    <!-- ============================================================ -->
+
+    <script>
+        (function() {
+            'use strict';
+
+            // =========================================================
+            //  🌐 TRANSLATIONS
+            // =========================================================
+            const translations = {
+                en: {
+                    nav_home: 'Home', nav_pricing: 'Pricing', nav_contact: 'Contact',
+                    pricing_title: 'Choose Your <span class="gold">Pricing Plan</span>',
+                    pricing_sub: 'Find one that works for you.',
+                    footer_tagline: 'Only Elite. Only the Few. Only Wordwell.',
+                    // Plan names & descriptions
+                    plan_crown_title: 'Crown Talk Fan',
+                    plan_crown_desc: 'Unlock the complete SportCenter experience with premium stories.',
+                    plan_insider_title: 'League Insider',
+                    plan_insider_desc: 'Become part of the action through official voting, predictions, and community influence.',
+                    plan_builder_title: 'Franchise Builder',
+                    plan_builder_desc: 'Unlock the complete fan experience with Fantasy League, Fan Pool, premium rankings, and more.',
+                    plan_athlete_title: 'University Athlete',
+                    plan_athlete_desc: 'Begin your journey through University. Complete challenges, climb the rankings, and earn your opportunity.',
+                    plan_season_title: 'University Season Athlete',
+                    plan_season_desc: 'Commit to an entire University season. Compete in every weekly challenge and stay eligible for the Draft.',
+                    plan_cta_title: 'CTA Program',
+                    plan_cta_desc: 'Join the Scouting Department. Complete a 30-day evaluation and earn your place as a Certified CTA.',
+                    // Features
+                    feat_crown_1: 'Full SportCenter',
+                    feat_crown_2: 'Crown Talk Feature',
+                    feat_crown_3: 'Create A Fan File',
+                    feat_insider_1: 'Official Fan Voting',
+                    feat_insider_2: 'Award & Debate Polls',
+                    feat_insider_3: 'Predictions',
+                    feat_insider_4: 'Stronger Fan Influence',
+                    feat_builder_1: 'Everything In Crown Talk',
+                    feat_builder_2: 'Fantasy League',
+                    feat_builder_3: 'Fan Pool',
+                    feat_builder_4: 'CTA Rankings',
+                    feat_builder_5: 'Season Leaderboard',
+                    feat_builder_6: 'Premium Fan Dashboard',
+                    feat_athlete_1: 'Athlete Dashboard',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: 'University Roster & Rankings',
+                    feat_athlete_4: 'Weekly Game Schedule',
+                    feat_athlete_5: 'Five Game Career Mode',
+                    feat_athlete_6: 'Draft Stock Tracking',
+                    feat_athlete_7: 'Weekly Challenges & Stats',
+                    feat_athlete_8: 'Build Your Teammates',
+                    feat_athlete_9: 'Community Polls',
+                    feat_athlete_10: 'Draft Eligibility',
+                    feat_season_1: 'Full Athlete Dashboard',
+                    feat_season_2: 'SportsCenter Access',
+                    feat_season_3: 'Fan Access',
+                    feat_season_4: 'Fantasy Team',
+                    feat_season_5: 'Full Season Schedule',
+                    feat_season_6: 'Upcoming Prospects',
+                    feat_cta_1: 'Official CTA Evaluation',
+                    feat_cta_2: 'Performance Dashboard',
+                    feat_cta_3: 'Earn Commission',
+                    feat_cta_4: 'CTA SportCenter Access',
+                    feat_cta_5: '30-Day Evaluation Period',
+                    feat_cta_6: 'Official CTA ID Assignment',
+                    feat_cta_7: 'Performance Tracking',
+                    feat_cta_8: 'Opportunity For Full CTA Status',
+                    btn_select: 'Select Plan',
+                    badge_best: 'Best Value',
+                    badge_trial: '30-Day Free Trial'
+                },
+                es: {
+                    nav_home: 'Inicio', nav_pricing: 'Precios', nav_contact: 'Contacto',
+                    pricing_title: 'Elige tu <span class="gold">Plan de Precios</span>',
+                    pricing_sub: 'Encuentra uno que funcione para ti.',
+                    footer_tagline: 'Solo Élite. Solo los Pocos. Solo Wordwell.',
+                    plan_crown_title: 'Crown Talk Fan',
+                    plan_crown_desc: 'Desbloquea la experiencia completa de SportCenter con historias premium.',
+                    plan_insider_title: 'Insider de la Liga',
+                    plan_insider_desc: 'Sé parte de la acción a través de votaciones oficiales, predicciones e influencia comunitaria.',
+                    plan_builder_title: 'Constructor de Franquicias',
+                    plan_builder_desc: 'Desbloquea la experiencia completa de fan con Fantasy League, Fan Pool, rankings premium y más.',
+                    plan_athlete_title: 'Atleta Universitario',
+                    plan_athlete_desc: 'Comienza tu viaje a través de la Universidad. Completa desafíos, sube en el ranking y gana tu oportunidad.',
+                    plan_season_title: 'Atleta de Temporada Universitaria',
+                    plan_season_desc: 'Comprométete con toda una temporada universitaria. Compite en cada desafío semanal y mantén tu elegibilidad para el Draft.',
+                    plan_cta_title: 'Programa CTA',
+                    plan_cta_desc: 'Únete al Departamento de Scouting. Completa una evaluación de 30 días y gana tu lugar como CTA Certificado.',
+                    feat_crown_1: 'SportCenter Completo',
+                    feat_crown_2: 'Función Crown Talk',
+                    feat_crown_3: 'Crea un Archivo de Fan',
+                    feat_insider_1: 'Votación Oficial de Fans',
+                    feat_insider_2: 'Encuestas de Premios y Debates',
+                    feat_insider_3: 'Predicciones',
+                    feat_insider_4: 'Mayor Influencia del Fan',
+                    feat_builder_1: 'Todo en Crown Talk',
+                    feat_builder_2: 'Fantasy League',
+                    feat_builder_3: 'Fan Pool',
+                    feat_builder_4: 'Rankings CTA',
+                    feat_builder_5: 'Tabla de Líderes de Temporada',
+                    feat_builder_6: 'Panel Premium de Fans',
+                    feat_athlete_1: 'Panel de Atleta',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: 'Lista y Rankings Universitarios',
+                    feat_athlete_4: 'Calendario de Juegos Semanales',
+                    feat_athlete_5: 'Modo Carrera de 5 Juegos',
+                    feat_athlete_6: 'Seguimiento de Acciones de Draft',
+                    feat_athlete_7: 'Desafíos Semanales y Estadísticas',
+                    feat_athlete_8: 'Construye tus Compañeros',
+                    feat_athlete_9: 'Encuestas Comunitarias',
+                    feat_athlete_10: 'Elegibilidad para el Draft',
+                    feat_season_1: 'Panel Completo de Atleta',
+                    feat_season_2: 'Acceso a SportsCenter',
+                    feat_season_3: 'Acceso de Fan',
+                    feat_season_4: 'Equipo de Fantasía',
+                    feat_season_5: 'Calendario de Temporada Completa',
+                    feat_season_6: 'Prospectos Destacados',
+                    feat_cta_1: 'Evaluación Oficial CTA',
+                    feat_cta_2: 'Panel de Rendimiento',
+                    feat_cta_3: 'Gana Comisiones',
+                    feat_cta_4: 'Acceso CTA a SportCenter',
+                    feat_cta_5: 'Período de Evaluación de 30 Días',
+                    feat_cta_6: 'Asignación de ID Oficial CTA',
+                    feat_cta_7: 'Seguimiento de Rendimiento',
+                    feat_cta_8: 'Oportunidad para Estatus CTA Completo',
+                    btn_select: 'Seleccionar Plan',
+                    badge_best: 'Mejor Valor',
+                    badge_trial: 'Prueba Gratuita de 30 Días'
+                },
+                fa: {
+                    nav_home: 'خانه', nav_pricing: 'قیمت‌ها', nav_contact: 'تماس',
+                    pricing_title: 'برنامه قیمت‌گذاری <span class="gold">خود را انتخاب کنید</span>',
+                    pricing_sub: 'یکی را پیدا کنید که برای شما مناسب است.',
+                    footer_tagline: 'فقط نخبگان. فقط تعداد معدود. فقط وردول.',
+                    plan_crown_title: 'کراون تاک فن',
+                    plan_crown_desc: 'تجربه کامل SportCenter را با داستان‌های پریمیوم باز کنید.',
+                    plan_insider_title: 'داخلی لیگ',
+                    plan_insider_desc: 'از طریق رای‌گیری رسمی، پیش‌بینی‌ها و نفوذ جامعه، بخشی از اقدام باشید.',
+                    plan_builder_title: 'سازنده فرنچایز',
+                    plan_builder_desc: 'تجربه کامل هواداری را با لیگ خیالی، استخر هواداران، رتبه‌بندی پریمیوم و موارد بیشتر باز کنید.',
+                    plan_athlete_title: 'ورزشکار دانشگاهی',
+                    plan_athlete_desc: 'سفر خود را از طریق دانشگاه آغاز کنید. چالش‌ها را کامل کنید، در رتبه‌بندی صعود کنید و شانس خود را به دست آورید.',
+                    plan_season_title: 'ورزشکار فصل دانشگاهی',
+                    plan_season_desc: 'متعهد به یک فصل کامل دانشگاهی شوید. در هر چالش هفتگی رقابت کنید و واجد شرایط درفت بمانید.',
+                    plan_cta_title: 'برنامه CTA',
+                    plan_cta_desc: 'به بخش استعدادیابی بپیوندید. یک ارزیابی ۳۰ روزه را کامل کنید و جای خود را به عنوان CTA معتبر به دست آورید.',
+                    feat_crown_1: 'SportCenter کامل',
+                    feat_crown_2: 'ویژگی Crown Talk',
+                    feat_crown_3: 'ایجاد پرونده هوادار',
+                    feat_insider_1: 'رای‌گیری رسمی هواداران',
+                    feat_insider_2: 'نظرسنجی‌های جوایز و مناظره',
+                    feat_insider_3: 'پیش‌بینی‌ها',
+                    feat_insider_4: 'نفوذ بیشتر هواداران',
+                    feat_builder_1: 'همه چیز در Crown Talk',
+                    feat_builder_2: 'لیگ خیالی',
+                    feat_builder_3: 'استخر هواداران',
+                    feat_builder_4: 'رتبه‌بندی CTA',
+                    feat_builder_5: 'جدول رهبران فصل',
+                    feat_builder_6: 'داشبورد پریمیوم هواداران',
+                    feat_athlete_1: 'داشبورد ورزشکار',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: 'فهرست و رتبه‌بندی دانشگاه',
+                    feat_athlete_4: 'برنامه بازی هفتگی',
+                    feat_athlete_5: 'حالت حرفه‌ای ۵ بازی',
+                    feat_athlete_6: 'ردیابی سهام درفت',
+                    feat_athlete_7: 'چالش‌های هفتگی و آمار',
+                    feat_athlete_8: 'تیم خود را بسازید',
+                    feat_athlete_9: 'نظرسنجی‌های جامعه',
+                    feat_athlete_10: 'واجد شرایط بودن برای درفت',
+                    feat_season_1: 'داشبورد کامل ورزشکار',
+                    feat_season_2: 'دسترسی به SportsCenter',
+                    feat_season_3: 'دسترسی هواداران',
+                    feat_season_4: 'تیم خیالی',
+                    feat_season_5: 'برنامه کامل فصل',
+                    feat_season_6: 'پروспекت‌های آینده',
+                    feat_cta_1: 'ارزیابی رسمی CTA',
+                    feat_cta_2: 'داشبورد عملکرد',
+                    feat_cta_3: 'کسب کمیسیون',
+                    feat_cta_4: 'دسترسی CTA به SportCenter',
+                    feat_cta_5: 'دوره ارزیابی ۳۰ روزه',
+                    feat_cta_6: 'تخصیص شناسه رسمی CTA',
+                    feat_cta_7: 'ردیابی عملکرد',
+                    feat_cta_8: 'فرصت برای وضعیت کامل CTA',
+                    btn_select: 'انتخاب طرح',
+                    badge_best: 'بهترین ارزش',
+                    badge_trial: 'آزمایش رایگان ۳۰ روزه'
+                },
+                ko: {
+                    nav_home: '홈', nav_pricing: '가격', nav_contact: '연락처',
+                    pricing_title: '<span class="gold">가격 플랜</span>을 선택하세요',
+                    pricing_sub: '당신에게 맞는 플랜을 찾아보세요.',
+                    footer_tagline: '오직 엘리트. 오직 소수. 오직 워드웰.',
+                    plan_crown_title: '크라운 토크 팬',
+                    plan_crown_desc: '프리미엄 스토리로 SportCenter 경험을 완전히 잠금 해제하세요.',
+                    plan_insider_title: '리그 인사이더',
+                    plan_insider_desc: '공식 투표, 예측 및 커뮤니티 영향력을 통해 액션에 참여하세요.',
+                    plan_builder_title: '프랜차이즈 빌더',
+                    plan_builder_desc: '판타지 리그, 팬 풀, 프리미엄 순위 등으로 완전한 팬 경험을 잠금 해제하세요.',
+                    plan_athlete_title: '대학 선수',
+                    plan_athlete_desc: '대학을 통한 여정을 시작하세요. 도전 과제를 완료하고, 순위를 올리고, 기회를 잡으세요.',
+                    plan_season_title: '대학 시즌 선수',
+                    plan_season_desc: '전체 대학 시즌에 전념하세요. 매주 챌린지에 참여하고 드래프트 자격을 유지하세요.',
+                    plan_cta_title: 'CTA 프로그램',
+                    plan_cta_desc: '스카우팅 부서에 합류하세요. 30일 평가를 완료하고 인증된 CTA 자격을 얻으세요.',
+                    feat_crown_1: '전체 SportCenter',
+                    feat_crown_2: '크라운 토크 기능',
+                    feat_crown_3: '팬 파일 생성',
+                    feat_insider_1: '공식 팬 투표',
+                    feat_insider_2: '시상 및 토론 투표',
+                    feat_insider_3: '예측',
+                    feat_insider_4: '더 강력한 팬 영향력',
+                    feat_builder_1: '크라운 토크의 모든 것',
+                    feat_builder_2: '판타지 리그',
+                    feat_builder_3: '팬 풀',
+                    feat_builder_4: 'CTA 순위',
+                    feat_builder_5: '시즌 리더보드',
+                    feat_builder_6: '프리미엄 팬 대시보드',
+                    feat_athlete_1: '선수 대시보드',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: '대학 명단 및 순위',
+                    feat_athlete_4: '주간 경기 일정',
+                    feat_athlete_5: '5경기 커리어 모드',
+                    feat_athlete_6: '드래프트 스톡 추적',
+                    feat_athlete_7: '주간 챌린지 및 통계',
+                    feat_athlete_8: '팀원 구성',
+                    feat_athlete_9: '커뮤니티 투표',
+                    feat_athlete_10: '드래프트 자격',
+                    feat_season_1: '전체 선수 대시보드',
+                    feat_season_2: 'SportsCenter 액세스',
+                    feat_season_3: '팬 액세스',
+                    feat_season_4: '판타지 팀',
+                    feat_season_5: '전체 시즌 일정',
+                    feat_season_6: '유망주',
+                    feat_cta_1: '공식 CTA 평가',
+                    feat_cta_2: '성과 대시보드',
+                    feat_cta_3: '수수료 획득',
+                    feat_cta_4: 'CTA SportCenter 액세스',
+                    feat_cta_5: '30일 평가 기간',
+                    feat_cta_6: '공식 CTA ID 할당',
+                    feat_cta_7: '성과 추적',
+                    feat_cta_8: '전체 CTA 자격 획득 기회',
+                    btn_select: '플랜 선택',
+                    badge_best: '최고의 가치',
+                    badge_trial: '30일 무료 체험'
+                },
+                ar: {
+                    nav_home: 'الرئيسية', nav_pricing: 'الأسعار', nav_contact: 'اتصل',
+                    pricing_title: 'اختر <span class="gold">خطة الأسعار</span> الخاصة بك',
+                    pricing_sub: 'ابحث عن الخطة التي تناسبك.',
+                    footer_tagline: 'النخبة فقط. القليلون فقط. ووردويل فقط.',
+                    plan_crown_title: 'كراون توك فان',
+                    plan_crown_desc: 'افتح تجربة SportCenter الكاملة مع القصص المميزة.',
+                    plan_insider_title: 'داخلي الدوري',
+                    plan_insider_desc: 'كن جزءًا من الحدث من خلال التصويت الرسمي والتنبؤات والتأثير المجتمعي.',
+                    plan_builder_title: 'باني الامتياز',
+                    plan_builder_desc: 'افتح تجربة المعجبين الكاملة مع دوري الخيال، وحمام المعجبين، والتصنيفات المميزة والمزيد.',
+                    plan_athlete_title: 'رياضي جامعي',
+                    plan_athlete_desc: 'ابدأ رحلتك عبر الجامعة. أكمل التحديات، واصعد في التصنيف، واحصل على فرصتك.',
+                    plan_season_title: 'رياضي الموسم الجامعي',
+                    plan_season_desc: 'التزم بموسم جامعي كامل. تنافس في كل تحدٍ أسبوعي وحافظ على أهليتك للمسودة.',
+                    plan_cta_title: 'برنامج CTA',
+                    plan_cta_desc: 'انضم إلى قسم الكشف. أكمل تقييمًا لمدة 30 يومًا واحصل على مكانك كـ CTA معتمد.',
+                    feat_crown_1: 'SportCenter كامل',
+                    feat_crown_2: 'ميزة Crown Talk',
+                    feat_crown_3: 'إنشاء ملف معجب',
+                    feat_insider_1: 'تصويت رسمي للمشجعين',
+                    feat_insider_2: 'استطلاعات الجوائز والمناظرات',
+                    feat_insider_3: 'التنبؤات',
+                    feat_insider_4: 'تأثير أقوى للمشجعين',
+                    feat_builder_1: 'كل شيء في Crown Talk',
+                    feat_builder_2: 'دوري الخيال',
+                    feat_builder_3: 'حمام المعجبين',
+                    feat_builder_4: 'تصنيفات CTA',
+                    feat_builder_5: 'لوحة متصدرين الموسم',
+                    feat_builder_6: 'لوحة تحكم مميزة للمشجعين',
+                    feat_athlete_1: 'لوحة تحكم الرياضي',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: 'قائمة الجامعة وتصنيفاتها',
+                    feat_athlete_4: 'جدول المباريات الأسبوعي',
+                    feat_athlete_5: 'وضع المسيرة المهنية لـ 5 مباريات',
+                    feat_athlete_6: 'تتبع مخزون المسودة',
+                    feat_athlete_7: 'التحديات الأسبوعية والإحصائيات',
+                    feat_athlete_8: 'بناء زملائك في الفريق',
+                    feat_athlete_9: 'استطلاعات المجتمع',
+                    feat_athlete_10: 'أهلية المسودة',
+                    feat_season_1: 'لوحة تحكم كاملة للرياضي',
+                    feat_season_2: 'الوصول إلى SportsCenter',
+                    feat_season_3: 'وصول المعجبين',
+                    feat_season_4: 'فريق الخيال',
+                    feat_season_5: 'جدول الموسم الكامل',
+                    feat_season_6: 'المواهب الواعدة',
+                    feat_cta_1: 'تقييم CTA الرسمي',
+                    feat_cta_2: 'لوحة تحكم الأداء',
+                    feat_cta_3: 'كسب العمولات',
+                    feat_cta_4: 'وصول CTA إلى SportCenter',
+                    feat_cta_5: 'فترة تقييم 30 يومًا',
+                    feat_cta_6: 'تعيين معرف CTA الرسمي',
+                    feat_cta_7: 'تتبع الأداء',
+                    feat_cta_8: 'فرصة للحصول على حالة CTA كاملة',
+                    btn_select: 'اختر الخطة',
+                    badge_best: 'أفضل قيمة',
+                    badge_trial: 'نسخة تجريبية مجانية لمدة 30 يومًا'
+                },
+                ru: {
+                    nav_home: 'Главная', nav_pricing: 'Цены', nav_contact: 'Контакты',
+                    pricing_title: 'Выберите свой <span class="gold">тарифный план</span>',
+                    pricing_sub: 'Найдите тот, который подходит вам.',
+                    footer_tagline: 'Только элита. Только избранные. Только Вордвелл.',
+                    plan_crown_title: 'Crown Talk Fan',
+                    plan_crown_desc: 'Откройте полный опыт SportCenter с премиум-историями.',
+                    plan_insider_title: 'Инсайдер лиги',
+                    plan_insider_desc: 'Станьте частью действия через официальное голосование, прогнозы и влияние сообщества.',
+                    plan_builder_title: 'Строитель франшизы',
+                    plan_builder_desc: 'Откройте полный опыт фаната с Fantasy League, Fan Pool, премиум-рейтингами и многим другим.',
+                    plan_athlete_title: 'Университетский спортсмен',
+                    plan_athlete_desc: 'Начните свое путешествие по университету. Проходите испытания, поднимайтесь в рейтинге и получите свой шанс.',
+                    plan_season_title: 'Спортсмен университетского сезона',
+                    plan_season_desc: 'Посвятите себя целому университетскому сезону. Участвуйте в каждом еженедельном испытании и оставайтесь eligible для драфта.',
+                    plan_cta_title: 'Программа CTA',
+                    plan_cta_desc: 'Присоединяйтесь к отделу скаутинга. Пройдите 30-дневную оценку и получите статус сертифицированного CTA.',
+                    feat_crown_1: 'Полный SportCenter',
+                    feat_crown_2: 'Функция Crown Talk',
+                    feat_crown_3: 'Создайте файл фаната',
+                    feat_insider_1: 'Официальное голосование фанатов',
+                    feat_insider_2: 'Опросы наград и дебатов',
+                    feat_insider_3: 'Прогнозы',
+                    feat_insider_4: 'Более сильное влияние фанатов',
+                    feat_builder_1: 'Все в Crown Talk',
+                    feat_builder_2: 'Фэнтези-лига',
+                    feat_builder_3: 'Fan Pool',
+                    feat_builder_4: 'Рейтинги CTA',
+                    feat_builder_5: 'Таблица лидеров сезона',
+                    feat_builder_6: 'Премиум-панель фаната',
+                    feat_athlete_1: 'Панель спортсмена',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: 'Университетский состав и рейтинги',
+                    feat_athlete_4: 'Расписание еженедельных игр',
+                    feat_athlete_5: 'Режим карьеры из 5 игр',
+                    feat_athlete_6: 'Отслеживание драфтового запаса',
+                    feat_athlete_7: 'Еженедельные испытания и статистика',
+                    feat_athlete_8: 'Соберите своих товарищей по команде',
+                    feat_athlete_9: 'Опросы сообщества',
+                    feat_athlete_10: 'Право на драфт',
+                    feat_season_1: 'Полная панель спортсмена',
+                    feat_season_2: 'Доступ к SportsCenter',
+                    feat_season_3: 'Доступ фаната',
+                    feat_season_4: 'Фэнтези-команда',
+                    feat_season_5: 'Полное расписание сезона',
+                    feat_season_6: 'Перспективные игроки',
+                    feat_cta_1: 'Официальная оценка CTA',
+                    feat_cta_2: 'Панель производительности',
+                    feat_cta_3: 'Зарабатывайте комиссионные',
+                    feat_cta_4: 'Доступ CTA к SportCenter',
+                    feat_cta_5: '30-дневный период оценки',
+                    feat_cta_6: 'Назначение официального ID CTA',
+                    feat_cta_7: 'Отслеживание производительности',
+                    feat_cta_8: 'Возможность получения полного статуса CTA',
+                    btn_select: 'Выбрать план',
+                    badge_best: 'Лучшая цена',
+                    badge_trial: '30-дневная бесплатная пробная версия'
+                },
+                zh: {
+                    nav_home: '首页', nav_pricing: '价格', nav_contact: '联系我们',
+                    pricing_title: '选择您的<span class="gold">定价计划</span>',
+                    pricing_sub: '找到适合您的计划。',
+                    footer_tagline: '唯有精英。唯有少数。唯有沃德韦尔。',
+                    plan_crown_title: 'Crown Talk 粉丝',
+                    plan_crown_desc: '通过高级故事解锁完整的 SportCenter 体验。',
+                    plan_insider_title: '联盟内部人士',
+                    plan_insider_desc: '通过官方投票、预测和社区影响力参与其中。',
+                    plan_builder_title: '特许经营建设者',
+                    plan_builder_desc: '通过梦幻联赛、粉丝池、高级排名等解锁完整的粉丝体验。',
+                    plan_athlete_title: '大学运动员',
+                    plan_athlete_desc: '开始您的大学之旅。完成挑战，提升排名，获得您的机会。',
+                    plan_season_title: '大学赛季运动员',
+                    plan_season_desc: '投入整个大学赛季。参加每周挑战，保持选秀资格。',
+                    plan_cta_title: 'CTA 计划',
+                    plan_cta_desc: '加入球探部门。完成30天评估，获得认证 CTA 资格。',
+                    feat_crown_1: '完整 SportCenter',
+                    feat_crown_2: 'Crown Talk 功能',
+                    feat_crown_3: '创建粉丝档案',
+                    feat_insider_1: '官方粉丝投票',
+                    feat_insider_2: '奖项与辩论投票',
+                    feat_insider_3: '预测',
+                    feat_insider_4: '更强的粉丝影响力',
+                    feat_builder_1: 'Crown Talk 全部功能',
+                    feat_builder_2: '梦幻联赛',
+                    feat_builder_3: '粉丝池',
+                    feat_builder_4: 'CTA 排名',
+                    feat_builder_5: '赛季排行榜',
+                    feat_builder_6: '高级粉丝仪表板',
+                    feat_athlete_1: '运动员仪表板',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: '大学名单与排名',
+                    feat_athlete_4: '每周赛程',
+                    feat_athlete_5: '5场职业生涯模式',
+                    feat_athlete_6: '选秀股票追踪',
+                    feat_athlete_7: '每周挑战与统计',
+                    feat_athlete_8: '建立您的队友',
+                    feat_athlete_9: '社区投票',
+                    feat_athlete_10: '选秀资格',
+                    feat_season_1: '完整运动员仪表板',
+                    feat_season_2: 'SportsCenter 访问',
+                    feat_season_3: '粉丝访问',
+                    feat_season_4: '梦幻团队',
+                    feat_season_5: '完整赛季赛程',
+                    feat_season_6: '未来新秀',
+                    feat_cta_1: '官方 CTA 评估',
+                    feat_cta_2: '绩效仪表板',
+                    feat_cta_3: '赚取佣金',
+                    feat_cta_4: 'CTA SportCenter 访问',
+                    feat_cta_5: '30天评估期',
+                    feat_cta_6: '官方 CTA ID 分配',
+                    feat_cta_7: '绩效追踪',
+                    feat_cta_8: '获得完整 CTA 身份的机会',
+                    btn_select: '选择计划',
+                    badge_best: '最佳价值',
+                    badge_trial: '30天免费试用'
+                },
+                so: {
+                    nav_home: 'Bogga Hore', nav_pricing: 'Qiimaha', nav_contact: 'Nala Soo Xiriir',
+                    pricing_title: 'Dooro <span class="gold">Qorshaha Qiimaha</span>',
+                    pricing_sub: 'Hel mid kuu habboon.',
+                    footer_tagline: 'Kaliya Elite. Kaliya kuwa yar. Kaliya Wordwell.',
+                    plan_crown_title: 'Crown Talk Fan',
+                    plan_crown_desc: 'Fur khibrada SportCenter oo dhan sheekooyin heer sare ah.',
+                    plan_insider_title: 'Insider-ka Liga',
+                    plan_insider_desc: 'Ka qayb qaado ficillada iyada oo loo marayo codeynta rasmiga ah, saadaalinta, iyo saamaynta bulshada.',
+                    plan_builder_title: 'Dhismaha Franchise',
+                    plan_builder_desc: 'Fur khibrada taageeraha oo dhan leh Fantasy League, Fan Pool, qiimeyn heer sare ah iyo wax badan.',
+                    plan_athlete_title: 'Ciyaartoy Jaamicadeed',
+                    plan_athlete_desc: 'Bilow safarkaaga Jaamacadda. Dhamee caqabadaha, kor u kaca qiimeynta, oo hel fursaddaada.',
+                    plan_season_title: 'Ciyaartoy Xilli Jaamicadeed',
+                    plan_season_desc: 'Ku hawlan xilli jaamicadeed oo dhan. Ku tartan caqabad kasta oo toddobaadle ah oo sii ahaado mid u qalma Qabyo-qoraalka.',
+                    plan_cta_title: 'Barnaamijka CTA',
+                    plan_cta_desc: 'Ku biir Qaybta Sahaminta. Dhammeeshto qiimeyn 30 maalmood ah oo hel booskaaga CTA sharci ah.',
+                    feat_crown_1: 'SportCenter oo Dhan',
+                    feat_crown_2: 'Astaanta Crown Talk',
+                    feat_crown_3: 'Abuur Fayl Taageere',
+                    feat_insider_1: 'Codeynta Rasmiga ah ee Taageerayaasha',
+                    feat_insider_2: 'Sahannada Abaalmarinta iyo Doodaha',
+                    feat_insider_3: 'Saadaalinta',
+                    feat_insider_4: 'Saamaynta Taageeraha oo xoog badan',
+                    feat_builder_1: 'Wax kasta oo Crown Talk ah',
+                    feat_builder_2: 'Fantasy League',
+                    feat_builder_3: 'Fan Pool',
+                    feat_builder_4: 'Qiimeynta CTA',
+                    feat_builder_5: 'Liiska Hogaamiyayaasha Xilliga',
+                    feat_builder_6: 'Dashboard-ka Taageeraha ee Heer Sare',
+                    feat_athlete_1: 'Dashboard-ka Ciyaartoyga',
+                    feat_athlete_2: 'Scoop SportCenter',
+                    feat_athlete_3: 'Liiska Jaamacadda iyo Qiimeynta',
+                    feat_athlete_4: 'Jadwalka Ciyaaraha Toddobaadlaha ah',
+                    feat_athlete_5: 'Habka Xirfadda 5 Ciyaarood',
+                    feat_athlete_6: 'Raadraaca Kaydka Qabyo-qoraalka',
+                    feat_athlete_7: 'Caqabadaha Toddobaadlaha ah & Tirakoobka',
+                    feat_athlete_8: 'Dhismo Kooxdaada',
+                    feat_athlete_9: 'Sahannada Bulshada',
+                    feat_athlete_10: 'U-qalmida Qabyo-qoraalka',
+                    feat_season_1: 'Dashboard-ka Ciyaartoyga oo Dhan',
+                    feat_season_2: 'Gelitaanka SportsCenter',
+                    feat_season_3: 'Gelitaanka Taageeraha',
+                    feat_season_4: 'Kooxda Fantasy',
+                    feat_season_5: 'Jadwalka Xilliga oo Dhan',
+                    feat_season_6: 'Kubad-cayaarayaasha Mustaqbalka',
+                    feat_cta_1: 'Qiimeynta Rasmiga ah ee CTA',
+                    feat_cta_2: 'Dashboard-ka Waxqabadka',
+                    feat_cta_3: 'Kasbato Guddiga',
+                    feat_cta_4: 'Gelitaanka CTA ee SportCenter',
+                    feat_cta_5: 'Muddada Qiimeynta 30 Maalmood',
+                    feat_cta_6: 'Ku-takhasuska Aqoonsiga CTA ee Rasmiga ah',
+                    feat_cta_7: 'Raadraaca Waxqabadka',
+                    feat_cta_8: 'Fursadda Helitaanka Heerka CTA oo Dhan',
+                    btn_select: 'Dooro Qorshaha',
+                    badge_best: 'Qiimaha ugu Fiican',
+                    badge_trial: 'Tijaabo Bilaash ah 30 Maalmood'
+                }
+            };
+
+            // =========================================================
+            //  🔍 DETECT LANGUAGE
+            // =========================================================
+            function detectLanguage() {
+                let raw = navigator.language;
+                if (!raw || raw === '') {
+                    raw = navigator.languages?.[0] || 'en';
+                }
+                const map = {
+                    'es': 'es', 'fa': 'fa', 'ko': 'ko', 'ar': 'ar',
+                    'ru': 'ru', 'zh': 'zh', 'so': 'so', 'en': 'en'
+                };
+                let detected = 'en';
+                if (map[raw]) {
+                    detected = map[raw];
+                } else {
+                    const prefix = raw.substring(0, 2);
+                    if (map[prefix]) {
+                        detected = map[prefix];
+                    }
+                }
+                return detected;
+            }
+
+            // =========================================================
+            //  🌐 APPLY TRANSLATIONS
+            // =========================================================
+            function applyLanguage(lang) {
+                const t = translations[lang] || translations.en;
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (t[key] !== undefined) {
+                        if (el.querySelector('strong, span, br')) {
+                            el.innerHTML = t[key];
+                        } else {
+                            el.textContent = t[key];
+                        }
+                    }
+                });
+                document.documentElement.lang = lang;
+                window.__currentLang = lang;
+                // Re-render pricing cards with the new language
+                renderPricingCards(lang);
+            }
+
+            // =========================================================
+            //  📋 PRICING PLANS DATA (no $0 plan)
+            // =========================================================
+            const plans = [
+                {
+                    id: 'crown-talk-fan',
+                    key: 'crown',
+                    price: '4.99',
+                    badge: null,
+                    trial: false
+                },
+                {
+                    id: 'league-insider',
+                    key: 'insider',
+                    price: '9.99',
+                    badge: null,
+                    trial: false
+                },
+                {
+                    id: 'franchise-builder',
+                    key: 'builder',
+                    price: '19.99',
+                    badge: 'best',
+                    trial: false
+                },
+                {
+                    id: 'university-athlete',
+                    key: 'athlete',
+                    price: '24.99',
+                    badge: null,
+                    trial: true
+                },
+                {
+                    id: 'university-season-athlete',
+                    key: 'season',
+                    price: '79.99',
+                    badge: null,
+                    trial: false
+                },
+                {
+                    id: 'cta-program',
+                    key: 'cta',
+                    price: '14.99',
+                    badge: null,
+                    trial: true
+                }
+            ];
+
+            // Feature keys for each plan
+            const featureKeys = {
+                crown: ['feat_crown_1', 'feat_crown_2', 'feat_crown_3'],
+                insider: ['feat_insider_1', 'feat_insider_2', 'feat_insider_3', 'feat_insider_4'],
+                builder: ['feat_builder_1', 'feat_builder_2', 'feat_builder_3', 'feat_builder_4', 'feat_builder_5', 'feat_builder_6'],
+                athlete: ['feat_athlete_1', 'feat_athlete_2', 'feat_athlete_3', 'feat_athlete_4', 'feat_athlete_5', 'feat_athlete_6', 'feat_athlete_7', 'feat_athlete_8', 'feat_athlete_9', 'feat_athlete_10'],
+                season: ['feat_season_1', 'feat_season_2', 'feat_season_3', 'feat_season_4', 'feat_season_5', 'feat_season_6'],
+                cta: ['feat_cta_1', 'feat_cta_2', 'feat_cta_3', 'feat_cta_4', 'feat_cta_5', 'feat_cta_6', 'feat_cta_7', 'feat_cta_8']
+            };
+
+            // =========================================================
+            //  🖨️ RENDER PRICING CARDS
+            // =========================================================
+            function renderPricingCards(lang) {
+                const t = translations[lang] || translations.en;
+                const grid = document.getElementById('pricingGrid');
+                if (!grid) return;
+
+                let html = '';
+                plans.forEach(plan => {
+                    const features = featureKeys[plan.key] || [];
+                    const titleKey = 'plan_' + plan.key + '_title';
+                    const descKey = 'plan_' + plan.key + '_desc';
+
+                    let badgeHtml = '';
+                    if (plan.badge === 'best') {
+                        badgeHtml = `<span class="badge">${t.badge_best || 'Best Value'}</span>`;
+                    }
+                    let trialHtml = '';
+                    if (plan.trial) {
+                        trialHtml = `<div style="font-size:0.8rem;color:var(--gold);margin-bottom:8px;">${t.badge_trial || '30-Day Free Trial'}</div>`;
+                    }
+
+                    let featuresHtml = '';
+                    features.forEach(fk => {
+                        if (t[fk]) {
+                            featuresHtml += `<li><span class="check">✦</span> ${t[fk]}</li>`;
+                        }
+                    });
+
+                    // Generate a random checkout ID for demo purposes
+                    const checkoutId = generateUUID();
+
+                    html += `
+                        <div class="pricing-card">
+                            ${badgeHtml}
+                            <div class="plan-name">${t[titleKey] || plan.key}</div>
+                            <div class="plan-price">$${plan.price} <small>/ month</small></div>
+                            ${trialHtml}
+                            <div class="plan-desc">${t[descKey] || ''}</div>
+                            <ul class="plan-features">
+                                ${featuresHtml}
+                            </ul>
+                            <a href="checkout.html?checkoutId=${checkoutId}&plan=${plan.id}" class="btn-select">${t.btn_select || 'Select Plan'}</a>
+                        </div>
+                    `;
+                });
+
+                grid.innerHTML = html;
+            }
+
+            // =========================================================
+            //  🆔 Generate UUID (simple version for checkout)
+            // =========================================================
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            // =========================================================
+            //  🔄 LANGUAGE TOGGLE
+            // =========================================================
+            const langCycle = ['en', 'es', 'fa', 'ko', 'ar', 'ru', 'zh', 'so'];
+            document.getElementById('langToggle').addEventListener('click', function() {
+                const current = window.__currentLang || 'en';
+                let idx = langCycle.indexOf(current);
+                if (idx === -1) idx = 0;
+                idx = (idx + 1) % langCycle.length;
+                applyLanguage(langCycle[idx]);
+            });
+
+            // =========================================================
+            //  🚀 INIT
+            // =========================================================
+            function init() {
+                const detected = detectLanguage();
+                applyLanguage(detected);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
