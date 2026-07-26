@@ -116,26 +116,6 @@
             font-style: italic;
         }
 
-        /* ----- DEBUG BANNER (visible at top) ----- */
-        .debug-banner {
-            background: #ff4444;
-            color: white;
-            text-align: center;
-            padding: 10px 16px;
-            font-weight: bold;
-            font-size: 1rem;
-            border-bottom: 2px solid var(--gold);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        .debug-banner span {
-            background: rgba(255,255,255,0.2);
-            padding: 2px 12px;
-            border-radius: 20px;
-            margin: 0 6px;
-        }
-
         /* ----- HEADER / NAV ----- */
         header {
             padding: 20px 0 16px;
@@ -747,12 +727,6 @@
 </head>
 <body>
 
-    <!-- ===== DEBUG BANNER (visible at top) ===== -->
-    <div class="debug-banner" id="debugBanner">
-        🐞 DEBUG: Detected language: <span id="debugLangDisplay">---</span> 
-        | Raw: <span id="debugRawDisplay">---</span>
-    </div>
-
     <!-- ===== HEADER ===== -->
     <header>
         <div class="container header-inner">
@@ -946,10 +920,7 @@
                         Whether you're an athlete, fan, or potential CTA, we'd love to hear from you. 
                         Let's build the future of women's sports together.
                     </p>
-                    <div class="detail">
-                        <span>📧</span>
-                        <span><strong>Email:</strong> hello@wordwell.com</span>
-                    </div>
+                    <!-- Email line removed per request -->
                     <div class="detail">
                         <span>⏱️</span>
                         <span><strong data-i18n="contact_response">Response:</strong> <span data-i18n="contact_response_time">Within 24 hours</span></span>
@@ -985,7 +956,7 @@
     <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
-            <div>&copy; 2026 <span class="gold">Wordwell</span> &mdash; 
+            <div>&copy; 2000 <span class="gold">Wordwell</span> &mdash; 
             <span data-i18n="footer_tagline">Only Elite. Only the Few. Only Wordwell.</span></div>
         </div>
     </footer>
@@ -999,7 +970,7 @@
             'use strict';
 
             // =========================================================
-            //  🌐 TRANSLATIONS (8+ languages)
+            //  🌐 TRANSLATIONS (8 languages)
             // =========================================================
             const translations = {
                 en: {
@@ -1317,20 +1288,12 @@
             };
 
             // =========================================================
-            //  🔍 DETECT LANGUAGE (with alert and visible debug)
+            //  🔍 DETECT LANGUAGE (silent)
             // =========================================================
             function detectLanguage() {
-                // Try multiple sources
                 let raw = navigator.language;
                 if (!raw || raw === '') {
                     raw = navigator.languages?.[0] || 'en';
-                }
-                // Also check if language is in the URL query string (for testing)
-                const urlParams = new URLSearchParams(window.location.search);
-                const forced = urlParams.get('lang');
-                if (forced && ['en','es','fa','ko','ar','ru','zh','so'].includes(forced)) {
-                    raw = forced;
-                    console.log('🔍 Forced language from URL:', raw);
                 }
 
                 const map = {
@@ -1347,23 +1310,6 @@
                         detected = map[prefix];
                     }
                 }
-
-                console.log('🔍 Raw browser language:', raw, '→ mapped to:', detected);
-
-                // Show alert for debugging
-                alert('🌐 Language detection:\n\nRaw: ' + raw + '\nMapped: ' + detected + '\n\nIf this is not Spanish, check your browser language settings.');
-
-                // Update debug banner
-                const debugLang = document.getElementById('debugLangDisplay');
-                const debugRaw = document.getElementById('debugRawDisplay');
-                if (debugLang) {
-                    const langNames = { en: 'English', es: 'Español', fa: 'فارسی', ko: '한국어', ar: 'العربية', ru: 'Русский', zh: '中文', so: 'Soomaali' };
-                    debugLang.textContent = langNames[detected] || detected.toUpperCase();
-                }
-                if (debugRaw) {
-                    debugRaw.textContent = raw;
-                }
-
                 return detected;
             }
 
@@ -1371,9 +1317,7 @@
             //  🌐 APPLY TRANSLATIONS
             // =========================================================
             function applyLanguage(lang) {
-                console.log('🌐 Applying language:', lang);
                 const t = translations[lang] || translations.en;
-
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     if (t[key] !== undefined) {
@@ -1382,11 +1326,8 @@
                         } else {
                             el.textContent = t[key];
                         }
-                    } else {
-                        console.warn('⚠️ Missing translation for key:', key, 'in language:', lang);
                     }
                 });
-
                 document.documentElement.lang = lang;
                 window.__currentLang = lang;
             }
@@ -1400,19 +1341,11 @@
                 let idx = langCycle.indexOf(current);
                 if (idx === -1) idx = 0;
                 idx = (idx + 1) % langCycle.length;
-                const nextLang = langCycle[idx];
-                applyLanguage(nextLang);
-                // Update debug banner to reflect manual change
-                const debugLang = document.getElementById('debugLangDisplay');
-                if (debugLang) {
-                    const langNames = { en: 'English', es: 'Español', fa: 'فارسی', ko: '한국어', ar: 'العربية', ru: 'Русский', zh: '中文', so: 'Soomaali' };
-                    debugLang.textContent = langNames[nextLang] || nextLang.toUpperCase() + ' (manual)';
-                }
-                alert('🌐 Language manually changed to: ' + (langNames[nextLang] || nextLang.toUpperCase()));
+                applyLanguage(langCycle[idx]);
             });
 
             // =========================================================
-            //  🚀 INITIAL LOAD – DETECT AND APPLY
+            //  🚀 INITIAL LOAD
             // =========================================================
             function init() {
                 const detected = detectLanguage();
@@ -1424,9 +1357,6 @@
             } else {
                 init();
             }
-
-            // Force re-apply after 500ms to catch any late elements
-            setTimeout(init, 500);
 
             // =========================================================
             //  ⏱️ COUNTDOWN TIMER (August 1, 2026)
