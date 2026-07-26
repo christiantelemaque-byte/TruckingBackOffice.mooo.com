@@ -335,13 +335,6 @@
             box-shadow: 0 8px 30px rgba(245, 200, 66, 0.25);
         }
 
-        .pricing-card .btn-select:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
         /* ----- FOOTER ----- */
         footer {
             border-top: 1px solid var(--border);
@@ -430,7 +423,7 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT – i18n + Pricing + Language Detection ===== -->
+    <!-- ===== JAVASCRIPT – i18n + Pricing + Direct Stripe Links ===== -->
     <!-- ============================================================ -->
 
     <script>
@@ -955,13 +948,14 @@
             }
 
             // =========================================================
-            //  📋 PRICING PLANS DATA (no $0 plan)
+            //  📋 PRICING PLANS DATA with Direct Stripe Links
             // =========================================================
             const plans = [
                 {
                     id: 'crown-talk-fan',
                     key: 'crown',
                     price: '4.99',
+                    stripeLink: 'https://buy.stripe.com/dRmaEX0qQ0Bmgeqf6z73G09',
                     badge: null,
                     trial: false
                 },
@@ -969,6 +963,7 @@
                     id: 'league-insider',
                     key: 'insider',
                     price: '9.99',
+                    stripeLink: 'https://buy.stripe.com/cNieVdb5uesc0fscYr73G0a',
                     badge: null,
                     trial: false
                 },
@@ -976,6 +971,7 @@
                     id: 'franchise-builder',
                     key: 'builder',
                     price: '19.99',
+                    stripeLink: 'https://buy.stripe.com/eVq8wP2yYgAk3rE7E773G0b',
                     badge: 'best',
                     trial: false
                 },
@@ -983,6 +979,7 @@
                     id: 'university-athlete',
                     key: 'athlete',
                     price: '24.99',
+                    stripeLink: 'https://buy.stripe.com/4gM6oH0qQabWbYagaD73G0c',
                     badge: null,
                     trial: true
                 },
@@ -990,6 +987,7 @@
                     id: 'university-season-athlete',
                     key: 'season',
                     price: '79.99',
+                    stripeLink: 'https://buy.stripe.com/dRmbJ18Xmbg05zMgaD73G0d',
                     badge: null,
                     trial: false
                 },
@@ -997,6 +995,7 @@
                     id: 'cta-program',
                     key: 'cta',
                     price: '14.99',
+                    stripeLink: 'https://buy.stripe.com/5kQ8wPddCgAk9Q27E773G0e',
                     badge: null,
                     trial: true
                 }
@@ -1013,7 +1012,7 @@
             };
 
             // =========================================================
-            //  🖨️ RENDER PRICING CARDS
+            //  🖨️ RENDER PRICING CARDS (with Direct Stripe Links)
             // =========================================================
             function renderPricingCards(lang) {
                 const t = translations[lang] || translations.en;
@@ -1042,9 +1041,6 @@
                         }
                     });
 
-                    // Generate a random checkout ID for demo purposes
-                    const checkoutId = generateUUID();
-
                     html += `
                         <div class="pricing-card">
                             ${badgeHtml}
@@ -1055,23 +1051,12 @@
                             <ul class="plan-features">
                                 ${featuresHtml}
                             </ul>
-                            <a href="checkout.html?checkoutId=${checkoutId}&plan=${plan.id}" class="btn-select">${t.btn_select || 'Select Plan'}</a>
+                            <a href="${plan.stripeLink}" target="_blank" class="btn-select">${t.btn_select || 'Select Plan'}</a>
                         </div>
                     `;
                 });
 
                 grid.innerHTML = html;
-            }
-
-            // =========================================================
-            //  🆔 Generate UUID (simple version for checkout)
-            // =========================================================
-            function generateUUID() {
-                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                    const r = Math.random() * 16 | 0;
-                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                    return v.toString(16);
-                });
             }
 
             // =========================================================
