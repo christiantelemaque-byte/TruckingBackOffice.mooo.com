@@ -325,16 +325,11 @@
             border: 1px solid var(--red);
             color: var(--red);
         }
-
-        .stripe-product-id {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            background: var(--bg-input);
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin-top: 12px;
-            display: inline-block;
+        .form-status.loading {
+            display: block;
+            background: rgba(245, 200, 66, 0.08);
             border: 1px solid var(--border);
+            color: var(--text-muted);
         }
 
         /* ----- FOOTER ----- */
@@ -425,8 +420,6 @@
                         <span class="value" data-i18n="order_monthly">Monthly</span>
                     </div>
                     <div class="total" id="orderTotal">$0.00</div>
-                    <!-- Display Stripe Product ID (for reference) -->
-                    <div class="stripe-product-id" id="stripeProductDisplay">🔗 Stripe Product ID: <span id="stripeProductId">—</span></div>
                 </div>
 
                 <!-- Billing Form -->
@@ -482,7 +475,7 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT – i18n + Checkout + Language Detection ===== -->
+    <!-- ===== JAVASCRIPT – i18n + Checkout + Stripe Redirect ===== -->
     <!-- ============================================================ -->
 
     <script>
@@ -490,7 +483,7 @@
             'use strict';
 
             // =========================================================
-            //  🌐 TRANSLATIONS (add new key: form_zip)
+            //  🌐 TRANSLATIONS
             // =========================================================
             const translations = {
                 en: {
@@ -703,15 +696,39 @@
             });
 
             // =========================================================
-            //  📋 PLAN LOOKUP with Stripe Product IDs
+            //  📋 PLAN LOOKUP with Stripe Payment Links
             // =========================================================
             const planData = {
-                'crown-talk-fan': { name: 'Crown Talk Fan', price: '4.99', productId: 'prod_UxRZOXFPbyDiMp' },
-                'league-insider': { name: 'League Insider', price: '9.99', productId: 'prod_UxRei8fPSz9H3Z' },
-                'franchise-builder': { name: 'Franchise Builder', price: '19.99', productId: 'prod_UxRgpz9sjdFGux' },
-                'university-athlete': { name: 'University Athlete', price: '24.99', productId: 'prod_UxRi6nCLPwK4oo' },
-                'university-season-athlete': { name: 'University Season Athlete', price: '79.99', productId: 'prod_UxRjJ5P2GPsyGd' },
-                'cta-program': { name: 'CTA Program', price: '14.99', productId: 'prod_UxRkjyGLOBDwhP' }
+                'crown-talk-fan': {
+                    name: 'Crown Talk Fan',
+                    price: '4.99',
+                    stripeLink: 'https://buy.stripe.com/dRmaEX0qQ0Bmgeqf6z73G09'
+                },
+                'league-insider': {
+                    name: 'League Insider',
+                    price: '9.99',
+                    stripeLink: 'https://buy.stripe.com/cNieVdb5uesc0fscYr73G0a'
+                },
+                'franchise-builder': {
+                    name: 'Franchise Builder',
+                    price: '19.99',
+                    stripeLink: 'https://buy.stripe.com/eVq8wP2yYgAk3rE7E773G0b'
+                },
+                'university-athlete': {
+                    name: 'University Athlete',
+                    price: '24.99',
+                    stripeLink: 'https://buy.stripe.com/4gM6oH0qQabWbYagaD73G0c'
+                },
+                'university-season-athlete': {
+                    name: 'University Season Athlete',
+                    price: '79.99',
+                    stripeLink: 'https://buy.stripe.com/dRmbJ18Xmbg05zMgaD73G0d'
+                },
+                'cta-program': {
+                    name: 'CTA Program',
+                    price: '14.99',
+                    stripeLink: 'https://buy.stripe.com/5kQ8wPddCgAk9Q27E773G0e'
+                }
             };
 
             // =========================================================
@@ -724,25 +741,27 @@
 
                 const plan = planData[planId];
                 if (!plan) {
-                    // fallback
                     document.getElementById('orderPlan').textContent = 'Unknown Plan';
                     document.getElementById('orderPrice').textContent = '$0.00 / month';
                     document.getElementById('orderTotal').textContent = '$0.00';
-                    document.getElementById('stripeProductId').textContent = '—';
                     return;
                 }
 
                 document.getElementById('orderPlan').textContent = plan.name;
                 document.getElementById('orderPrice').textContent = '$' + plan.price + ' / month';
                 document.getElementById('orderTotal').textContent = '$' + plan.price;
-                document.getElementById('stripeProductId').textContent = plan.productId;
 
-                // Store for form submission
-                window.__checkoutData = { planId, planName: plan.name, planPrice: plan.price, productId: plan.productId, checkoutId };
+                window.__checkoutData = {
+                    planId: planId,
+                    planName: plan.name,
+                    planPrice: plan.price,
+                    stripeLink: plan.stripeLink,
+                    checkoutId: checkoutId
+                };
             }
 
             // =========================================================
-            //  📧 FORM SUBMISSION (simulate Stripe Checkout)
+            //  💳 FORM SUBMISSION – Redirect to Stripe Payment Link
             // =========================================================
             const form = document.getElementById('checkoutForm');
             const status = document.getElementById('formStatus');
@@ -784,58 +803,43 @@
                     return;
                 }
 
+                // Get the Stripe payment link
+                const stripeLink = window.__checkoutData?.stripeLink;
+                if (!stripeLink) {
+                    const lang = window.__currentLang || 'en';
+                    const errorMsg = lang === 'es' ? 'Error: no se encontró el enlace de pago.' :
+                                     lang === 'fa' ? 'خطا: لینک پرداخت پیدا نشد.' :
+                                     lang === 'ko' ? '오류: 결제 링크를 찾을 수 없습니다.' :
+                                     lang === 'ar' ? 'خطأ: لم يتم العثور على رابط الدفع.' :
+                                     lang === 'ru' ? 'Ошибка: ссылка на оплату не найдена.' :
+                                     lang === 'zh' ? '错误：未找到支付链接。' :
+                                     lang === 'so' ? 'Khalad: linkiga bixinta lama helin.' :
+                                     'Error: payment link not found.';
+                    setStatus(errorMsg, 'error');
+                    return;
+                }
+
+                // Disable button and show loading
                 submitBtn.disabled = true;
                 const lang = window.__currentLang || 'en';
-                const sendingText = lang === 'es' ? '✧ Procesando...' :
-                                     lang === 'fa' ? '✧ در حال پردازش...' :
-                                     lang === 'ko' ? '✧ 처리 중...' :
-                                     lang === 'ar' ? '✧ جاري المعالجة...' :
-                                     lang === 'ru' ? '✧ Обработка...' :
-                                     lang === 'zh' ? '✧ 处理中...' :
-                                     lang === 'so' ? '✧ Hawl gelin...' :
-                                     '✧ Processing...';
-                submitBtn.innerHTML = sendingText;
+                const loadingText = lang === 'es' ? '✧ Redirigiendo a Stripe...' :
+                                     lang === 'fa' ? '✧ در حال انتقال به Stripe...' :
+                                     lang === 'ko' ? '✧ Stripe로 리디렉션 중...' :
+                                     lang === 'ar' ? '✧ جاري التوجيه إلى Stripe...' :
+                                     lang === 'ru' ? '✧ Перенаправление на Stripe...' :
+                                     lang === 'zh' ? '✧ 正在重定向到 Stripe...' :
+                                     lang === 'so' ? '✧ Loo wareejinayaa Stripe...' :
+                                     '✧ Redirecting to Stripe...';
+                submitBtn.innerHTML = loadingText;
                 resetStatus();
 
-                // Simulate payment processing
-                setTimeout(function() {
-                    const lang = window.__currentLang || 'en';
-                    const successMsg = lang === 'es' ? '✓ ¡Pago completado! Redirigiendo a Stripe...' :
-                                        lang === 'fa' ? '✓ پرداخت تکمیل شد! در حال انتقال به Stripe...' :
-                                        lang === 'ko' ? '✓ 결제가 완료되었습니다! Stripe로 리디렉션 중...' :
-                                        lang === 'ar' ? '✓ تم إتمام الدفع! جاري التوجيه إلى Stripe...' :
-                                        lang === 'ru' ? '✓ Оплата завершена! Перенаправление на Stripe...' :
-                                        lang === 'zh' ? '✓ 付款已完成！正在重定向到 Stripe...' :
-                                        lang === 'so' ? '✓ Bixinta waa la dhammeeyey! Loo wareejinayaa Stripe...' :
-                                        '✓ Payment completed! Redirecting to Stripe...';
-                    setStatus(successMsg, 'success');
-                    submitBtn.disabled = false;
-                    const submitText = lang === 'es' ? '✧ Completar Compra' :
-                                        lang === 'fa' ? '✧ تکمیل خرید' :
-                                        lang === 'ko' ? '✧ 구매 완료' :
-                                        lang === 'ar' ? '✧ إكمال الشراء' :
-                                        lang === 'ru' ? '✧ Завершить покупку' :
-                                        lang === 'zh' ? '✧ 完成购买' :
-                                        lang === 'so' ? '✧ Dhammeystir Iibsiga' :
-                                        '✧ Complete Purchase';
-                    submitBtn.innerHTML = submitText;
-                    form.reset();
+                // Store user info in sessionStorage for the thank-you page
+                sessionStorage.setItem('wordwell_customer_name', name);
+                sessionStorage.setItem('wordwell_customer_email', email);
+                sessionStorage.setItem('wordwell_plan_name', window.__checkoutData?.planName || '');
 
-                    // In a real implementation, you would redirect to Stripe Checkout using the product ID
-                    // For demo, we open a new window with a Stripe product page (or you can replace with your actual checkout URL)
-                    // Example: window.location.href = 'https://buy.stripe.com/test_...';
-                    // For now, we just show a link
-                    const productId = window.__checkoutData?.productId || '';
-                    if (productId) {
-                        // Simulate redirect to Stripe Checkout (you need to create a session server-side)
-                        // For demonstration, we'll just show an alert with the product ID
-                        setTimeout(function() {
-                            alert('Redirect to Stripe Checkout for product: ' + productId + '\n\nIn production, this would redirect to your Stripe Checkout session URL.');
-                            // Optionally redirect to a Stripe product page (public view)
-                            // window.location.href = 'https://buy.stripe.com/' + productId;
-                        }, 500);
-                    }
-                }, 1500);
+                // Redirect to Stripe Payment Link
+                window.location.href = stripeLink;
             });
 
             // =========================================================
