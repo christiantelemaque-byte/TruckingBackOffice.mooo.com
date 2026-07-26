@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Word Well | Christian Télémaque – Content Writer & Strategist</title>
+    <title>Scoopaveli League – Elite Women's Sports</title>
 
     <!-- ===== FONTS ===== -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
 
     <style>
         /* ----- RESET & BASE ----- */
@@ -21,9 +21,10 @@
         }
 
         :root {
-            --gold: #c9a84c;
-            --gold-light: #e8d5a3;
-            --gold-dark: #a8892e;
+            --gold: #f5c842;
+            --gold-dark: #c9a020;
+            --red: #e94560;
+            --red-dark: #c0392b;
             --bg: #0b0a0a;
             --bg-card: #141212;
             --bg-input: #1e1b1b;
@@ -52,7 +53,7 @@
             transition: var(--transition);
         }
         a:hover {
-            color: var(--gold-light);
+            color: var(--red);
         }
 
         .container {
@@ -77,9 +78,17 @@
         .serif {
             font-family: 'Playfair Display', serif;
         }
+        .oswald {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
         .gold {
             color: var(--gold);
+        }
+        .red {
+            color: var(--red);
         }
 
         .section-label {
@@ -106,11 +115,11 @@
 
         /* ----- HEADER / NAV ----- */
         header {
-            padding: 28px 0 20px;
+            padding: 20px 0 16px;
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            background: rgba(11, 10, 10, 0.92);
+            background: rgba(11, 10, 10, 0.95);
             backdrop-filter: blur(12px);
             z-index: 100;
         }
@@ -125,20 +134,21 @@
 
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
-        .logo .gold {
+        .logo .red {
             font-style: italic;
         }
 
         .nav-links {
             display: flex;
-            gap: 32px;
-            font-size: 0.9rem;
-            font-weight: 400;
-            letter-spacing: 0.3px;
+            gap: 28px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         .nav-links a {
             color: var(--text-muted);
@@ -151,7 +161,7 @@
             bottom: -4px;
             left: 0;
             width: 0;
-            height: 1.5px;
+            height: 2px;
             background: var(--gold);
             transition: var(--transition);
         }
@@ -162,181 +172,376 @@
             width: 100%;
         }
 
-        /* ----- HERO ----- */
-        .hero {
-            padding: 80px 0 60px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
+        .lang-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .lang-toggle:hover {
+            border-color: var(--gold);
+            color: var(--gold);
         }
 
-        .hero-badge {
-            display: inline-block;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            padding: 6px 20px;
-            border-radius: 50px;
-            margin-bottom: 28px;
-            font-weight: 500;
+        /* ----- HERO ----- */
+        .hero {
+            padding: 60px 0 50px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--bg) 0%, #1a1410 100%);
         }
 
         .hero h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2.6rem, 7vw, 4.8rem);
+            font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 700;
-            line-height: 1.08;
-            margin-bottom: 20px;
+            line-height: 1.05;
+            margin-bottom: 10px;
         }
-
         .hero h1 .gold {
             font-style: italic;
         }
 
-        .hero p {
-            font-size: 1.2rem;
+        .hero-sub {
+            font-size: 1.1rem;
             color: var(--text-muted);
-            max-width: 620px;
-            margin: 0 auto 36px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
             font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .hero-countdown {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 30px 0 20px;
+            flex-wrap: wrap;
+        }
+        .countdown-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            min-width: 80px;
+            text-align: center;
+        }
+        .countdown-item .number {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .countdown-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .hero-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            display: inline-block;
             background: var(--gold);
             color: #0b0a0a;
-            font-weight: 600;
-            padding: 14px 42px;
+            font-weight: 700;
+            padding: 14px 48px;
             border-radius: 50px;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             transition: var(--transition);
             border: none;
             cursor: pointer;
+            margin-top: 10px;
         }
         .hero-cta:hover {
-            background: var(--gold-light);
+            background: #e6b832;
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(201, 168, 76, 0.25);
+            box-shadow: 0 12px 40px rgba(245, 200, 66, 0.25);
         }
 
-        .hero-cta i {
-            font-style: normal;
-            font-size: 1.2rem;
-        }
-
-        /* ----- SERVICES ----- */
-        .services {
+        /* ----- CHOOSE SIDE ----- */
+        .choose-side {
             padding: 80px 0 60px;
             border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        .choose-side h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .choose-side .tagline {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 40px;
         }
 
-        .services-grid {
+        .side-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 32px;
-            margin-top: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 700px;
+            margin: 0 auto 30px;
         }
-
-        .service-card {
+        .side-card {
             background: var(--bg-card);
-            padding: 36px 28px;
-            border-radius: var(--radius);
             border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px 20px;
             transition: var(--transition);
         }
-        .service-card:hover {
+        .side-card:hover {
             border-color: var(--gold);
             transform: translateY(-4px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
-
-        .service-card .icon {
-            font-size: 2.2rem;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .service-card h3 {
+        .side-card h3 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
-
-        .service-card p {
+        .side-card .sub {
+            font-size: 0.9rem;
             color: var(--text-muted);
-            font-size: 0.95rem;
-            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .side-card .highlight {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin: 10px 0 4px;
+        }
+        .side-card .list-item {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
-        /* ----- PORTFOLIO ----- */
-        .portfolio {
+        .side-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 20px auto 0;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+        .side-note strong {
+            color: var(--gold);
+        }
+
+        /* ----- POSITIONS EXIST ----- */
+        .positions {
+            padding: 60px 0 60px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        .positions h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .positions .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .positions .grid-item {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-weight: 500;
+        }
+        .positions .grid-item .num {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            color: var(--gold);
+        }
+
+        .positions .earned {
+            margin-top: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        /* ----- WHAT IS ----- */
+        .what-is {
             padding: 80px 0 60px;
             border-bottom: 1px solid var(--border);
         }
-
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 28px;
-            margin-top: 40px;
+        .what-is h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
         }
-
-        .portfolio-item {
+        .what-is p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.8;
+        }
+        .what-is .highlight-box {
             background: var(--bg-card);
+            border-left: 4px solid var(--gold);
+            padding: 20px 28px;
             border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            transition: var(--transition);
+            margin: 20px 0;
         }
-        .portfolio-item:hover {
-            border-color: var(--gold);
-            transform: translateY(-3px);
+        .what-is .highlight-box p {
+            font-size: 1.1rem;
+            color: var(--text);
+            font-weight: 500;
         }
 
-        .portfolio-item .thumb {
-            height: 180px;
-            background: linear-gradient(135deg, #1e1b1b, #2a2626);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: var(--gold);
+        /* ----- DIVISIONS ----- */
+        .divisions {
+            padding: 60px 0 60px;
             border-bottom: 1px solid var(--border);
         }
-
-        .portfolio-item .info {
-            padding: 22px 24px 26px;
-        }
-
-        .portfolio-item .info h4 {
+        .divisions h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.15rem;
-            font-weight: 600;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .divisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+        .division-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .division-card:hover {
+            border-color: var(--gold);
+        }
+        .division-card .icon {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .division-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
             margin-bottom: 6px;
         }
-
-        .portfolio-item .info p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 300;
+        .division-card .sub {
+            font-size: 0.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-bottom: 12px;
         }
-
-        .portfolio-item .info a {
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+        .division-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        /* ----- CONTACT ----- */
+        .enter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .enter-btn {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .enter-btn:hover {
+            background: var(--gold);
+            color: #0b0a0a;
+        }
+
+        /* ----- MISSION ----- */
+        .mission {
+            padding: 80px 0 60px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        .mission h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .mission .sub {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+        .mission-items {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .mission-item {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+        .mission-item small {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .mission-footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ----- CONTACT (optional) ----- */
         .contact {
             padding: 80px 0 100px;
         }
-
         .contact-wrapper {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
@@ -344,20 +549,17 @@
             align-items: start;
             margin-top: 40px;
         }
-
         .contact-info h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.6rem;
             font-weight: 600;
             margin-bottom: 12px;
         }
-
         .contact-info p {
             color: var(--text-muted);
             font-weight: 300;
             margin-bottom: 28px;
         }
-
         .contact-info .detail {
             display: flex;
             align-items: center;
@@ -375,7 +577,6 @@
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group label {
             display: block;
             font-size: 0.8rem;
@@ -385,7 +586,6 @@
             color: var(--text-muted);
             margin-bottom: 6px;
         }
-
         .form-group input,
         .form-group textarea {
             width: 100%;
@@ -399,28 +599,24 @@
             transition: var(--transition);
             outline: none;
         }
-
         .form-group input:focus,
         .form-group textarea:focus {
             border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+            box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
         }
-
         .form-group textarea {
             min-height: 140px;
             resize: vertical;
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
         .btn-submit {
             background: var(--gold);
             color: #0b0a0a;
-            font-weight: 600;
+            font-weight: 700;
             padding: 16px 40px;
             border: none;
             border-radius: 50px;
@@ -428,19 +624,19 @@
             cursor: pointer;
             transition: var(--transition);
             width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .btn-submit:hover {
-            background: var(--gold-light);
+            background: #e6b832;
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(201, 168, 76, 0.2);
+            box-shadow: 0 12px 40px rgba(245, 200, 66, 0.2);
         }
-
         .btn-submit:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
         }
-
         .form-status {
             margin-top: 16px;
             padding: 14px 18px;
@@ -450,15 +646,15 @@
         }
         .form-status.success {
             display: block;
-            background: rgba(201, 168, 76, 0.12);
+            background: rgba(245, 200, 66, 0.12);
             border: 1px solid var(--gold);
-            color: var(--gold-light);
+            color: var(--gold);
         }
         .form-status.error {
             display: block;
-            background: rgba(255, 70, 70, 0.1);
-            border: 1px solid #cc4444;
-            color: #ff8888;
+            background: rgba(233, 69, 96, 0.12);
+            border: 1px solid var(--red);
+            color: var(--red);
         }
 
         /* ----- FOOTER ----- */
@@ -470,7 +666,6 @@
             font-size: 0.85rem;
             font-weight: 300;
         }
-
         footer .gold {
             font-weight: 500;
         }
@@ -489,13 +684,28 @@
                 align-items: center;
             }
             .nav-links {
-                gap: 20px;
-                font-size: 0.8rem;
+                gap: 16px;
+                font-size: 0.75rem;
                 flex-wrap: wrap;
                 justify-content: center;
             }
-            .hero {
-                padding: 50px 0 40px;
+            .side-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            .hero-countdown {
+                gap: 12px;
+            }
+            .countdown-item {
+                min-width: 60px;
+                padding: 8px 12px;
+            }
+            .countdown-item .number {
+                font-size: 2rem;
+            }
+            .mission-items {
+                flex-direction: column;
+                gap: 16px;
             }
         }
 
@@ -503,11 +713,11 @@
             .container {
                 padding: 0 16px;
             }
-            .services-grid {
-                grid-template-columns: 1fr;
+            .hero h1 {
+                font-size: 2.6rem;
             }
-            .portfolio-grid {
-                grid-template-columns: 1fr;
+            .side-card h3 {
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -518,156 +728,223 @@
     <header>
         <div class="container header-inner">
             <div class="logo">
-                Word<span class="gold">Well</span>
+                Scoopaveli<span class="red">League</span>
             </div>
             <nav class="nav-links">
-                <a href="#services">Services</a>
-                <a href="#portfolio">Portfolio</a>
-                <a href="#contact">Contact</a>
+                <a href="#choose" data-i18n="nav_choose">Choose Side</a>
+                <a href="#what" data-i18n="nav_what">About</a>
+                <a href="#divisions" data-i18n="nav_divisions">Divisions</a>
+                <a href="#mission" data-i18n="nav_mission">Mission</a>
+                <a href="#contact" data-i18n="nav_contact">Contact</a>
+                <button class="lang-toggle" id="langToggle">ES / EN</button>
             </nav>
         </div>
     </header>
 
     <!-- ===== HERO ===== -->
-    <section class="hero">
+    <section class="hero" id="hero">
         <div class="container">
-            <span class="hero-badge">✦ Freelance Content Writer</span>
             <h1>
-                Human-first,<br />
-                <span class="gold">SEO-smart</span> storytelling.
+                <span data-i18n="hero_title1">SCOOPAVELI</span><br />
+                <span class="gold" data-i18n="hero_title2">LEAGUE</span>
             </h1>
-            <p>
-                I help brands find their voice — and readers find meaning.
-                Ghostwriting, SEO content, and authentic storytelling for the
-                US market.
+            <div class="hero-sub" data-i18n="hero_sub">Preseason begins August 1</div>
+
+            <div class="hero-countdown" id="countdown">
+                <div class="countdown-item">
+                    <div class="number" id="days">00</div>
+                    <div class="label" data-i18n="days">days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="hours">00</div>
+                    <div class="label" data-i18n="hours">hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="minutes">00</div>
+                    <div class="label" data-i18n="minutes">minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="seconds">00</div>
+                    <div class="label" data-i18n="seconds">seconds</div>
+                </div>
+            </div>
+
+            <a href="#choose" class="hero-cta" data-i18n="hero_cta">Choose Your Side</a>
+            <div style="margin-top: 12px; font-size: 0.8rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase;" data-i18n="hero_tagline">
+                Only Elite. Only the Few. Only Scoopaveli.
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CHOOSE YOUR SIDE ===== -->
+    <section class="choose-side" id="choose">
+        <div class="container">
+            <h2 data-i18n="choose_title">CHOOSE YOUR SIDE</h2>
+            <div class="tagline" data-i18n="choose_tagline">Only Elite. Only the Few. Only Scoopaveli.</div>
+
+            <div class="side-grid">
+                <div class="side-card">
+                    <h3 class="gold" data-i18n="dynasty_title">DYNASTY DIAMONDS</h3>
+                    <div class="sub" data-i18n="dynasty_sub">5 ELITE MAIN ROSTER POSITIONS</div>
+                    <div class="highlight" data-i18n="dynasty_highlight">✦</div>
+                    <div class="list-item" data-i18n="dynasty_list1">Built on Legacy</div>
+                    <div class="list-item" data-i18n="dynasty_list2">Elite Presence</div>
+                    <div class="list-item" data-i18n="dynasty_list3">Luxury Influence</div>
+                    <div class="list-item" data-i18n="dynasty_list4">Consistency</div>
+                    <div class="list-item" data-i18n="dynasty_list5">Prestige</div>
+                </div>
+                <div class="side-card">
+                    <h3 class="gold" data-i18n="velour_title">VELOUR JEWELS</h3>
+                    <div class="sub" data-i18n="velour_sub">5 ELITE MAIN ROSTER POSITIONS</div>
+                    <div class="highlight" data-i18n="velour_highlight">✦</div>
+                    <div class="list-item" data-i18n="velour_list1">Built on Creativity</div>
+                    <div class="list-item" data-i18n="velour_list2">Visual Impact</div>
+                    <div class="list-item" data-i18n="velour_list3">Audience Energy</div>
+                    <div class="list-item" data-i18n="velour_list4">Personality</div>
+                    <div class="list-item" data-i18n="velour_list5">Trend Leadership</div>
+                </div>
+            </div>
+
+            <div class="side-note" data-i18n="choose_note">
+                <strong>ONLY 10</strong> — 5 DYNASTY DIAMONDS · 5 VELOUR JEWELS <br />
+                NO GUARANTEED PLACEMENTS. EVERY POSITION MUST BE EARNED.
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== POSITIONS EXIST ===== -->
+    <section class="positions" id="positions">
+        <div class="container">
+            <h2 data-i18n="positions_title">POSITIONS EXIST</h2>
+            <div class="grid">
+                <div class="grid-item"><span class="num">5</span> <span data-i18n="pos_dynasty">Dynasty Diamonds</span></div>
+                <div class="grid-item"><span class="num">5</span> <span data-i18n="pos_velour">Velour Jewels</span></div>
+            </div>
+            <div style="margin-top: 16px; color: var(--text-muted); font-size: 0.95rem;" data-i18n="pos_note">
+                No guaranteed placements. Every position must be earned.
+            </div>
+            <div class="earned" data-i18n="earned_tagline">
+                VISIBILITY IS EARNED. POSITIONS ARE WON.
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHAT IS THE LEAGUE ===== -->
+    <section class="what-is" id="what">
+        <div class="container">
+            <h2 data-i18n="what_title">WHAT IS THE SCOOPAVELI LEAGUE?</h2>
+            <p data-i18n="what_p1">
+                The Scoopaveli League is a women's athlete development, visibility, and recognition ecosystem.
             </p>
-            <a href="#contact" class="hero-cta">
-                <i>✧</i> Let's work together
-            </a>
+            <p data-i18n="what_p2">
+                The league was created to give women a structured environment where they can build their personal brand, increase visibility, participate in competitive scouting cycles, and pursue advancement opportunities within the Scoopaveli system.
+            </p>
+            <div class="highlight-box">
+                <p data-i18n="what_highlight">
+                    Unlike traditional social media platforms, the Scoopaveli League is built around participation, rankings, evaluation, and recognition.
+                </p>
+            </div>
+            <p data-i18n="what_p3">
+                Athletes enter Scoopaveli University, where they complete challenges, submit content, participate in scouting activities, build rankings, and compete for visibility opportunities throughout the ecosystem.
+            </p>
+            <p data-i18n="what_p4">
+                Top-performing athletes may earn featured placements, athlete spotlights, ranking movement, draft consideration opportunities, and additional recognition within the league.
+            </p>
         </div>
     </section>
 
-    <!-- ===== SERVICES ===== -->
-    <section class="services" id="services">
+    <!-- ===== DIVISIONS ===== -->
+    <section class="divisions" id="divisions">
         <div class="container">
-            <span class="section-label">✦ What I do</span>
-            <h2 class="section-title">
-                Services <span class="gold">that move</span> the needle.
-            </h2>
+            <h2 data-i18n="divisions_title">THREE PRIMARY DIVISIONS</h2>
+            <div class="divisions-grid">
+                <div class="division-card">
+                    <span class="icon">👥</span>
+                    <h3 data-i18n="div_fans_title">FANS</h3>
+                    <div class="sub" data-i18n="div_fans_sub">Supporters</div>
+                    <p data-i18n="div_fans_desc">Supporters who follow athletes, monitor rankings, engage with the arena, and participate in the growth of the league community.</p>
+                </div>
+                <div class="division-card">
+                    <span class="icon">🏋️</span>
+                    <h3 data-i18n="div_athletes_title">ATHLETES</h3>
+                    <div class="sub" data-i18n="div_athletes_sub">Participants</div>
+                    <p data-i18n="div_athletes_desc">Women who participate in scouting cycles, build visibility, create content, and compete for advancement opportunities.</p>
+                </div>
+                <div class="division-card">
+                    <span class="icon">🔍</span>
+                    <h3 data-i18n="div_ctas_title">CTAS</h3>
+                    <div class="sub" data-i18n="div_ctas_sub">Chief of Talent Acquisition</div>
+                    <p data-i18n="div_ctas_desc">Independent recruiters who identify potential athletes, introduce them to the league, and help expand the ecosystem.</p>
+                </div>
+            </div>
 
-            <div class="services-grid">
-                <div class="service-card">
-                    <span class="icon">✍️</span>
-                    <h3>Ghostwriting</h3>
-                    <p>
-                        Your voice, my pen. I capture your ideas and turn them
-                        into compelling articles, LinkedIn posts, and thought
-                        leadership pieces.
-                    </p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">📈</span>
-                    <h3>SEO Content</h3>
-                    <p>
-                        Search engines love relevance — humans love personality.
-                        I blend both to drive traffic and build trust.
-                    </p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">🎯</span>
-                    <h3>Authentic Storytelling</h3>
-                    <p>
-                        Generic content is noise. Genuine human narrative creates
-                        emotional connection and lasting impact.
-                    </p>
-                </div>
+            <div class="enter-buttons">
+                <button class="enter-btn" data-i18n="enter_fan">Enter as a Fan</button>
+                <button class="enter-btn" data-i18n="enter_athlete">Enter as an Athlete</button>
+                <button class="enter-btn" data-i18n="enter_cta">Enter as a CTA</button>
             </div>
         </div>
     </section>
 
-    <!-- ===== PORTFOLIO ===== -->
-    <section class="portfolio" id="portfolio">
+    <!-- ===== MISSION ===== -->
+    <section class="mission" id="mission">
         <div class="container">
-            <span class="section-label">✦ Featured work</span>
-            <h2 class="section-title">
-                Writing that <span class="gold">resonates</span>.
-            </h2>
-
-            <div class="portfolio-grid">
-                <div class="portfolio-item">
-                    <div class="thumb">📄</div>
-                    <div class="info">
-                        <h4>Ghostwriting Spotlight</h4>
-                        <p>Bringing an executive's voice to life on LinkedIn.</p>
-                        <a href="#">View sample →</a>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="thumb">🔍</div>
-                    <div class="info">
-                        <h4>SEO Deep Dive</h4>
-                        <p>Ranking #1 for competitive keywords with human-first content.</p>
-                        <a href="#">View sample →</a>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="thumb">💡</div>
-                    <div class="info">
-                        <h4>Brand Narrative</h4>
-                        <p>Helping a startup define its authentic voice from scratch.</p>
-                        <a href="#">View sample →</a>
-                    </div>
-                </div>
+            <h2 data-i18n="mission_title">THE MISSION OF THE SCOOPAVELI LEAGUE</h2>
+            <div class="sub" data-i18n="mission_sub">Is simple:</div>
+            <div class="mission-items">
+                <div class="mission-item" data-i18n="mission1">CREATE OPPORTUNITIES.</div>
+                <div class="mission-item" data-i18n="mission2">BUILD VISIBILITY.</div>
+                <div class="mission-item" data-i18n="mission3">RECOGNIZE PERFORMANCE.</div>
+            </div>
+            <div class="mission-footer" data-i18n="mission_footer">
+                Every ranking, spotlight, feature, and advancement opportunity is earned through participation, consistency, and performance inside the system.
             </div>
         </div>
     </section>
 
-    <!-- ===== CONTACT ===== -->
+    <!-- ===== CONTACT (optional, but included) ===== -->
     <section class="contact" id="contact">
         <div class="container">
-            <span class="section-label">✦ Get in touch</span>
-            <h2 class="section-title">
-                Let's create <span class="gold">something</span> great.
+            <span class="section-label" data-i18n="contact_label">✦ Get in touch</span>
+            <h2 class="section-title" data-i18n="contact_title">
+                Let's connect <span class="gold">with the league</span>
             </h2>
 
             <div class="contact-wrapper">
-                <!-- left: info -->
                 <div class="contact-info">
-                    <h3>Ready to elevate your content?</h3>
-                    <p>
-                        Whether you need a ghostwriter, SEO-driven articles, or
-                        a full content strategy — I'm here to help you stand out
-                        in the US market.
+                    <h3 data-i18n="contact_info_title">Reach out to us</h3>
+                    <p data-i18n="contact_info_desc">
+                        Whether you're an athlete, fan, or potential CTA, we'd love to hear from you. 
+                        Let's build the future of women's sports together.
                     </p>
                     <div class="detail">
                         <span>📧</span>
-                        <span><strong>Email:</strong> christiantelemaquecanada@gmail.com</span>
+                        <span><strong>Email:</strong> hello@scoopavelileague.com</span>
                     </div>
                     <div class="detail">
                         <span>⏱️</span>
-                        <span><strong>Response:</strong> Within 24 hours</span>
+                        <span><strong data-i18n="contact_response">Response:</strong> <span data-i18n="contact_response_time">Within 24 hours</span></span>
                     </div>
                 </div>
 
-                <!-- right: form -->
                 <form id="contactForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="name">Full name</label>
+                            <label for="name" data-i18n="form_name">Full name</label>
                             <input type="text" id="name" name="name" placeholder="Jane Doe" required />
                         </div>
                         <div class="form-group">
-                            <label for="email">Email address</label>
+                            <label for="email" data-i18n="form_email">Email address</label>
                             <input type="email" id="email" name="email" placeholder="jane@company.com" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="message">Your message</label>
-                        <textarea id="message" name="message" placeholder="Tell me about your project..." required></textarea>
+                        <label for="message" data-i18n="form_message">Your message</label>
+                        <textarea id="message" name="message" placeholder="Tell us about yourself..." required></textarea>
                     </div>
 
                     <button type="submit" class="btn-submit" id="submitBtn">
-                        ✧ Send message
+                        <span data-i18n="form_submit">✧ Send message</span>
                     </button>
 
                     <div class="form-status" id="formStatus"></div>
@@ -679,13 +956,13 @@
     <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
-            &copy; 2026 <span class="gold">Word Well</span> &mdash; Christian Télémaque.
-            Crafted with purpose.
+            &copy; 2026 <span class="gold">Scoopaveli League</span> &mdash; 
+            <span data-i18n="footer_tagline">Only Elite. Only the Few. Only Scoopaveli.</span>
         </div>
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT – Sends data to Google Apps Script ===== -->
+    <!-- ===== JAVASCRIPT – i18n + Countdown + Form ===== -->
     <!-- ============================================================ -->
 
     <script>
@@ -693,18 +970,255 @@
             'use strict';
 
             // =========================================================
-            //  🔑  REPLACE THIS URL with your Google Apps Script Web App URL
-            //  (Step 2 from the deployment)
+            //  🌐 TRANSLATIONS
             // =========================================================
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbyn4MirbcMdJkfVNeH9wenmrEvQq-Z7wBNR2F4we89abcjq4f8Q3LFuGbg0ZjoO5jF6/exec';
+            const translations = {
+                en: {
+                    nav_choose: 'Choose Side',
+                    nav_what: 'About',
+                    nav_divisions: 'Divisions',
+                    nav_mission: 'Mission',
+                    nav_contact: 'Contact',
+                    hero_title1: 'SCOOPAVELI',
+                    hero_title2: 'LEAGUE',
+                    hero_sub: 'Preseason begins August 1',
+                    hero_cta: 'Choose Your Side',
+                    hero_tagline: 'Only Elite. Only the Few. Only Scoopaveli.',
+                    days: 'days',
+                    hours: 'hours',
+                    minutes: 'minutes',
+                    seconds: 'seconds',
+                    choose_title: 'CHOOSE YOUR SIDE',
+                    choose_tagline: 'Only Elite. Only the Few. Only Scoopaveli.',
+                    dynasty_title: 'DYNASTY DIAMONDS',
+                    dynasty_sub: '5 ELITE MAIN ROSTER POSITIONS',
+                    dynasty_highlight: '✦',
+                    dynasty_list1: 'Built on Legacy',
+                    dynasty_list2: 'Elite Presence',
+                    dynasty_list3: 'Luxury Influence',
+                    dynasty_list4: 'Consistency',
+                    dynasty_list5: 'Prestige',
+                    velour_title: 'VELOUR JEWELS',
+                    velour_sub: '5 ELITE MAIN ROSTER POSITIONS',
+                    velour_highlight: '✦',
+                    velour_list1: 'Built on Creativity',
+                    velour_list2: 'Visual Impact',
+                    velour_list3: 'Audience Energy',
+                    velour_list4: 'Personality',
+                    velour_list5: 'Trend Leadership',
+                    choose_note: '<strong>ONLY 10</strong> — 5 DYNASTY DIAMONDS · 5 VELOUR JEWELS <br /> NO GUARANTEED PLACEMENTS. EVERY POSITION MUST BE EARNED.',
+                    positions_title: 'POSITIONS EXIST',
+                    pos_dynasty: 'Dynasty Diamonds',
+                    pos_velour: 'Velour Jewels',
+                    pos_note: 'No guaranteed placements. Every position must be earned.',
+                    earned_tagline: 'VISIBILITY IS EARNED. POSITIONS ARE WON.',
+                    what_title: 'WHAT IS THE SCOOPAVELI LEAGUE?',
+                    what_p1: 'The Scoopaveli League is a women\'s athlete development, visibility, and recognition ecosystem.',
+                    what_p2: 'The league was created to give women a structured environment where they can build their personal brand, increase visibility, participate in competitive scouting cycles, and pursue advancement opportunities within the Scoopaveli system.',
+                    what_highlight: 'Unlike traditional social media platforms, the Scoopaveli League is built around participation, rankings, evaluation, and recognition.',
+                    what_p3: 'Athletes enter Scoopaveli University, where they complete challenges, submit content, participate in scouting activities, build rankings, and compete for visibility opportunities throughout the ecosystem.',
+                    what_p4: 'Top-performing athletes may earn featured placements, athlete spotlights, ranking movement, draft consideration opportunities, and additional recognition within the league.',
+                    divisions_title: 'THREE PRIMARY DIVISIONS',
+                    div_fans_title: 'FANS',
+                    div_fans_sub: 'Supporters',
+                    div_fans_desc: 'Supporters who follow athletes, monitor rankings, engage with the arena, and participate in the growth of the league community.',
+                    div_athletes_title: 'ATHLETES',
+                    div_athletes_sub: 'Participants',
+                    div_athletes_desc: 'Women who participate in scouting cycles, build visibility, create content, and compete for advancement opportunities.',
+                    div_ctas_title: 'CTAS',
+                    div_ctas_sub: 'Chief of Talent Acquisition',
+                    div_ctas_desc: 'Independent recruiters who identify potential athletes, introduce them to the league, and help expand the ecosystem.',
+                    enter_fan: 'Enter as a Fan',
+                    enter_athlete: 'Enter as an Athlete',
+                    enter_cta: 'Enter as a CTA',
+                    mission_title: 'THE MISSION OF THE SCOOPAVELI LEAGUE',
+                    mission_sub: 'Is simple:',
+                    mission1: 'CREATE OPPORTUNITIES.',
+                    mission2: 'BUILD VISIBILITY.',
+                    mission3: 'RECOGNIZE PERFORMANCE.',
+                    mission_footer: 'Every ranking, spotlight, feature, and advancement opportunity is earned through participation, consistency, and performance inside the system.',
+                    contact_label: '✦ Get in touch',
+                    contact_title: 'Let\'s connect <span class="gold">with the league</span>',
+                    contact_info_title: 'Reach out to us',
+                    contact_info_desc: 'Whether you\'re an athlete, fan, or potential CTA, we\'d love to hear from you. Let\'s build the future of women\'s sports together.',
+                    contact_response: 'Response',
+                    contact_response_time: 'Within 24 hours',
+                    form_name: 'Full name',
+                    form_email: 'Email address',
+                    form_message: 'Your message',
+                    form_submit: '✧ Send message',
+                    footer_tagline: 'Only Elite. Only the Few. Only Scoopaveli.'
+                },
+                es: {
+                    nav_choose: 'Elige tu bando',
+                    nav_what: 'Acerca de',
+                    nav_divisions: 'Divisiones',
+                    nav_mission: 'Misión',
+                    nav_contact: 'Contacto',
+                    hero_title1: 'SCOOPAVELI',
+                    hero_title2: 'LIGA',
+                    hero_sub: 'La pretemporada comienza el 1 de agosto',
+                    hero_cta: 'Elige tu bando',
+                    hero_tagline: 'Solo Élite. Solo los Pocos. Solo Scoopaveli.',
+                    days: 'días',
+                    hours: 'horas',
+                    minutes: 'minutos',
+                    seconds: 'segundos',
+                    choose_title: 'ELIGE TU BANDO',
+                    choose_tagline: 'Solo Élite. Solo los Pocos. Solo Scoopaveli.',
+                    dynasty_title: 'DIAMANTES DE DINASTÍA',
+                    dynasty_sub: '5 POSICIONES ÉLITE EN EL ROSTER PRINCIPAL',
+                    dynasty_highlight: '✦',
+                    dynasty_list1: 'Construido sobre el legado',
+                    dynasty_list2: 'Presencia Élite',
+                    dynasty_list3: 'Influencia de Lujo',
+                    dynasty_list4: 'Consistencia',
+                    dynasty_list5: 'Prestigio',
+                    velour_title: 'JOYAS DE VELOUR',
+                    velour_sub: '5 POSICIONES ÉLITE EN EL ROSTER PRINCIPAL',
+                    velour_highlight: '✦',
+                    velour_list1: 'Construido sobre la creatividad',
+                    velour_list2: 'Impacto Visual',
+                    velour_list3: 'Energía del Público',
+                    velour_list4: 'Personalidad',
+                    velour_list5: 'Liderazgo de Tendencias',
+                    choose_note: '<strong>SOLO 10</strong> — 5 DIAMANTES DE DINASTÍA · 5 JOYAS DE VELOUR <br /> SIN COLOCACIONES GARANTIZADAS. CADA POSICIÓN DEBE SER GANADA.',
+                    positions_title: 'LAS POSICIONES EXISTEN',
+                    pos_dynasty: 'Diamantes de Dinastía',
+                    pos_velour: 'Joyas de Velour',
+                    pos_note: 'Sin colocaciones garantizadas. Cada posición debe ser ganada.',
+                    earned_tagline: 'LA VISIBILIDAD SE GANA. LAS POSICIONES SE GANAN.',
+                    what_title: '¿QUÉ ES LA SCOOPAVELI LEAGUE?',
+                    what_p1: 'La Scoopaveli League es un ecosistema de desarrollo, visibilidad y reconocimiento para atletas mujeres.',
+                    what_p2: 'La liga fue creada para brindar a las mujeres un entorno estructurado donde puedan construir su marca personal, aumentar su visibilidad, participar en ciclos de exploración competitiva y buscar oportunidades de avance dentro del sistema Scoopaveli.',
+                    what_highlight: 'A diferencia de las plataformas de redes sociales tradicionales, la Scoopaveli League está construida alrededor de la participación, clasificaciones, evaluación y reconocimiento.',
+                    what_p3: 'Las atletas ingresan a la Scoopaveli University, donde completan desafíos, envían contenido, participan en actividades de exploración, construyen clasificaciones y compiten por oportunidades de visibilidad en todo el ecosistema.',
+                    what_p4: 'Las atletas de mejor rendimiento pueden ganar colocaciones destacadas, focos de atletas, movimiento en el ranking, oportunidades de consideración para el draft y reconocimiento adicional dentro de la liga.',
+                    divisions_title: 'TRES DIVISIONES PRINCIPALES',
+                    div_fans_title: 'FANS',
+                    div_fans_sub: 'Seguidores',
+                    div_fans_desc: 'Seguidores que siguen a las atletas, monitorean los rankings, participan en la arena y contribuyen al crecimiento de la comunidad de la liga.',
+                    div_athletes_title: 'ATLETAS',
+                    div_athletes_sub: 'Participantes',
+                    div_athletes_desc: 'Mujeres que participan en ciclos de exploración, construyen visibilidad, crean contenido y compiten por oportunidades de avance.',
+                    div_ctas_title: 'CTAS',
+                    div_ctas_sub: 'Jefe de Adquisición de Talento',
+                    div_ctas_desc: 'Reclutadores independientes que identifican posibles atletas, las introducen a la liga y ayudan a expandir el ecosistema.',
+                    enter_fan: 'Entrar como Fan',
+                    enter_athlete: 'Entrar como Atleta',
+                    enter_cta: 'Entrar como CTA',
+                    mission_title: 'LA MISIÓN DE LA SCOOPAVELI LEAGUE',
+                    mission_sub: 'Es simple:',
+                    mission1: 'CREAR OPORTUNIDADES.',
+                    mission2: 'CONSTRUIR VISIBILIDAD.',
+                    mission3: 'RECONOCER EL RENDIMIENTO.',
+                    mission_footer: 'Cada ranking, foco, característica y oportunidad de avance se gana a través de la participación, la consistencia y el rendimiento dentro del sistema.',
+                    contact_label: '✦ Ponte en contacto',
+                    contact_title: 'Conecta <span class="gold">con la liga</span>',
+                    contact_info_title: 'Contáctanos',
+                    contact_info_desc: 'Ya seas atleta, fan o posible CTA, nos encantaría saber de ti. Construyamos juntos el futuro del deporte femenino.',
+                    contact_response: 'Respuesta',
+                    contact_response_time: 'En 24 horas',
+                    form_name: 'Nombre completo',
+                    form_email: 'Correo electrónico',
+                    form_message: 'Tu mensaje',
+                    form_submit: '✧ Enviar mensaje',
+                    footer_tagline: 'Solo Élite. Solo los Pocos. Solo Scoopaveli.'
+                }
+            };
 
             // =========================================================
+            //  🔍 DETECT LANGUAGE
+            // =========================================================
+            function getBrowserLanguage() {
+                const lang = navigator.language || navigator.languages?.[0] || 'en';
+                return lang.startsWith('es') ? 'es' : 'en';
+            }
+
+            let currentLang = getBrowserLanguage();
+
+            // =========================================================
+            //  🌐 APPLY TRANSLATIONS
+            // =========================================================
+            function applyLanguage(lang) {
+                const t = translations[lang] || translations.en;
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (t[key] !== undefined) {
+                        // If the element contains HTML, use innerHTML
+                        if (el.querySelector('strong, span, br')) {
+                            el.innerHTML = t[key];
+                        } else {
+                            el.textContent = t[key];
+                        }
+                    }
+                });
+                // Special handling for the contact_response label with strong inside
+                const responseLabel = document.querySelector('[data-i18n="contact_response"]');
+                if (responseLabel) {
+                    const strong = responseLabel.querySelector('strong');
+                    if (strong) {
+                        strong.textContent = t.contact_response + ':';
+                    }
+                }
+                currentLang = lang;
+                document.documentElement.lang = lang;
+            }
+
+            // =========================================================
+            //  🔄 LANGUAGE TOGGLE
+            // =========================================================
+            document.getElementById('langToggle').addEventListener('click', function() {
+                const nextLang = currentLang === 'en' ? 'es' : 'en';
+                applyLanguage(nextLang);
+            });
+
+            // =========================================================
+            //  🚀 INITIAL LOAD
+            // =========================================================
+            applyLanguage(getBrowserLanguage());
+
+            // =========================================================
+            //  ⏱️ COUNTDOWN TIMER (August 1, 2026)
+            // =========================================================
+            const targetDate = new Date('2026-08-01T00:00:00').getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const diff = targetDate - now;
+
+                if (diff <= 0) {
+                    document.getElementById('days').textContent = '00';
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            // =========================================================
+            //  📧 CONTACT FORM (Google Apps Script)
+            // =========================================================
+            // 🔑 REPLACE THIS URL with your Google Apps Script Web App URL
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbyn4MirbcMdJkfVNeH9wenmrEvQq-Z7wBNR2F4we89abcjq4f8Q3LFuGbg0ZjoO5jF6/exec';
 
             const form = document.getElementById('contactForm');
             const status = document.getElementById('formStatus');
             const submitBtn = document.getElementById('submitBtn');
 
-            // --- helper: show status ---
             function setStatus(message, type) {
                 status.textContent = message;
                 status.className = 'form-status ' + type;
@@ -717,57 +1231,49 @@
                 status.textContent = '';
             }
 
-            // --- main submit ---
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // grab values
                 const name = document.getElementById('name').value.trim();
                 const email = document.getElementById('email').value.trim();
                 const message = document.getElementById('message').value.trim();
 
                 if (!name || !email || !message) {
-                    setStatus('Please fill in all fields.', 'error');
+                    const errorMsg = currentLang === 'es' ? 'Por favor, completa todos los campos.' : 'Please fill in all fields.';
+                    setStatus(errorMsg, 'error');
                     return;
                 }
 
-                // disable button
                 submitBtn.disabled = true;
-                submitBtn.textContent = '✧ Sending...';
+                const sendingText = currentLang === 'es' ? '✧ Enviando...' : '✧ Sending...';
+                submitBtn.innerHTML = sendingText;
                 resetStatus();
 
-                // --- send data to Google Apps Script ---
                 fetch(GAS_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // required for Google Apps Script web apps
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        message: message
-                    })
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
                 })
                 .then(function() {
-                    // Because of 'no-cors', we can't read the response.
-                    // We assume success if no network error.
-                    setStatus(
-                        '✓ Message sent! You\'ll receive a reply within 24 hours.',
-                        'success'
-                    );
+                    const successMsg = currentLang === 'es' 
+                        ? '✓ ¡Mensaje enviado! Recibirás una respuesta en 24 horas.'
+                        : '✓ Message sent! You\'ll receive a reply within 24 hours.';
+                    setStatus(successMsg, 'success');
                     form.reset();
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '✧ Send message';
+                    const submitText = currentLang === 'es' ? '✧ Enviar mensaje' : '✧ Send message';
+                    submitBtn.innerHTML = submitText;
                 })
                 .catch(function(err) {
                     console.error('Error:', err);
-                    setStatus(
-                        'Something went wrong. Please try again or email me directly at christiantelemaquecanada@gmail.com.',
-                        'error'
-                    );
+                    const errorMsg = currentLang === 'es'
+                        ? 'Algo salió mal. Intenta de nuevo o escríbenos directamente a hello@scoopavelileague.com.'
+                        : 'Something went wrong. Please try again or email us directly at hello@scoopavelileague.com.';
+                    setStatus(errorMsg, 'error');
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '✧ Send message';
+                    const submitText = currentLang === 'es' ? '✧ Enviar mensaje' : '✧ Send message';
+                    submitBtn.innerHTML = submitText;
                 });
             });
 
