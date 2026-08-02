@@ -2,1504 +2,2047 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>Wordwell – Elite Content Studio</title>
-
-    <!-- ===== FONTS ===== -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>NEON SHIFT · Puzzle Cascade</title>
 
     <style>
-        /* ----- RESET & BASE ----- */
+        /* ========== RESET & BASE ========== */
         *,
         *::before,
         *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-
         :root {
-            --gold: #f5c842;
-            --gold-dark: #c9a020;
-            --red: #e94560;
-            --red-dark: #c0392b;
-            --bg: #0b0a0a;
-            --bg-card: #141212;
-            --bg-input: #1e1b1b;
-            --text: #f0ede8;
-            --text-muted: #a8a39a;
-            --border: #2a2626;
-            --radius: 12px;
-            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #1a0a2e;
+            --neon-cyan: #00f0ff;
+            --neon-magenta: #ff00e5;
+            --neon-gold: #ffcc00;
+            --neon-cyan-dim: rgba(0, 240, 255, 0.15);
+            --neon-magenta-dim: rgba(255, 0, 229, 0.15);
+            --glass-bg: rgba(10, 10, 30, 0.75);
+            --glass-border: rgba(0, 240, 255, 0.2);
+            --text-primary: #e0e8ff;
+            --text-secondary: #8899cc;
+            --radius: 16px;
+            --shadow-glow: 0 0 30px rgba(0, 240, 255, 0.15);
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        html,
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
+            height: 100%;
+            background: var(--bg-primary);
+            font-family: var(--font);
+            color: var(--text-primary);
+            overflow: hidden;
+            touch-action: manipulation;
         }
-
-        a {
-            color: var(--gold);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        a:hover {
-            color: var(--red);
-        }
-
-        .container {
-            max-width: 1120px;
+        #app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 520px;
             margin: 0 auto;
-            padding: 0 24px;
+            background: radial-gradient(ellipse at 50% 0%, var(--bg-secondary), var(--bg-primary) 70%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 80px rgba(0, 240, 255, 0.06);
         }
 
-        /* ----- SCROLLBAR ----- */
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* ========== SCREENS ========== */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: scale(0.97);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold);
+        .screen::-webkit-scrollbar {
+            width: 3px;
+        }
+        .screen::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .screen::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
             border-radius: 10px;
         }
 
-        /* ----- TYPOGRAPHY ----- */
-        .serif {
-            font-family: 'Playfair Display', serif;
+        /* ========== MAIN MENU ========== */
+        #menu-screen {
+            justify-content: center;
+            gap: 28px;
+            padding: 30px 20px;
         }
-        .oswald {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .gold {
-            color: var(--gold);
-        }
-        .red {
-            color: var(--red);
-        }
-
-        .section-label {
-            font-size: 0.75rem;
+        .menu-title {
+            font-size: clamp(44px, 12vw, 72px);
+            font-weight: 900;
             letter-spacing: 4px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta), var(--neon-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(0, 240, 255, 0.3), 0 0 120px rgba(255, 0, 229, 0.15);
+            animation: titlePulse 3s ease-in-out infinite;
+            line-height: 1.1;
+        }
+        .menu-subtitle {
+            font-size: clamp(14px, 3vw, 20px);
+            color: var(--text-secondary);
+            letter-spacing: 8px;
             text-transform: uppercase;
-            color: var(--gold);
-            font-weight: 500;
-            margin-bottom: 12px;
-            display: block;
+            margin-top: -12px;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+        }
+        @keyframes titlePulse {
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.25);
+            }
         }
 
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 3.2rem);
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            max-width: 320px;
+            margin-top: 8px;
+        }
+        .btn {
+            position: relative;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 60px;
+            font-size: clamp(18px, 4vw, 24px);
             font-weight: 700;
-            line-height: 1.15;
-            margin-bottom: 20px;
-        }
-
-        .section-title .gold {
-            font-style: italic;
-        }
-
-        /* ----- HEADER / NAV ----- */
-        header {
-            padding: 20px 0 16px;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            background: rgba(11, 10, 10, 0.95);
-            backdrop-filter: blur(12px);
-            z-index: 100;
-        }
-
-        .header-inner {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(255, 0, 229, 0.08));
+            border: 1.5px solid var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.05), inset 0 0 30px rgba(0, 240, 255, 0.02);
+            backdrop-filter: blur(4px);
+            letter-spacing: 1px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        .logo .red {
-            font-style: italic;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 28px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .nav-links a {
-            color: var(--text-muted);
-            transition: var(--transition);
-            position: relative;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gold);
-            transition: var(--transition);
-        }
-        .nav-links a:hover {
-            color: var(--text);
-        }
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .lang-toggle {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .lang-toggle:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-        }
-
-        /* ----- HERO ----- */
-        .hero {
-            padding: 60px 0 50px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(180deg, var(--bg) 0%, #1a1410 100%);
-        }
-
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            font-weight: 700;
-            line-height: 1.05;
-            margin-bottom: 10px;
-        }
-        .hero h1 .gold {
-            font-style: italic;
-        }
-
-        .hero-sub {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            font-weight: 300;
-            margin-bottom: 30px;
-        }
-
-        .hero-countdown {
-            display: flex;
             justify-content: center;
-            gap: 24px;
-            margin: 30px 0 20px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
-        .countdown-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 12px 20px;
-            min-width: 80px;
-            text-align: center;
+        .btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.2), inset 0 0 30px rgba(0, 240, 255, 0.05);
+            border-color: var(--neon-gold);
         }
-        .countdown-item .number {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--gold);
-            line-height: 1;
+        .btn:active {
+            transform: scale(0.96);
         }
-        .countdown-item .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), #0088ff);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 70px rgba(0, 240, 255, 0.4);
+        }
+        .btn-secondary {
+            border-color: var(--neon-magenta);
+            box-shadow: 0 0 30px rgba(255, 0, 229, 0.05);
+        }
+        .btn-secondary:hover {
+            border-color: var(--neon-gold);
+            box-shadow: 0 0 50px rgba(255, 0, 229, 0.15);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--neon-gold), #e6a800);
+            border-color: var(--neon-gold);
+            color: #0a0a1a;
+            box-shadow: 0 0 40px rgba(255, 204, 0, 0.2);
+        }
+        .btn-gold:hover {
+            box-shadow: 0 0 70px rgba(255, 204, 0, 0.35);
+        }
+        .btn-sm {
+            padding: 10px 18px;
+            font-size: clamp(13px, 2.5vw, 16px);
+        }
+        .btn-icon {
+            font-size: 22px;
+        }
+
+        .menu-footer {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            opacity: 0.6;
             letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-top: 4px;
         }
 
-        .hero-cta {
-            display: inline-block;
-            background: var(--gold);
-            color: #0b0a0a;
-            font-weight: 700;
-            padding: 14px 48px;
-            border-radius: 50px;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .hero-cta:hover {
-            background: #e6b832;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(245, 200, 66, 0.25);
-        }
-
-        /* ----- CHOOSE SIDE ----- */
-        .choose-side {
-            padding: 80px 0 60px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
-        .choose-side h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.4rem, 6vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .choose-side .tagline {
-            font-size: 1rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-        }
-
-        .side-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            max-width: 700px;
-            margin: 0 auto 30px;
-        }
-        .side-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 30px 20px;
-            transition: var(--transition);
-        }
-        .side-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-4px);
-        }
-        .side-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .side-card .sub {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .side-card .highlight {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2rem;
-            color: var(--gold);
-            margin: 10px 0 4px;
-        }
-        .side-card .list-item {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .side-note {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 20px auto 0;
-            border-top: 1px solid var(--border);
+        /* ========== LEVEL SELECT ========== */
+        #level-select-screen {
+            padding: 16px 12px 20px;
+            justify-content: flex-start;
             padding-top: 20px;
         }
-        .side-note strong {
-            color: var(--gold);
-        }
-
-        /* ----- POSITIONS EXIST ----- */
-        .positions {
-            padding: 60px 0 60px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
-        .positions h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        .positions .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        .positions .grid-item {
-            background: var(--bg-card);
-            padding: 16px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            font-weight: 500;
-        }
-        .positions .grid-item .num {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2rem;
-            color: var(--gold);
-        }
-
-        .positions .earned {
-            margin-top: 30px;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
-
-        /* ----- WHAT IS ----- */
-        .what-is {
-            padding: 80px 0 60px;
-            border-bottom: 1px solid var(--border);
-        }
-        .what-is h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        .what-is p {
-            font-size: 1.05rem;
-            color: var(--text-muted);
-            max-width: 800px;
-            margin: 0 auto 20px;
-            line-height: 1.8;
-        }
-        .what-is .highlight-box {
-            background: var(--bg-card);
-            border-left: 4px solid var(--gold);
-            padding: 20px 28px;
-            border-radius: var(--radius);
-            margin: 20px 0;
-        }
-        .what-is .highlight-box p {
-            font-size: 1.1rem;
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        /* ----- DIVISIONS ----- */
-        .divisions {
-            padding: 60px 0 60px;
-            border-bottom: 1px solid var(--border);
-        }
-        .divisions h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .divisions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 30px;
-        }
-        .division-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 30px 24px;
-            text-align: center;
-            transition: var(--transition);
-        }
-        .division-card:hover {
-            border-color: var(--gold);
-        }
-        .division-card .icon {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .division-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .division-card .sub {
-            font-size: 0.8rem;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-        .division-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .enter-buttons {
+        .ls-header {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 40px;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 4px 16px 4px;
+            flex-shrink: 0;
         }
-        .enter-btn {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            padding: 12px 32px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.85rem;
-            transition: var(--transition);
+        .ls-header h2 {
+            font-size: clamp(20px, 5vw, 28px);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .ls-back {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
             cursor: pointer;
-        }
-        .enter-btn:hover {
-            background: var(--gold);
-            color: #0b0a0a;
-        }
-
-        /* ----- MISSION ----- */
-        .mission {
-            padding: 80px 0 60px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
-        .mission h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 4vw, 3.2rem);
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .mission .sub {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
-        .mission-items {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-        .mission-item {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
-        .mission-item small {
-            display: block;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 300;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-        .mission-footer {
-            margin-top: 30px;
-            font-size: 1rem;
-            color: var(--text-muted);
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* ----- CONTACT ----- */
-        .contact {
-            padding: 80px 0 100px;
-        }
-        .contact-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 60px;
-            align-items: start;
-            margin-top: 40px;
-        }
-        .contact-info h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        .contact-info p {
-            color: var(--text-muted);
-            font-weight: 300;
-            margin-bottom: 28px;
-        }
-        .contact-info .detail {
+            transition: 0.2s;
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            gap: 6px;
         }
-        .contact-info .detail strong {
-            color: var(--text);
-            font-weight: 500;
+        .ls-back:hover {
+            border-color: var(--neon-cyan);
+            color: #fff;
         }
 
-        /* ----- FORM ----- */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 14px 18px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            transition: var(--transition);
-            outline: none;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
-        }
-        .form-group textarea {
-            min-height: 140px;
-            resize: vertical;
-        }
-        .form-row {
+        .ls-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .btn-submit {
-            background: var(--gold);
-            color: #0b0a0a;
-            font-weight: 700;
-            padding: 16px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             width: 100%;
-            text-transform: uppercase;
+            max-width: 480px;
+            padding: 4px 0 20px;
+            flex: 1;
+            align-content: start;
+        }
+        .ls-cell {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(16px, 3.5vw, 22px);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1.5px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+            gap: 2px;
+            min-height: 44px;
+        }
+        .ls-cell .star-indicator {
+            font-size: 10px;
             letter-spacing: 1px;
+            color: var(--neon-gold);
         }
-        .btn-submit:hover {
-            background: #e6b832;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(245, 200, 66, 0.2);
-        }
-        .btn-submit:disabled {
-            opacity: 0.5;
+        .ls-cell.locked {
+            opacity: 0.35;
             cursor: not-allowed;
-            transform: none !important;
+            border-color: rgba(255, 0, 229, 0.15);
         }
-        .form-status {
-            margin-top: 16px;
-            padding: 14px 18px;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
+        .ls-cell.locked::after {
+            content: '🔒';
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        .ls-cell.unlocked {
+            border-color: rgba(0, 240, 255, 0.15);
+        }
+        .ls-cell.unlocked:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+            transform: scale(1.04);
+        }
+        .ls-cell.completed {
+            border-color: var(--neon-gold);
+            background: rgba(255, 204, 0, 0.06);
+        }
+        .ls-cell.completed .star-indicator {
+            color: var(--neon-gold);
+        }
+        .ls-cell.current {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+            background: rgba(0, 240, 255, 0.06);
+        }
+        .ls-cell .level-num {
+            line-height: 1;
+        }
+        .ls-cell .lock-icon {
+            font-size: 16px;
+        }
+
+        /* ========== GAME SCREEN ========== */
+        #game-screen {
+            padding: 10px 12px 14px;
+            justify-content: flex-start;
+            padding-top: 12px;
+        }
+
+        .game-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 2px 10px 2px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .hud-left,
+        .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .hud-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 4px 14px;
+            font-size: clamp(13px, 2.5vw, 16px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .hud-item .val {
+            color: #fff;
+            font-weight: 700;
+        }
+        .hud-item .val.gold {
+            color: var(--neon-gold);
+        }
+        .hud-item .val.cyan {
+            color: var(--neon-cyan);
+        }
+        .hud-item .val.magenta {
+            color: var(--neon-magenta);
+        }
+        .hud-back {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            min-height: 38px;
+        }
+        .hud-back:hover {
+            border-color: var(--neon-cyan);
+            color: #fff;
+        }
+
+        /* ---- Canvas ---- */
+        .game-board-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+            flex: 1;
+            min-height: 0;
+        }
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 20px;
+            background: radial-gradient(ellipse at 50% 50%, #12102a, #08081a);
+            box-shadow: 0 0 60px rgba(0, 240, 255, 0.04), inset 0 0 80px rgba(0, 0, 0, 0.5);
+            touch-action: none;
+            cursor: pointer;
+        }
+
+        /* ---- Game Overlay ---- */
+        .game-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: rgba(10, 10, 26, 0.82);
+            backdrop-filter: blur(6px);
             display: none;
-        }
-        .form-status.success {
-            display: block;
-            background: rgba(245, 200, 66, 0.12);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-        }
-        .form-status.error {
-            display: block;
-            background: rgba(233, 69, 96, 0.12);
-            border: 1px solid var(--red);
-            color: var(--red);
-        }
-
-        /* ----- FOOTER ----- */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 32px 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 30px;
             text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 300;
+            z-index: 10;
         }
-        footer .gold {
-            font-weight: 500;
+        .game-overlay.show {
+            display: flex;
         }
-
-        /* ----- RESPONSIVE ----- */
-        @media (max-width: 820px) {
-            .contact-wrapper {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .header-inner {
-                flex-direction: column;
-                align-items: center;
-            }
-            .nav-links {
-                gap: 16px;
-                font-size: 0.75rem;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .side-grid {
-                grid-template-columns: 1fr;
-                max-width: 400px;
-            }
-            .hero-countdown {
-                gap: 12px;
-            }
-            .countdown-item {
-                min-width: 60px;
-                padding: 8px 12px;
-            }
-            .countdown-item .number {
-                font-size: 2rem;
-            }
-            .mission-items {
-                flex-direction: column;
-                gap: 16px;
-            }
+        .game-overlay .big-icon {
+            font-size: 54px;
+        }
+        .game-overlay .title {
+            font-size: clamp(24px, 5vw, 34px);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .game-overlay .sub {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: var(--text-secondary);
+        }
+        .game-overlay .stars-display {
+            font-size: 32px;
+            letter-spacing: 6px;
+            margin: 2px 0;
+        }
+        .game-overlay .btn {
+            margin-top: 8px;
+            min-width: 160px;
         }
 
+        /* ========== MODALS ========== */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 20;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.94);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 28px 24px 32px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 0 80px rgba(0, 240, 255, 0.06), inset 0 0 60px rgba(0, 240, 255, 0.02);
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-box h2 {
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .modal-box p {
+            color: var(--text-secondary);
+            font-size: clamp(14px, 2.5vw, 17px);
+            line-height: 1.6;
+            margin: 8px 0 16px;
+        }
+        .modal-box .price-tag {
+            font-size: clamp(28px, 6vw, 38px);
+            font-weight: 900;
+            color: var(--neon-gold);
+            text-shadow: 0 0 40px rgba(255, 204, 0, 0.2);
+            margin: 6px 0;
+        }
+        .modal-box .btn {
+            width: 100%;
+            max-width: 260px;
+            margin: 6px auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 28px;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px 8px;
+        }
+        .modal-close:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        .modal-box .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* ========== TUTORIAL ========== */
+        .tutorial-tip {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: clamp(12px, 2vw, 15px);
+            color: var(--text-secondary);
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+            z-index: 5;
+            animation: floatTip 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes floatTip {
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-4px);
+            }
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 3px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 10px;
+        }
+
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 480px) {
-            .container {
-                padding: 0 16px;
+            .ls-grid {
+                gap: 6px;
             }
-            .hero h1 {
-                font-size: 2.6rem;
+            .ls-cell {
+                border-radius: 10px;
+                font-size: 14px;
             }
-            .side-card h3 {
-                font-size: 1.3rem;
+            .hud-item {
+                padding: 2px 10px;
+                font-size: 12px;
             }
+            .modal-box {
+                padding: 20px 16px 24px;
+            }
+            .game-overlay .big-icon {
+                font-size: 40px;
+            }
+        }
+        @media (max-width: 380px) {
+            .ls-grid {
+                gap: 4px;
+            }
+            .ls-cell {
+                font-size: 12px;
+                border-radius: 8px;
+                min-height: 36px;
+            }
+            .hud-item {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+            .btn {
+                font-size: 15px;
+                padding: 12px 16px;
+            }
+        }
+        @media (min-height: 800px) {
+            #game-screen {
+                padding-top: 20px;
+            }
+            .game-hud {
+                padding-bottom: 16px;
+            }
+        }
+
+        /* ========== UTILITY ========== */
+        .hidden {
+            display: none !important;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .gap-12 {
+            gap: 12px;
+        }
+        .text-glow {
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
-    <header>
-        <div class="container header-inner">
-            <div class="logo">
-                Word<span class="red">well</span>
+    <div id="app">
+        <!-- ===== MAIN MENU ===== -->
+        <div id="menu-screen" class="screen active">
+            <div class="menu-title">NEON SHIFT</div>
+            <div class="menu-subtitle">⚡ Puzzle Cascade ⚡</div>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" id="menuPlayBtn">▶ &nbsp;PLAY</button>
+                <button class="btn btn-secondary" id="menuLevelsBtn">◈ &nbsp;LEVELS</button>
+                <button class="btn" id="menuShopBtn" style="border-color:var(--neon-gold);color:var(--neon-gold);">
+                    ✦ &nbsp;SHOP
+                </button>
+                <button class="btn btn-sm" id="menuSoundBtn" style="border-color:rgba(255,255,255,0.08);font-size:14px;">
+                    🔊 &nbsp;SOUND: ON
+                </button>
             </div>
-            <nav class="nav-links">
-                <a href="#choose" data-i18n="nav_choose">Choose Side</a>
-                <a href="#what" data-i18n="nav_what">About</a>
-                <a href="#divisions" data-i18n="nav_divisions">Divisions</a>
-                <a href="#mission" data-i18n="nav_mission">Mission</a>
-                <a href="#contact" data-i18n="nav_contact">Contact</a>
-                <button class="lang-toggle" id="langToggle">🌐</button>
-            </nav>
+            <div class="menu-footer">✦ 100 levels · neon cascade ✦</div>
         </div>
-    </header>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero" id="hero">
-        <div class="container">
-            <h1>
-                <span data-i18n="hero_title1">WORDWELL</span><br />
-                <span class="gold" data-i18n="hero_title2"></span>
-            </h1>
-            <div class="hero-sub" data-i18n="hero_sub">Preseason begins August 1</div>
-
-            <div class="hero-countdown" id="countdown">
-                <div class="countdown-item">
-                    <div class="number" id="days">00</div>
-                    <div class="label" data-i18n="days">days</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="number" id="hours">00</div>
-                    <div class="label" data-i18n="hours">hours</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="number" id="minutes">00</div>
-                    <div class="label" data-i18n="minutes">minutes</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="number" id="seconds">00</div>
-                    <div class="label" data-i18n="seconds">seconds</div>
-                </div>
+        <!-- ===== LEVEL SELECT ===== -->
+        <div id="level-select-screen" class="screen">
+            <div class="ls-header">
+                <button class="ls-back" id="lsBackBtn">‹ BACK</button>
+                <h2>◈ LEVELS</h2>
+                <div style="width:60px;"></div>
             </div>
-
-            <a href="#choose" class="hero-cta" data-i18n="hero_cta">Choose Your Side</a>
-            <div style="margin-top: 12px; font-size: 0.8rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase;" data-i18n="hero_tagline">
-                Only Elite. Only the Few. Only Wordwell.
-            </div>
+            <div class="ls-grid" id="levelGrid"></div>
         </div>
-    </section>
 
-    <!-- ===== CHOOSE YOUR SIDE ===== -->
-    <section class="choose-side" id="choose">
-        <div class="container">
-            <h2 data-i18n="choose_title">CHOOSE YOUR SIDE</h2>
-            <div class="tagline" data-i18n="choose_tagline">Only Elite. Only the Few. Only Wordwell.</div>
-
-            <div class="side-grid">
-                <div class="side-card">
-                    <h3 class="gold" data-i18n="dynasty_title">DYNASTY DIAMONDS</h3>
-                    <div class="sub" data-i18n="dynasty_sub">5 ELITE MAIN ROSTER POSITIONS</div>
-                    <div class="highlight" data-i18n="dynasty_highlight">✦</div>
-                    <div class="list-item" data-i18n="dynasty_list1">Built on Legacy</div>
-                    <div class="list-item" data-i18n="dynasty_list2">Elite Presence</div>
-                    <div class="list-item" data-i18n="dynasty_list3">Luxury Influence</div>
-                    <div class="list-item" data-i18n="dynasty_list4">Consistency</div>
-                    <div class="list-item" data-i18n="dynasty_list5">Prestige</div>
+        <!-- ===== GAME SCREEN ===== -->
+        <div id="game-screen" class="screen">
+            <div class="game-hud">
+                <div class="hud-left">
+                    <button class="hud-back" id="gameBackBtn">‹</button>
+                    <span class="hud-item">LEVEL <span class="val cyan" id="hudLevel">1</span></span>
                 </div>
-                <div class="side-card">
-                    <h3 class="gold" data-i18n="velour_title">VELOUR JEWELS</h3>
-                    <div class="sub" data-i18n="velour_sub">5 ELITE MAIN ROSTER POSITIONS</div>
-                    <div class="highlight" data-i18n="velour_highlight">✦</div>
-                    <div class="list-item" data-i18n="velour_list1">Built on Creativity</div>
-                    <div class="list-item" data-i18n="velour_list2">Visual Impact</div>
-                    <div class="list-item" data-i18n="velour_list3">Audience Energy</div>
-                    <div class="list-item" data-i18n="velour_list4">Personality</div>
-                    <div class="list-item" data-i18n="velour_list5">Trend Leadership</div>
+                <div class="hud-right">
+                    <span class="hud-item">🎯 <span class="val" id="hudMoves">0</span></span>
+                    <span class="hud-item">⭐ <span class="val gold" id="hudStars">0</span></span>
+                    <span class="hud-item">✦ <span class="val gold" id="hudCores">0</span></span>
+                    <button class="hud-back" id="gameHintBtn" title="Hint (5 cores)">💡</button>
+                    <button class="hud-back" id="gameUndoBtn" title="Undo (free once)">↩</button>
                 </div>
             </div>
-
-            <div class="side-note" data-i18n="choose_note">
-                <strong>ONLY 10</strong> — 5 DYNASTY DIAMONDS · 5 VELOUR JEWELS <br />
-                NO GUARANTEED PLACEMENTS. EVERY POSITION MUST BE EARNED.
+            <div class="game-board-wrap">
+                <canvas id="gameCanvas"></canvas>
+                <div class="game-overlay" id="gameOverlay">
+                    <div class="big-icon" id="overlayIcon">🎉</div>
+                    <div class="title" id="overlayTitle">Level Complete!</div>
+                    <div class="stars-display" id="overlayStars">⭐⭐⭐</div>
+                    <div class="sub" id="overlaySub">Amazing!</div>
+                    <button class="btn btn-primary" id="overlayBtn">▶ NEXT LEVEL</button>
+                </div>
+                <div class="tutorial-tip" id="tutorialTip">✨ Tap two adjacent tiles to swap them</div>
             </div>
         </div>
-    </section>
 
-    <!-- ===== POSITIONS EXIST ===== -->
-    <section class="positions" id="positions">
-        <div class="container">
-            <h2 data-i18n="positions_title">POSITIONS EXIST</h2>
-            <div class="grid">
-                <div class="grid-item"><span class="num">5</span> <span data-i18n="pos_dynasty">Dynasty Diamonds</span></div>
-                <div class="grid-item"><span class="num">5</span> <span data-i18n="pos_velour">Velour Jewels</span></div>
-            </div>
-            <div style="margin-top: 16px; color: var(--text-muted); font-size: 0.95rem;" data-i18n="pos_note">
-                No guaranteed placements. Every position must be earned.
-            </div>
-            <div class="earned" data-i18n="earned_tagline">
-                VISIBILITY IS EARNED. POSITIONS ARE WON.
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== WHAT IS ===== -->
-    <section class="what-is" id="what">
-        <div class="container">
-            <h2 data-i18n="what_title">WHAT IS WORDWELL?</h2>
-            <p data-i18n="what_p1">
-                Wordwell is a women's athlete development, visibility, and recognition ecosystem.
-            </p>
-            <p data-i18n="what_p2">
-                Wordwell was created to give women a structured environment where they can build their personal brand, increase visibility, participate in competitive scouting cycles, and pursue advancement opportunities within the Wordwell system.
-            </p>
-            <div class="highlight-box">
-                <p data-i18n="what_highlight">
-                    Unlike traditional social media platforms, Wordwell is built around participation, rankings, evaluation, and recognition.
-                </p>
-            </div>
-            <p data-i18n="what_p3">
-                Athletes enter Wordwell University, where they complete challenges, submit content, participate in scouting activities, build rankings, and compete for visibility opportunities throughout the ecosystem.
-            </p>
-            <p data-i18n="what_p4">
-                Top-performing athletes may earn featured placements, athlete spotlights, ranking movement, draft consideration opportunities, and additional recognition within Wordwell.
-            </p>
-        </div>
-    </section>
-
-    <!-- ===== DIVISIONS ===== -->
-    <section class="divisions" id="divisions">
-        <div class="container">
-            <h2 data-i18n="divisions_title">THREE PRIMARY DIVISIONS</h2>
-            <div class="divisions-grid">
-                <div class="division-card">
-                    <span class="icon">👥</span>
-                    <h3 data-i18n="div_fans_title">FANS</h3>
-                    <div class="sub" data-i18n="div_fans_sub">Supporters</div>
-                    <p data-i18n="div_fans_desc">Supporters who follow athletes, monitor rankings, engage with the arena, and participate in the growth of the Wordwell community.</p>
-                </div>
-                <div class="division-card">
-                    <span class="icon">🏋️</span>
-                    <h3 data-i18n="div_athletes_title">ATHLETES</h3>
-                    <div class="sub" data-i18n="div_athletes_sub">Participants</div>
-                    <p data-i18n="div_athletes_desc">Women who participate in scouting cycles, build visibility, create content, and compete for advancement opportunities.</p>
-                </div>
-                <div class="division-card">
-                    <span class="icon">🔍</span>
-                    <h3 data-i18n="div_ctas_title">CTAS</h3>
-                    <div class="sub" data-i18n="div_ctas_sub">Chief of Talent Acquisition</div>
-                    <p data-i18n="div_ctas_desc">Independent recruiters who identify potential athletes, introduce them to Wordwell, and help expand the ecosystem.</p>
-                </div>
-            </div>
-
-            <div class="enter-buttons">
-                <button class="enter-btn" data-i18n="enter_fan">Enter as a Fan</button>
-                <button class="enter-btn" data-i18n="enter_athlete">Enter as an Athlete</button>
-                <button class="enter-btn" data-i18n="enter_cta">Enter as a CTA</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== MISSION ===== -->
-    <section class="mission" id="mission">
-        <div class="container">
-            <h2 data-i18n="mission_title">THE MISSION OF WORDWELL</h2>
-            <div class="sub" data-i18n="mission_sub">Is simple:</div>
-            <div class="mission-items">
-                <div class="mission-item" data-i18n="mission1">CREATE OPPORTUNITIES.</div>
-                <div class="mission-item" data-i18n="mission2">BUILD VISIBILITY.</div>
-                <div class="mission-item" data-i18n="mission3">RECOGNIZE PERFORMANCE.</div>
-            </div>
-            <div class="mission-footer" data-i18n="mission_footer">
-                Every ranking, spotlight, feature, and advancement opportunity is earned through participation, consistency, and performance inside the system.
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== CONTACT ===== -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <span class="section-label" data-i18n="contact_label">✦ Get in touch</span>
-            <h2 class="section-title" data-i18n="contact_title">
-                Let's connect <span class="gold">with Wordwell</span>
-            </h2>
-
-            <div class="contact-wrapper">
-                <div class="contact-info">
-                    <h3 data-i18n="contact_info_title">Reach out to us</h3>
-                    <p data-i18n="contact_info_desc">
-                        Whether you're an athlete, fan, or potential CTA, we'd love to hear from you. 
-                        Let's build the future of women's sports together.
-                    </p>
-                    <!-- Email line removed per request -->
-                    <div class="detail">
-                        <span>⏱️</span>
-                        <span><strong data-i18n="contact_response">Response:</strong> <span data-i18n="contact_response_time">Within 24 hours</span></span>
+        <!-- ===== SHOP MODAL ===== -->
+        <div class="modal-overlay" id="shopModal">
+            <div class="modal-box" style="position:relative;">
+                <button class="modal-close" id="shopCloseBtn">✕</button>
+                <h2>✦ NEON SHOP</h2>
+                <p style="margin-bottom:4px;">Spend your Neon Cores on power-ups!</p>
+                <div style="display:flex;justify-content:center;gap:20px;margin:12px 0 16px;flex-wrap:wrap;">
+                    <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px 16px;border:1px solid rgba(255,255,255,0.06);min-width:90px;">
+                        <div style="font-size:28px;">✦</div>
+                        <div style="font-size:20px;font-weight:700;color:var(--neon-gold);" id="shopCores">0</div>
+                        <div style="font-size:11px;color:var(--text-secondary);">Cores</div>
                     </div>
                 </div>
-
-                <form id="contactForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="name" data-i18n="form_name">Full name</label>
-                            <input type="text" id="name" name="name" placeholder="Jane Doe" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="email" data-i18n="form_email">Email address</label>
-                            <input type="email" id="email" name="email" placeholder="jane@company.com" required />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="message" data-i18n="form_message">Your message</label>
-                        <textarea id="message" name="message" placeholder="Tell us about yourself..." required></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-submit" id="submitBtn">
-                        <span data-i18n="form_submit">✧ Send message</span>
-                    </button>
-
-                    <div class="form-status" id="formStatus"></div>
-                </form>
+                <div class="btn-group">
+                    <button class="btn btn-sm" id="shopHintBtn" style="border-color:var(--neon-cyan);">💡 Hint (5 cores)</button>
+                    <button class="btn btn-sm" id="shopUndoBtn" style="border-color:var(--neon-magenta);">↩ Extra Undo (2 cores)</button>
+                    <button class="btn btn-sm btn-gold" id="shopFullUnlockBtn" style="margin-top:4px;">🔓 Unlock All Chapters — $4.99</button>
+                    <button class="btn btn-sm" id="shopChapterBtn" style="border-color:var(--neon-gold);color:var(--neon-gold);">📦 Unlock Chapter Pack — $1.99</button>
+                    <button class="btn btn-sm" style="border-color:rgba(255,255,255,0.06);font-size:12px;color:var(--text-secondary);" id="shopRestoreBtn">↻ Restore Purchases</button>
+                </div>
             </div>
         </div>
-    </section>
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <div class="container">
-            <div>&copy; 2000 <span class="gold">Wordwell</span> &mdash; 
-            <span data-i18n="footer_tagline">Only Elite. Only the Few. Only Wordwell.</span></div>
+        <!-- ===== CHAPTER UNLOCK MODAL ===== -->
+        <div class="modal-overlay" id="chapterModal">
+            <div class="modal-box" style="position:relative;">
+                <button class="modal-close" id="chapterCloseBtn">✕</button>
+                <h2>🔓 CHAPTER UNLOCK</h2>
+                <p id="chapterModalDesc">You've completed the free chapters! Unlock the full game to continue your neon journey.</p>
+                <div class="price-tag" id="chapterModalPrice">$4.99</div>
+                <p style="font-size:13px;color:var(--text-secondary);" id="chapterModalSub">One-time purchase · 70 more levels</p>
+                <div class="btn-group">
+                    <button class="btn btn-gold" id="chapterPurchaseBtn">💎 PURCHASE</button>
+                    <button class="btn btn-sm" style="border-color:rgba(255,255,255,0.06);" id="chapterLaterBtn">Maybe later</button>
+                </div>
+            </div>
         </div>
-    </footer>
-
-    <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT – i18n + Countdown + Form ===== -->
-    <!-- ============================================================ -->
+    </div>
 
     <script>
+        // ================================================================
+        //  NEON SHIFT — FULL GAME ENGINE
+        //  (c) 2026 · Single-file production build
+        // ================================================================
+
         (function() {
             'use strict';
 
-            // =========================================================
-            //  🌐 TRANSLATIONS (8 languages)
-            // =========================================================
-            const translations = {
-                en: {
-                    nav_choose: 'Choose Side', nav_what: 'About', nav_divisions: 'Divisions', nav_mission: 'Mission', nav_contact: 'Contact',
-                    hero_title1: 'WORDWELL', hero_title2: '',
-                    hero_sub: 'Preseason begins August 1',
-                    hero_cta: 'Choose Your Side', hero_tagline: 'Only Elite. Only the Few. Only Wordwell.',
-                    days: 'days', hours: 'hours', minutes: 'minutes', seconds: 'seconds',
-                    choose_title: 'CHOOSE YOUR SIDE', choose_tagline: 'Only Elite. Only the Few. Only Wordwell.',
-                    dynasty_title: 'DYNASTY DIAMONDS', dynasty_sub: '5 ELITE MAIN ROSTER POSITIONS', dynasty_highlight: '✦',
-                    dynasty_list1: 'Built on Legacy', dynasty_list2: 'Elite Presence', dynasty_list3: 'Luxury Influence', dynasty_list4: 'Consistency', dynasty_list5: 'Prestige',
-                    velour_title: 'VELOUR JEWELS', velour_sub: '5 ELITE MAIN ROSTER POSITIONS', velour_highlight: '✦',
-                    velour_list1: 'Built on Creativity', velour_list2: 'Visual Impact', velour_list3: 'Audience Energy', velour_list4: 'Personality', velour_list5: 'Trend Leadership',
-                    choose_note: '<strong>ONLY 10</strong> — 5 DYNASTY DIAMONDS · 5 VELOUR JEWELS <br /> NO GUARANTEED PLACEMENTS. EVERY POSITION MUST BE EARNED.',
-                    positions_title: 'POSITIONS EXIST', pos_dynasty: 'Dynasty Diamonds', pos_velour: 'Velour Jewels',
-                    pos_note: 'No guaranteed placements. Every position must be earned.',
-                    earned_tagline: 'VISIBILITY IS EARNED. POSITIONS ARE WON.',
-                    what_title: 'WHAT IS WORDWELL?',
-                    what_p1: 'Wordwell is a women\'s athlete development, visibility, and recognition ecosystem.',
-                    what_p2: 'Wordwell was created to give women a structured environment where they can build their personal brand, increase visibility, participate in competitive scouting cycles, and pursue advancement opportunities within the Wordwell system.',
-                    what_highlight: 'Unlike traditional social media platforms, Wordwell is built around participation, rankings, evaluation, and recognition.',
-                    what_p3: 'Athletes enter Wordwell University, where they complete challenges, submit content, participate in scouting activities, build rankings, and compete for visibility opportunities throughout the ecosystem.',
-                    what_p4: 'Top-performing athletes may earn featured placements, athlete spotlights, ranking movement, draft consideration opportunities, and additional recognition within Wordwell.',
-                    divisions_title: 'THREE PRIMARY DIVISIONS',
-                    div_fans_title: 'FANS', div_fans_sub: 'Supporters',
-                    div_fans_desc: 'Supporters who follow athletes, monitor rankings, engage with the arena, and participate in the growth of the Wordwell community.',
-                    div_athletes_title: 'ATHLETES', div_athletes_sub: 'Participants',
-                    div_athletes_desc: 'Women who participate in scouting cycles, build visibility, create content, and compete for advancement opportunities.',
-                    div_ctas_title: 'CTAS', div_ctas_sub: 'Chief of Talent Acquisition',
-                    div_ctas_desc: 'Independent recruiters who identify potential athletes, introduce them to Wordwell, and help expand the ecosystem.',
-                    enter_fan: 'Enter as a Fan', enter_athlete: 'Enter as an Athlete', enter_cta: 'Enter as a CTA',
-                    mission_title: 'THE MISSION OF WORDWELL', mission_sub: 'Is simple:',
-                    mission1: 'CREATE OPPORTUNITIES.', mission2: 'BUILD VISIBILITY.', mission3: 'RECOGNIZE PERFORMANCE.',
-                    mission_footer: 'Every ranking, spotlight, feature, and advancement opportunity is earned through participation, consistency, and performance inside the system.',
-                    contact_label: '✦ Get in touch', contact_title: 'Let\'s connect <span class="gold">with Wordwell</span>',
-                    contact_info_title: 'Reach out to us',
-                    contact_info_desc: 'Whether you\'re an athlete, fan, or potential CTA, we\'d love to hear from you. Let\'s build the future of women\'s sports together.',
-                    contact_response: 'Response', contact_response_time: 'Within 24 hours',
-                    form_name: 'Full name', form_email: 'Email address', form_message: 'Your message', form_submit: '✧ Send message',
-                    footer_tagline: 'Only Elite. Only the Few. Only Wordwell.'
-                },
-                es: {
-                    nav_choose: 'Elige tu bando', nav_what: 'Acerca de', nav_divisions: 'Divisiones', nav_mission: 'Misión', nav_contact: 'Contacto',
-                    hero_title1: 'WORDWELL', hero_title2: '',
-                    hero_sub: 'La pretemporada comienza el 1 de agosto',
-                    hero_cta: 'Elige tu bando', hero_tagline: 'Solo Élite. Solo los Pocos. Solo Wordwell.',
-                    days: 'días', hours: 'horas', minutes: 'minutos', seconds: 'segundos',
-                    choose_title: 'ELIGE TU BANDO', choose_tagline: 'Solo Élite. Solo los Pocos. Solo Wordwell.',
-                    dynasty_title: 'DIAMANTES DE DINASTÍA', dynasty_sub: '5 POSICIONES ÉLITE EN EL ROSTER PRINCIPAL', dynasty_highlight: '✦',
-                    dynasty_list1: 'Construido sobre el legado', dynasty_list2: 'Presencia Élite', dynasty_list3: 'Influencia de Lujo', dynasty_list4: 'Consistencia', dynasty_list5: 'Prestigio',
-                    velour_title: 'JOYAS DE VELOUR', velour_sub: '5 POSICIONES ÉLITE EN EL ROSTER PRINCIPAL', velour_highlight: '✦',
-                    velour_list1: 'Construido sobre la creatividad', velour_list2: 'Impacto Visual', velour_list3: 'Energía del Público', velour_list4: 'Personalidad', velour_list5: 'Liderazgo de Tendencias',
-                    choose_note: '<strong>SOLO 10</strong> — 5 DIAMANTES DE DINASTÍA · 5 JOYAS DE VELOUR <br /> SIN COLOCACIONES GARANTIZADAS. CADA POSICIÓN DEBE SER GANADA.',
-                    positions_title: 'LAS POSICIONES EXISTEN', pos_dynasty: 'Diamantes de Dinastía', pos_velour: 'Joyas de Velour',
-                    pos_note: 'Sin colocaciones garantizadas. Cada posición debe ser ganada.',
-                    earned_tagline: 'LA VISIBILIDAD SE GANA. LAS POSICIONES SE GANAN.',
-                    what_title: '¿QUÉ ES WORDWELL?',
-                    what_p1: 'Wordwell es un ecosistema de desarrollo, visibilidad y reconocimiento para atletas mujeres.',
-                    what_p2: 'Wordwell fue creado para brindar a las mujeres un entorno estructurado donde puedan construir su marca personal, aumentar su visibilidad, participar en ciclos de exploración competitiva y buscar oportunidades de avance dentro del sistema Wordwell.',
-                    what_highlight: 'A diferencia de las plataformas de redes sociales tradicionales, Wordwell está construido alrededor de la participación, clasificaciones, evaluación y reconocimiento.',
-                    what_p3: 'Las atletas ingresan a Wordwell University, donde completan desafíos, envían contenido, participan en actividades de exploración, construyen clasificaciones y compiten por oportunidades de visibilidad en todo el ecosistema.',
-                    what_p4: 'Las atletas de mejor rendimiento pueden ganar colocaciones destacadas, focos de atletas, movimiento en el ranking, oportunidades de consideración para el draft y reconocimiento adicional dentro de Wordwell.',
-                    divisions_title: 'TRES DIVISIONES PRINCIPALES',
-                    div_fans_title: 'FANS', div_fans_sub: 'Seguidores',
-                    div_fans_desc: 'Seguidores que siguen a las atletas, monitorean los rankings, participan en la arena y contribuyen al crecimiento de la comunidad de Wordwell.',
-                    div_athletes_title: 'ATLETAS', div_athletes_sub: 'Participantes',
-                    div_athletes_desc: 'Mujeres que participan en ciclos de exploración, construyen visibilidad, crean contenido y compiten por oportunidades de avance.',
-                    div_ctas_title: 'CTAS', div_ctas_sub: 'Jefe de Adquisición de Talento',
-                    div_ctas_desc: 'Reclutadores independientes que identifican posibles atletas, las introducen a Wordwell y ayudan a expandir el ecosistema.',
-                    enter_fan: 'Entrar como Fan', enter_athlete: 'Entrar como Atleta', enter_cta: 'Entrar como CTA',
-                    mission_title: 'LA MISIÓN DE WORDWELL', mission_sub: 'Es simple:',
-                    mission1: 'CREAR OPORTUNIDADES.', mission2: 'CONSTRUIR VISIBILIDAD.', mission3: 'RECONOCER EL RENDIMIENTO.',
-                    mission_footer: 'Cada ranking, foco, característica y oportunidad de avance se gana a través de la participación, la consistencia y el rendimiento dentro del sistema.',
-                    contact_label: '✦ Ponte en contacto', contact_title: 'Conecta <span class="gold">con Wordwell</span>',
-                    contact_info_title: 'Contáctanos',
-                    contact_info_desc: 'Ya seas atleta, fan o posible CTA, nos encantaría saber de ti. Construyamos juntos el futuro del deporte femenino.',
-                    contact_response: 'Respuesta', contact_response_time: 'En 24 horas',
-                    form_name: 'Nombre completo', form_email: 'Correo electrónico', form_message: 'Tu mensaje', form_submit: '✧ Enviar mensaje',
-                    footer_tagline: 'Solo Élite. Solo los Pocos. Solo Wordwell.'
-                },
-                fa: {
-                    nav_choose: 'انتخاب طرف', nav_what: 'درباره', nav_divisions: 'بخش‌ها', nav_mission: 'ماموریت', nav_contact: 'تماس',
-                    hero_title1: 'وردول', hero_title2: '',
-                    hero_sub: 'پیش‌فصل از ۱ اوت آغاز می‌شود',
-                    hero_cta: 'طرف خود را انتخاب کنید', hero_tagline: 'فقط نخبگان. فقط تعداد معدود. فقط وردول.',
-                    days: 'روز', hours: 'ساعت', minutes: 'دقیقه', seconds: 'ثانیه',
-                    choose_title: 'طرف خود را انتخاب کنید', choose_tagline: 'فقط نخبگان. فقط تعداد معدود. فقط وردول.',
-                    dynasty_title: 'الماس‌های دودمان', dynasty_sub: '۵ موقعیت اصلی نخبگان', dynasty_highlight: '✦',
-                    dynasty_list1: 'ساخته شده بر اساس میراث', dynasty_list2: 'حضور نخبگان', dynasty_list3: 'نفوذ لوکس', dynasty_list4: 'ثبات', dynasty_list5: 'پرستیژ',
-                    velour_title: 'جواهرات مخمل', velour_sub: '۵ موقعیت اصلی نخبگان', velour_highlight: '✦',
-                    velour_list1: 'ساخته شده بر اساس خلاقیت', velour_list2: 'تأثیر بصری', velour_list3: 'انرژی مخاطب', velour_list4: 'شخصیت', velour_list5: 'رهبری روند',
-                    choose_note: '<strong>فقط ۱۰</strong> — ۵ الماس دودمان · ۵ جواهرات مخمل <br /> هیچ موقعیت تضمینی وجود ندارد. هر موقعیت باید به دست آید.',
-                    positions_title: 'موقعیت‌ها وجود دارند', pos_dynasty: 'الماس‌های دودمان', pos_velour: 'جواهرات مخمل',
-                    pos_note: 'هیچ موقعیت تضمینی وجود ندارد. هر موقعیت باید به دست آید.',
-                    earned_tagline: 'دیدنی به دست می‌آید. موقعیت‌ها برنده می‌شوند.',
-                    what_title: 'وردول چیست؟',
-                    what_p1: 'Wordwell یک اکوسیستم توسعه، دید و شناسایی ورزشکاران زن است.',
-                    what_p2: 'Wordwell برای ارائه محیطی ساختاریافته به زنان ایجاد شده است تا بتوانند برند شخصی خود را بسازند، دید خود را افزایش دهند، در چرخه‌های استعدادیابی رقابتی شرکت کنند و فرصت‌های پیشرفت را در سیستم Wordwell دنبال کنند.',
-                    what_highlight: 'برخلاف پلتفرم‌های سنتی رسانه‌های اجتماعی، Wordwell حول مشارکت، رتبه‌بندی، ارزیابی و شناسایی ساخته شده است.',
-                    what_p3: 'ورزشکاران وارد دانشگاه Wordwell می‌شوند، جایی که چالش‌ها را تکمیل می‌کنند، محتوا ارسال می‌کنند، در فعالیت‌های استعدادیابی شرکت می‌کنند، رتبه‌بندی می‌سازند و برای فرصت‌های دید در سراسر اکوسیستم رقابت می‌کنند.',
-                    what_p4: 'ورزشکاران برتر ممکن است موقعیت‌های برجسته، نورافکن ورزشکاران، حرکت در رتبه‌بندی، فرصت‌های درفت و شناسایی اضافی در Wordwell کسب کنند.',
-                    divisions_title: 'سه بخش اصلی',
-                    div_fans_title: 'هواداران', div_fans_sub: 'حامیان',
-                    div_fans_desc: 'حامیانی که ورزشکاران را دنبال می‌کنند، رتبه‌بندی را نظارت می‌کنند، با عرصه درگیر می‌شوند و در رشد جامعه Wordwell شرکت می‌کنند.',
-                    div_athletes_title: 'ورزشکاران', div_athletes_sub: 'شرکت‌کنندگان',
-                    div_athletes_desc: 'زنانی که در چرخه‌های استعدادیابی شرکت می‌کنند، دید می‌سازند، محتوا ایجاد می‌کنند و برای فرصت‌های پیشرفت رقابت می‌کنند.',
-                    div_ctas_title: 'سی‌تی‌ای‌ها', div_ctas_sub: 'رئیس جذب استعداد',
-                    div_ctas_desc: 'استعدادیاب‌های مستقل که ورزشکاران بالقوه را شناسایی می‌کنند، آنها را به Wordwell معرفی می‌کنند و به گسترش اکوسیستم کمک می‌کنند.',
-                    enter_fan: 'ورود به عنوان هوادار', enter_athlete: 'ورود به عنوان ورزشکار', enter_cta: 'ورود به عنوان سی‌تی‌ای',
-                    mission_title: 'ماموریت Wordwell', mission_sub: 'ساده است:',
-                    mission1: 'ایجاد فرصت‌ها.', mission2: 'ساخت دید.', mission3: 'شناسایی عملکرد.',
-                    mission_footer: 'هر رتبه، نورافکن، ویژگی و فرصت پیشرفت از طریق مشارکت، ثبات و عملکرد در داخل سیستم به دست می‌آید.',
-                    contact_label: '✦ در تماس باشید', contact_title: 'بیایید <span class="gold">با Wordwell</span> ارتباط برقرار کنیم',
-                    contact_info_title: 'با ما تماس بگیرید',
-                    contact_info_desc: 'چه ورزشکار، هوادار یا سی‌تی‌ای بالقوه باشید، خوشحال می‌شویم از شما بشنویم. بیایید آینده ورزش زنان را با هم بسازیم.',
-                    contact_response: 'پاسخ', contact_response_time: 'در عرض ۲۴ ساعت',
-                    form_name: 'نام کامل', form_email: 'آدرس ایمیل', form_message: 'پیام شما', form_submit: '✧ ارسال پیام',
-                    footer_tagline: 'فقط نخبگان. فقط تعداد معدود. فقط وردول.'
-                },
-                ko: {
-                    nav_choose: '사이드 선택', nav_what: '소개', nav_divisions: '디비전', nav_mission: '미션', nav_contact: '연락처',
-                    hero_title1: '워드웰', hero_title2: '',
-                    hero_sub: '프리시즌 8월 1일 시작',
-                    hero_cta: '사이드 선택', hero_tagline: '오직 엘리트. 오직 소수. 오직 워드웰.',
-                    days: '일', hours: '시간', minutes: '분', seconds: '초',
-                    choose_title: '사이드 선택', choose_tagline: '오직 엘리트. 오직 소수. 오직 워드웰.',
-                    dynasty_title: '다이너스티 다이아몬드', dynasty_sub: '5개 엘리트 메인 로스터 포지션', dynasty_highlight: '✦',
-                    dynasty_list1: '유산 위에 구축', dynasty_list2: '엘리트 프레즌스', dynasty_list3: '럭셔리 인플루언스', dynasty_list4: '일관성', dynasty_list5: '프레스티지',
-                    velour_title: '벨루어 주얼스', velour_sub: '5개 엘리트 메인 로스터 포지션', velour_highlight: '✦',
-                    velour_list1: '창의성 위에 구축', velour_list2: '시각적 임팩트', velour_list3: '관객 에너지', velour_list4: '개성', velour_list5: '트렌드 리더십',
-                    choose_note: '<strong>오직 10</strong> — 5 다이너스티 다이아몬드 · 5 벨루어 주얼스 <br /> 보장된 포지션 없음. 모든 포지션은 획득해야 합니다.',
-                    positions_title: '포지션이 존재합니다', pos_dynasty: '다이너스티 다이아몬드', pos_velour: '벨루어 주얼스',
-                    pos_note: '보장된 포지션 없음. 모든 포지션은 획득해야 합니다.',
-                    earned_tagline: '가시성은 획득됩니다. 포지션은 획득됩니다.',
-                    what_title: '워드웰이란 무엇인가?',
-                    what_p1: 'Wordwell은 여성 운동선수 개발, 가시성 및 인정 생태계입니다.',
-                    what_p2: 'Wordwell은 여성들이 개인 브랜드를 구축하고, 가시성을 높이고, 경쟁적인 스카우팅 사이클에 참여하고, Wordwell 시스템 내에서 발전 기회를 추구할 수 있는 구조화된 환경을 제공하기 위해 만들어졌습니다.',
-                    what_highlight: '기존 소셜 미디어 플랫폼과 달리 Wordwell은 참여, 순위, 평가 및 인정을 중심으로 구축되었습니다.',
-                    what_p3: '운동선수들은 Wordwell University에 입학하여 도전 과제를 완료하고, 콘텐츠를 제출하고, 스카우팅 활동에 참여하고, 순위를 구축하고, 생태계 전반에 걸쳐 가시성 기회를 위해 경쟁합니다.',
-                    what_p4: '최고 성적의 운동선수는 주요 배치, 운동선수 스포트라이트, 순위 이동, 드래프트 고려 기회 및 Wordwell 내 추가 인정을 받을 수 있습니다.',
-                    divisions_title: '세 가지 주요 디비전',
-                    div_fans_title: '팬', div_fans_sub: '서포터',
-                    div_fans_desc: '운동선수를 팔로우하고, 순위를 모니터링하고, 아레나에 참여하고, Wordwell 커뮤니티의 성장에 참여하는 서포터.',
-                    div_athletes_title: '운동선수', div_athletes_sub: '참가자',
-                    div_athletes_desc: '스카우팅 사이클에 참여하고, 가시성을 구축하고, 콘텐츠를 만들고, 발전 기회를 위해 경쟁하는 여성.',
-                    div_ctas_title: 'CTA', div_ctas_sub: '인재 확보 책임자',
-                    div_ctas_desc: '잠재적인 운동선수를 발굴하고, Wordwell에 소개하고, 생태계 확장을 돕는 독립적인 리크루터.',
-                    enter_fan: '팬으로 입장', enter_athlete: '운동선수로 입장', enter_cta: 'CTA로 입장',
-                    mission_title: 'Wordwell의 사명', mission_sub: '간단합니다:',
-                    mission1: '기회를 창출하세요.', mission2: '가시성을 구축하세요.', mission3: '성과를 인정하세요.',
-                    mission_footer: '모든 순위, 스포트라이트, 피처 및 발전 기회는 시스템 내에서 참여, 일관성 및 성과를 통해 획득됩니다.',
-                    contact_label: '✦ 연락하기', contact_title: 'Wordwell과 <span class="gold">연결하세요</span>',
-                    contact_info_title: '문의하기',
-                    contact_info_desc: '운동선수, 팬 또는 잠재적인 CTA이든, 저희는 여러분의 의견을 듣고 싶습니다. 함께 여성 스포츠의 미래를 만들어 갑시다.',
-                    contact_response: '응답', contact_response_time: '24시간 이내',
-                    form_name: '이름', form_email: '이메일 주소', form_message: '메시지', form_submit: '✧ 메시지 보내기',
-                    footer_tagline: '오직 엘리트. 오직 소수. 오직 워드웰.'
-                },
-                ar: {
-                    nav_choose: 'اختر جانبك', nav_what: 'حول', nav_divisions: 'الأقسام', nav_mission: 'المهمة', nav_contact: 'اتصل',
-                    hero_title1: 'ووردويل', hero_title2: '',
-                    hero_sub: 'يبدأ الموسم التحضيري في 1 أغسطس',
-                    hero_cta: 'اختر جانبك', hero_tagline: 'النخبة فقط. القليلون فقط. ووردويل فقط.',
-                    days: 'يوم', hours: 'ساعة', minutes: 'دقيقة', seconds: 'ثانية',
-                    choose_title: 'اختر جانبك', choose_tagline: 'النخبة فقط. القليلون فقط. ووردويل فقط.',
-                    dynasty_title: 'ماس السلالة', dynasty_sub: '5 مراكز النخبة في القائمة الرئيسية', dynasty_highlight: '✦',
-                    dynasty_list1: 'مبني على الإرث', dynasty_list2: 'حضور النخبة', dynasty_list3: 'تأثير فاخر', dynasty_list4: 'الاتساق', dynasty_list5: 'الهيبة',
-                    velour_title: 'جواهر المخمل', velour_sub: '5 مراكز النخبة في القائمة الرئيسية', velour_highlight: '✦',
-                    velour_list1: 'مبني على الإبداع', velour_list2: 'تأثير بصري', velour_list3: 'طاقة الجمهور', velour_list4: 'الشخصية', velour_list5: 'قيادة الاتجاه',
-                    choose_note: '<strong>10 فقط</strong> — 5 ماس سلالة · 5 جواهر مخمل <br /> لا توجد مراكز مضمونة. كل مركز يجب أن يُكتسب.',
-                    positions_title: 'المراكز موجودة', pos_dynasty: 'ماس السلالة', pos_velour: 'جواهر المخمل',
-                    pos_note: 'لا توجد مراكز مضمونة. كل مركز يجب أن يُكتسب.',
-                    earned_tagline: 'الرؤية تُكتسب. المراكز تُربح.',
-                    what_title: 'ما هو ووردويل؟',
-                    what_p1: 'Wordwell هو نظام بيئي لتطوير الرياضيات والرؤية والتقدير.',
-                    what_p2: 'تم إنشاء Wordwell لتوفير بيئة منظمة للنساء حيث يمكنهن بناء علامتهن التجارية الشخصية، وزيادة الرؤية، والمشاركة في دوريات الكشف التنافسية، ومتابعة فرص التقدم داخل نظام Wordwell.',
-                    what_highlight: 'على عكس منصات التواصل الاجتماعي التقليدية، تم بناء Wordwell حول المشاركة والتصنيفات والتقييم والتقدير.',
-                    what_p3: 'تدخل الرياضيات إلى Wordwell University، حيث يكملن التحديات، ويقدمن المحتوى، ويشاركن في أنشطة الكشف، ويبنين التصنيفات، ويتنافسن على فرص الرؤية في جميع أنحاء النظام البيئي.',
-                    what_p4: 'قد تحصل الرياضيات المتميزات على مراكز مميزة، وأضواء كاشفة للرياضيات، وحركة في التصنيف، وفرص النظر في المسودة، وتقدير إضافي داخل Wordwell.',
-                    divisions_title: 'الأقسام الأساسية الثلاثة',
-                    div_fans_title: 'المشجعون', div_fans_sub: 'الداعمون',
-                    div_fans_desc: 'الداعمون الذين يتابعون الرياضيات، ويراقبون التصنيفات، ويتفاعلون مع الساحة، ويشاركون في نمو مجتمع Wordwell.',
-                    div_athletes_title: 'الرياضيات', div_athletes_sub: 'المشاركات',
-                    div_athletes_desc: 'النساء اللواتي يشاركن في دوريات الكشف، ويبنين الرؤية، وينشئن المحتوى، ويتنافسن على فرص التقدم.',
-                    div_ctas_title: 'CTAS', div_ctas_sub: 'رئيس اكتساب المواهب',
-                    div_ctas_desc: 'مجندون مستقلون يحددون الرياضيات المحتملات، ويقدمونهن إلى Wordwell، ويساعدون في توسيع النظام البيئي.',
-                    enter_fan: 'الدخول كمشجع', enter_athlete: 'الدخول كلاعبة', enter_cta: 'الدخول كـ CTA',
-                    mission_title: 'مهمة Wordwell', mission_sub: 'بسيطة:',
-                    mission1: 'خلق الفرص.', mission2: 'بناء الرؤية.', mission3: 'تقدير الأداء.',
-                    mission_footer: 'كل تصنيف، وضوء كاشف، وميزة، وفرصة تقدم تُكتسب من خلال المشاركة والاتساق والأداء داخل النظام.',
-                    contact_label: '✦ تواصل معنا', contact_title: 'تواصل <span class="gold">مع Wordwell</span>',
-                    contact_info_title: 'تواصل معنا',
-                    contact_info_desc: 'سواء كنت لاعبة، أو مشجعًا، أو CTA محتمل، يسعدنا سماعك. دعونا نبني مستقبل الرياضة النسائية معًا.',
-                    contact_response: 'الرد', contact_response_time: 'في غضون 24 ساعة',
-                    form_name: 'الاسم الكامل', form_email: 'البريد الإلكتروني', form_message: 'رسالتك', form_submit: '✧ إرسال الرسالة',
-                    footer_tagline: 'النخبة فقط. القليلون فقط. ووردويل فقط.'
-                },
-                ru: {
-                    nav_choose: 'Выберите сторону', nav_what: 'О нас', nav_divisions: 'Дивизионы', nav_mission: 'Миссия', nav_contact: 'Контакты',
-                    hero_title1: 'ВОРДВЕЛЛ', hero_title2: '',
-                    hero_sub: 'Предсезон начинается 1 августа',
-                    hero_cta: 'Выберите свою сторону', hero_tagline: 'Только элита. Только избранные. Только Вордвелл.',
-                    days: 'дней', hours: 'часов', minutes: 'минут', seconds: 'секунд',
-                    choose_title: 'ВЫБЕРИТЕ СВОЮ СТОРОНУ', choose_tagline: 'Только элита. Только избранные. Только Вордвелл.',
-                    dynasty_title: 'ДИНАСТИЯ АЛМАЗОВ', dynasty_sub: '5 ЭЛИТНЫХ ПОЗИЦИЙ ОСНОВНОГО СОСТАВА', dynasty_highlight: '✦',
-                    dynasty_list1: 'Построено на наследии', dynasty_list2: 'Элитное присутствие', dynasty_list3: 'Роскошное влияние', dynasty_list4: 'Последовательность', dynasty_list5: 'Престиж',
-                    velour_title: 'ВЕЛЮРОВЫЕ ДРАГОЦЕННОСТИ', velour_sub: '5 ЭЛИТНЫХ ПОЗИЦИЙ ОСНОВНОГО СОСТАВА', velour_highlight: '✦',
-                    velour_list1: 'Построено на творчестве', velour_list2: 'Визуальное воздействие', velour_list3: 'Энергия аудитории', velour_list4: 'Личность', velour_list5: 'Лидерство в трендах',
-                    choose_note: '<strong>ТОЛЬКО 10</strong> — 5 АЛМАЗОВ ДИНАСТИИ · 5 ВЕЛЮРОВЫХ ДРАГОЦЕННОСТЕЙ <br /> НЕТ ГАРАНТИРОВАННЫХ МЕСТ. КАЖДАЯ ПОЗИЦИЯ ДОЛЖНА БЫТЬ ЗАРАБОТАНА.',
-                    positions_title: 'ПОЗИЦИИ СУЩЕСТВУЮТ', pos_dynasty: 'Алмазы династии', pos_velour: 'Велюровые драгоценности',
-                    pos_note: 'Нет гарантированных мест. Каждая позиция должна быть заработана.',
-                    earned_tagline: 'ВИДИМОСТЬ ЗАРАБАТЫВАЕТСЯ. ПОЗИЦИИ ВЫИГРЫВАЮТСЯ.',
-                    what_title: 'ЧТО ТАКОЕ ВОРДВЕЛЛ?',
-                    what_p1: 'Wordwell — это экосистема развития, видимости и признания женщин-спортсменок.',
-                    what_p2: 'Wordwell был создан, чтобы предоставить женщинам структурированную среду, где они могут построить свой личный бренд, повысить видимость, участвовать в конкурентных циклах скаутинга и добиваться возможностей продвижения в системе Wordwell.',
-                    what_highlight: 'В отличие от традиционных платформ социальных сетей, Wordwell построен вокруг участия, рейтингов, оценки и признания.',
-                    what_p3: 'Спортсменки поступают в Университет Wordwell, где они проходят испытания, отправляют контент, участвуют в скаутинговых мероприятиях, строят рейтинги и соревнуются за возможности видимости по всей экосистеме.',
-                    what_p4: 'Лучшие спортсменки могут получить специальные места, спортивные прожекторы, движение в рейтинге, возможности драфта и дополнительное признание в Wordwell.',
-                    divisions_title: 'ТРИ ОСНОВНЫХ ДИВИЗИОНА',
-                    div_fans_title: 'ФАНАТЫ', div_fans_sub: 'Сторонники',
-                    div_fans_desc: 'Сторонники, которые следят за спортсменками, отслеживают рейтинги, участвуют в арене и способствуют росту сообщества Wordwell.',
-                    div_athletes_title: 'СПОРТСМЕНКИ', div_athletes_sub: 'Участницы',
-                    div_athletes_desc: 'Женщины, которые участвуют в циклах скаутинга, создают видимость, создают контент и соревнуются за возможности продвижения.',
-                    div_ctas_title: 'КТА', div_ctas_sub: 'Руководитель по поиску талантов',
-                    div_ctas_desc: 'Независимые рекрутеры, которые выявляют потенциальных спортсменок, знакомят их с Wordwell и помогают расширять экосистему.',
-                    enter_fan: 'Войти как фанат', enter_athlete: 'Войти как спортсменка', enter_cta: 'Войти как КТА',
-                    mission_title: 'МИССИЯ ВОРДВЕЛЛ', mission_sub: 'Проста:',
-                    mission1: 'СОЗДАВАТЬ ВОЗМОЖНОСТИ.', mission2: 'СТРОИТЬ ВИДИМОСТЬ.', mission3: 'ПРИЗНАВАТЬ РЕЗУЛЬТАТЫ.',
-                    mission_footer: 'Каждый рейтинг, прожектор, функция и возможность продвижения зарабатываются через участие, последовательность и результаты внутри системы.',
-                    contact_label: '✦ Свяжитесь с нами', contact_title: 'Свяжитесь <span class="gold">с Wordwell</span>',
-                    contact_info_title: 'Свяжитесь с нами',
-                    contact_info_desc: 'Будь вы спортсменкой, фанатом или потенциальным КТА, мы будем рады услышать вас. Давайте вместе строить будущее женского спорта.',
-                    contact_response: 'Ответ', contact_response_time: 'В течение 24 часов',
-                    form_name: 'Полное имя', form_email: 'Адрес электронной почты', form_message: 'Ваше сообщение', form_submit: '✧ Отправить сообщение',
-                    footer_tagline: 'Только элита. Только избранные. Только Вордвелл.'
-                },
-                zh: {
-                    nav_choose: '选择阵营', nav_what: '关于', nav_divisions: '部门', nav_mission: '使命', nav_contact: '联系我们',
-                    hero_title1: '沃德韦尔', hero_title2: '',
-                    hero_sub: '季前赛于8月1日开始',
-                    hero_cta: '选择你的阵营', hero_tagline: '唯有精英。唯有少数。唯有沃德韦尔。',
-                    days: '天', hours: '小时', minutes: '分钟', seconds: '秒',
-                    choose_title: '选择你的阵营', choose_tagline: '唯有精英。唯有少数。唯有沃德韦尔。',
-                    dynasty_title: '王朝钻石', dynasty_sub: '5个精英主力阵容位置', dynasty_highlight: '✦',
-                    dynasty_list1: '建立在传承之上', dynasty_list2: '精英存在感', dynasty_list3: '奢华影响力', dynasty_list4: '一致性', dynasty_list5: '声望',
-                    velour_title: '丝绒珍宝', velour_sub: '5个精英主力阵容位置', velour_highlight: '✦',
-                    velour_list1: '建立在创造力之上', velour_list2: '视觉冲击力', velour_list3: '观众能量', velour_list4: '个性', velour_list5: '潮流引领力',
-                    choose_note: '<strong>仅有10个</strong> — 5个王朝钻石 · 5个丝绒珍宝 <br /> 没有保证名额。每个位置都必须靠实力赢得。',
-                    positions_title: '位置存在', pos_dynasty: '王朝钻石', pos_velour: '丝绒珍宝',
-                    pos_note: '没有保证名额。每个位置都必须靠实力赢得。',
-                    earned_tagline: '可见性靠赢得。位置靠赢得。',
-                    what_title: '什么是沃德韦尔？',
-                    what_p1: 'Wordwell是一个女性运动员发展、可见性和认可生态系统。',
-                    what_p2: 'Wordwell旨在为女性提供一个结构化的环境，让她们能够建立个人品牌、提高可见性、参与竞争性球探周期，并在Wordwell系统内寻求晋升机会。',
-                    what_highlight: '与传统社交媒体平台不同，Wordwell围绕参与、排名、评估和认可而建立。',
-                    what_p3: '运动员进入Wordwell University，在那里她们完成挑战、提交内容、参与球探活动、建立排名，并在整个生态系统中竞争可见性机会。',
-                    what_p4: '表现优异的运动员可以获得特色展示位置、运动员聚焦、排名提升、选秀考虑机会以及Wordwell内的额外认可。',
-                    divisions_title: '三个主要部门',
-                    div_fans_title: '粉丝', div_fans_sub: '支持者',
-                    div_fans_desc: '关注运动员、监测排名、参与竞技场并参与Wordwell社区发展的支持者。',
-                    div_athletes_title: '运动员', div_athletes_sub: '参与者',
-                    div_athletes_desc: '参与球探周期、建立可见性、创建内容并竞争晋升机会的女性。',
-                    div_ctas_title: 'CTA', div_ctas_sub: '人才招聘主管',
-                    div_ctas_desc: '独立招聘人员，负责识别潜在运动员、将他们引入Wordwell并帮助扩大生态系统。',
-                    enter_fan: '以粉丝身份进入', enter_athlete: '以运动员身份进入', enter_cta: '以CTA身份进入',
-                    mission_title: 'Wordwell的使命', mission_sub: '很简单：',
-                    mission1: '创造机会。', mission2: '建立可见性。', mission3: '认可表现。',
-                    mission_footer: '每一个排名、聚焦、特色和晋升机会都是通过系统内的参与、一致性和表现赢得的。',
-                    contact_label: '✦ 联系我们', contact_title: '与Wordwell <span class="gold">建立联系</span>',
-                    contact_info_title: '联系我们',
-                    contact_info_desc: '无论您是运动员、粉丝还是潜在的CTA，我们都希望收到您的来信。让我们一起打造女子体育的未来。',
-                    contact_response: '回复', contact_response_time: '24小时内',
-                    form_name: '全名', form_email: '电子邮箱', form_message: '您的留言', form_submit: '✧ 发送消息',
-                    footer_tagline: '唯有精英。唯有少数。唯有沃德韦尔。'
-                },
-                so: {
-                    nav_choose: 'Dooro dhankaaga', nav_what: 'Ku saabsan', nav_divisions: 'Qaybaha', nav_mission: 'Himilada', nav_contact: 'Nala soo xiriir',
-                    hero_title1: 'WORDWELL', hero_title2: '',
-                    hero_sub: 'Xilli-diyaar garowga wuxuu bilaabmaa 1 Ogosto',
-                    hero_cta: 'Dooro dhankaaga', hero_tagline: 'Kaliya Elite. Kaliya kuwa yar. Kaliya Wordwell.',
-                    days: 'maalmood', hours: 'saacadood', minutes: 'daqiiqo', seconds: 'ilbiriqsi',
-                    choose_title: 'DOORO DHANKAAGA', choose_tagline: 'Kaliya Elite. Kaliya kuwa yar. Kaliya Wordwell.',
-                    dynasty_title: 'DYNASTY DIAMONDS', dynasty_sub: '5 BOOSAS OO ELITE AH OO LIISKA GUUD AH', dynasty_highlight: '✦',
-                    dynasty_list1: 'Dhismay dhaxal', dynasty_list2: 'Joogitaan Elite', dynasty_list3: 'Saamayn Raaxo', dynasty_list4: 'Joogteyn', dynasty_list5: 'Sharaf',
-                    velour_title: 'VELOUR JEWELS', velour_sub: '5 BOOSAS OO ELITE AH OO LIISKA GUUD AH', velour_highlight: '✦',
-                    velour_list1: 'Dhismay hal-abuur', velour_list2: 'Saamayn muuqaal', velour_list3: 'Tamarta dhagaystayaasha', velour_list4: 'Shakhsiyad', velour_list5: 'Hogaaminta isbeddelka',
-                    choose_note: '<strong>KALIYA 10</strong> — 5 DYNASTY DIAMONDS · 5 VELOUR JEWELS <br /> BOOSAS LAMA DAMMAANAD QADO. BOOS KASTA WAA IN LA HELO.',
-                    positions_title: 'BOOSAS WAY JIRAAN', pos_dynasty: 'Dynasty Diamonds', pos_velour: 'Velour Jewels',
-                    pos_note: 'Boosas lama dammaanad qado. Boos kasta waa in la helo.',
-                    earned_tagline: 'MUUQAALKA WAA LA HELAA. BOOSASKA WAA LA HELAA.',
-                    what_title: 'WAA MAXAY WORDWELL?',
-                    what_p1: 'Wordwell waa nidaam horumarinta, muuqaalka iyo aqoonsiga haweenka ciyaartoyda ah.',
-                    what_p2: 'Wordwell waxaa loo sameeyay inuu haweenka siiyo jawi habaysan oo ay ku dhisaan sumcaddooda shaqsiyeed, kordhiyaan muuqaalkooda, ka qaybqaataan wareegyada tartanka cibaaraynta, una raadsadaan fursadaha horumarinta nidaamka Wordwell.',
-                    what_highlight: 'Si ka duwan mareegaha bulshada ee caadiga ah, Wordwell waxaa lagu dhisay ka qaybgalka, darajooyinka, qiimaynta iyo aqoonsiga.',
-                    what_p3: 'Ciyaartoydu waxay galaan Jaamacadda Wordwell, halkaas oo ay dhameeyaan caqabadaha, soo gudbiyaan waxyaabaha ay soo saareen, ka qaybqaataan waxqabadyada cibaaraynta, dhisaan darajooyinka, uguna tartamaan fursadaha muuqaalka ee nidaamka oo dhan.',
-                    what_p4: 'Ciyaartoyda waxqabadka sare leh waxay heli karaan boosas la soo bandhigay, iftiiminta ciyaartoyda, dhaqaaqa darajooyinka, fursadaha tixgelinta qabyo-qoraalka, iyo aqoonsi dheeri ah oo ka dhex jira Wordwell.',
-                    divisions_title: 'SADDEXDA QAYB EE AASAASKA AH',
-                    div_fans_title: 'TAAGEERAYAASHA', div_fans_sub: 'Taageerayaal',
-                    div_fans_desc: 'Taageerayaal raacaya ciyaartoyda, kormeeraya darajooyinka, kala qaybqaataya goobta, kana qaybqaataya korriinka bulshada Wordwell.',
-                    div_athletes_title: 'CIYAARTOY', div_athletes_sub: 'Kaqaybgalayaal',
-                    div_athletes_desc: 'Haween ka qaybqata wareegyada cibaaraynta, dhisa muuqaal, abuura wax soo saar, kuna tartama fursadaha horumarinta.',
-                    div_ctas_title: 'CTAS', div_ctas_sub: 'Madaxa Helitaanka Hibada',
-                    div_ctas_desc: 'Shaqaale shaqo-bannaan oo aqoonsada ciyaartoyda suurtagalka ah, u soo bandhiga Wordwell, kana caawiya ballaarinta nidaamka.',
-                    enter_fan: 'Ku soo gal Taageere ahaan', enter_athlete: 'Ku soo gal Ciyaarto ahaan', enter_cta: 'Ku soo gal CTA ahaan',
-                    mission_title: 'HIMILADA WORDWELL', mission_sub: 'Waa fududahay:',
-                    mission1: 'ABUUR FURSADO.', mission2: 'DHIS MUUQAAL.', mission3: 'AQOONSOW WAXQABADKA.',
-                    mission_footer: 'Darajo kasta, iftiimin kasta, muuqaal kasta, iyo fursad horumarineed waxaa lagu helaa ka qaybgalka, joogteynta iyo waxqabadka nidaamka dhexdiisa.',
-                    contact_label: '✦ Nala soo xiriir', contact_title: 'Ku xidh <span class="gold">Wordwell</span>',
-                    contact_info_title: 'Nala soo xiriir',
-                    contact_info_desc: 'Haddii aad tahay ciyaarto, taageere, ama CTA suurtagal ah, waan jeclaan lahayn inaan kaa maqalno. Aynu si wada jir ah u dhigno mustaqbalka ciyaaraha haweenka.',
-                    contact_response: 'Jawaab', contact_response_time: '24 saac gudahood',
-                    form_name: 'Magac oo dhameystiran', form_email: 'Ciwaan iimayl', form_message: 'Fariintaada', form_submit: '✧ Soo dir fariin',
-                    footer_tagline: 'Kaliya Elite. Kaliya kuwa yar. Kaliya Wordwell.'
-                }
+            // -------- CONSTANTS --------
+            const GRID_SIZE = 6;
+            const NUM_COLORS = 6;
+            const TOTAL_LEVELS = 100;
+            const FREE_CHAPTERS = 3; // chapters 1-3 free (levels 1-30)
+            const CHAPTER_LEVELS = 10; // levels per chapter
+
+            // -------- STATE --------
+            let state = {
+                currentLevel: 1,
+                stars: new Array(TOTAL_LEVELS + 1).fill(0), // 0=locked, 1-3=stars
+                cores: 0,
+                chaptersUnlocked: [1, 2, 3], // chapter indices 1-based
+                soundEnabled: true,
+                musicEnabled: false,
+                // runtime
+                grid: [],
+                target: [],
+                moves: 0,
+                maxMoves: 0,
+                selected: null, // {r, c} or null
+                isComplete: false,
+                isAnimating: false,
+                undoStack: [],
+                undoUsed: false,
+                hintUsed: false,
+                tutorialLevel: 0,
             };
 
-            // =========================================================
-            //  🔍 DETECT LANGUAGE (silent)
-            // =========================================================
-            function detectLanguage() {
-                let raw = navigator.language;
-                if (!raw || raw === '') {
-                    raw = navigator.languages?.[0] || 'en';
+            // -------- DOM REFS --------
+            const $ = id => document.getElementById(id);
+            const canvas = $('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const screens = {
+                menu: $('menu-screen'),
+                levels: $('level-select-screen'),
+                game: $('game-screen'),
+            };
+            const overlay = $('gameOverlay');
+            const overlayIcon = $('overlayIcon');
+            const overlayTitle = $('overlayTitle');
+            const overlayStars = $('overlayStars');
+            const overlaySub = $('overlaySub');
+            const overlayBtn = $('overlayBtn');
+            const tutorialTip = $('tutorialTip');
+
+            // -------- SOUND (ZzFX) --------
+            const zzfx = (...args) => {
+                // Minimal ZzFX implementation
+                let zzfxF = 0.05,
+                    zzfxR = 0,
+                    zzfxV = 0.3,
+                    zzfxQ = 0,
+                    zzfxS = 0,
+                    zzfxZ = 0,
+                    zzfxX = 0,
+                    zzfxC = 0,
+                    zzfxM = 0,
+                    zzfxU = 0,
+                    zzfxL = 0,
+                    zzfxA = 0,
+                    zzfxW = 0,
+                    zzfxH = 0,
+                    zzfxG = 0;
+                let vol = 0.3,
+                    sampleRate = 44100,
+                    seed = 0;
+                if (args.length > 0) { zzfxR = args[0] || 0;
+                    zzfxV = args[1] || 0.3;
+                    zzfxQ = args[2] || 0;
+                    zzfxS = args[3] || 0;
+                    zzfxZ = args[4] || 0;
+                    zzfxX = args[5] || 0;
+                    zzfxC = args[6] || 0;
+                    zzfxM = args[7] || 0;
+                    zzfxU = args[8] || 0;
+                    zzfxL = args[9] || 0;
+                    zzfxA = args[10] || 0;
+                    zzfxW = args[11] || 0;
+                    zzfxH = args[12] || 0;
+                    zzfxG = args[13] || 0; }
+                let zzfxR0 = zzfxR,
+                    zzfxV0 = zzfxV,
+                    zzfxQ0 = zzfxQ,
+                    zzfxS0 = zzfxS,
+                    zzfxZ0 = zzfxZ,
+                    zzfxX0 = zzfxX,
+                    zzfxC0 = zzfxC,
+                    zzfxM0 = zzfxM,
+                    zzfxU0 = zzfxU,
+                    zzfxL0 = zzfxL,
+                    zzfxA0 = zzfxA,
+                    zzfxW0 = zzfxW,
+                    zzfxH0 = zzfxH,
+                    zzfxG0 = zzfxG;
+                let zzfxP = 0,
+                    zzfxO = 0,
+                    zzfxF0 = 0,
+                    zzfxF1 = 0,
+                    zzfxF2 = 0,
+                    zzfxF3 = 0,
+                    zzfxF4 = 0,
+                    zzfxF5 = 0,
+                    zzfxF6 = 0,
+                    zzfxF7 = 0,
+                    zzfxF8 = 0,
+                    zzfxF9 = 0,
+                    zzfxFA = 0,
+                    zzfxFB = 0,
+                    zzfxFC = 0,
+                    zzfxFD = 0,
+                    zzfxFE = 0,
+                    zzfxFF = 0;
+                let zzfxT = 0,
+                    zzfxN = 0,
+                    zzfxB = 0,
+                    zzfxI = 0,
+                    zzfxJ = 0,
+                    zzfxK = 0,
+                    zzfxD = 0,
+                    zzfxE = 0,
+                    zzfxY = 0,
+                    zzfx$ = 0,
+                    zzfx_ = 0,
+                    zzfx`` = 0,
+                    zzfx´ = 0,
+                    zzfx‘ = 0,
+                    zzfx’ = 0;
+                let zzfxBuffer = [];
+                const zzfxSampleRate = sampleRate;
+                const zzfxVolume = vol;
+                const zzfxSeed = seed;
+                const zzfxLoop = 0;
+                const zzfxDur = zzfxR0;
+                const zzfxFreq = 220;
+                const zzfxFreqRamp = 0;
+                const zzfxFreqRampRate = 0;
+                const zzfxFreqRampAmount = 0;
+                const zzfxFreqRampDelay = 0;
+                const zzfxFreqRampDuration = 0;
+                const zzfxFreqRampEnd = 0;
+                const zzfxFreqRampStart = 0;
+                const zzfxFreqRampStartFreq = 0;
+                const zzfxFreqRampEndFreq = 0;
+                const zzfxFreqRampStartDelay = 0;
+                const zzfxFreqRampEndDelay = 0;
+                const zzfxFreqRampStartDuration = 0;
+                const zzfxFreqRampEndDuration = 0;
+                const zzfxFreqRampStartAmount = 0;
+                const zzfxFreqRampEndAmount = 0;
+                const zzfxFreqRampStartRate = 0;
+                const zzfxFreqRampEndRate = 0;
+                const zzfxFreqRampStartFreqRamp = 0;
+                const zzfxFreqRampEndFreqRamp = 0;
+                const zzfxFreqRampStartFreqRampRate = 0;
+                const zzfxFreqRampEndFreqRampRate = 0;
+                const zzfxFreqRampStartFreqRampAmount = 0;
+                const zzfxFreqRampEndFreqRampAmount = 0;
+                const zzfxFreqRampStartFreqRampDelay = 0;
+                const zzfxFreqRampEndFreqRampDelay = 0;
+                const zzfxFreqRampStartFreqRampDuration = 0;
+                const zzfxFreqRampEndFreqRampDuration = 0;
+                const zzfxFreqRampStartFreqRampStart = 0;
+                const zzfxFreqRampEndFreqRampStart = 0;
+                const zzfxFreqRampStartFreqRampEnd = 0;
+                const zzfxFreqRampEndFreqRampEnd = 0;
+
+                // Simple sound generation
+                let sampleCount = Math.floor(zzfxDur * zzfxSampleRate);
+                let phase = 0;
+                let phaseStep = (2 * Math.PI * zzfxFreq) / zzfxSampleRate;
+                let amp = zzfxVolume;
+
+                for (let i = 0; i < sampleCount; i++) {
+                    let sample = 0;
+                    // Basic waveform: sine with some harmonics
+                    let t = i / zzfxSampleRate;
+                    let env = Math.exp(-t * 3) * (1 - t / zzfxDur);
+                    let freq = zzfxFreq * (1 + zzfxFreqRamp * t / zzfxDur);
+                    phase += (2 * Math.PI * freq) / zzfxSampleRate;
+                    sample = Math.sin(phase) * env * amp;
+                    // Add some square-ish distortion for edge
+                    if (zzfxQ > 0.1) {
+                        let sq = Math.sign(Math.sin(phase)) * env * amp * 0.3;
+                        sample = sample * (1 - zzfxQ) + sq * zzfxQ;
+                    }
+                    // Add noise
+                    if (zzfxS > 0.01) {
+                        let noise = (Math.random() * 2 - 1) * zzfxS * env * amp;
+                        sample += noise;
+                    }
+                    zzfxBuffer.push(sample);
                 }
 
-                const map = {
-                    'es': 'es', 'fa': 'fa', 'ko': 'ko', 'ar': 'ar',
-                    'ru': 'ru', 'zh': 'zh', 'so': 'so', 'en': 'en'
-                };
+                // Play using AudioContext
+                try {
+                    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                    const buffer = audioCtx.createBuffer(1, zzfxBuffer.length, zzfxSampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < zzfxBuffer.length; i++) {
+                        data[i] = zzfxBuffer[i] * 0.8;
+                    }
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = buffer;
+                    const gain = audioCtx.createGain();
+                    gain.gain.value = vol * 0.7;
+                    source.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    source.start();
+                    // Clean up
+                    setTimeout(() => {
+                        try { source.stop(); } catch (e) {}
+                    }, zzfxDur * 1000 + 200);
+                } catch (e) { /* silent fail */ }
+            };
 
-                let detected = 'en';
-                if (map[raw]) {
-                    detected = map[raw];
-                } else {
-                    const prefix = raw.substring(0, 2);
-                    if (map[prefix]) {
-                        detected = map[prefix];
+            // Sound helpers
+            function sfxSlide() { if (state.soundEnabled) zzfx(0.08, 0.25, 0.15, 0.2, 0.3, 0, 0, 1.2, 0, 0, 0, 0, 0, 0); }
+
+            function sfxMatch() { if (state.soundEnabled) zzfx(0.12, 0.3, 0, 0.1, 0.5, 0, 0, 2.0, 0, 0, 0, 0, 0, 0); }
+
+            function sfxCascade() {
+                if (state.soundEnabled) {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => zzfx(0.06, 0.2, 0, 0.05, 0.4 + i * 0.1, 0, 0, 1.5 + i * 0.3, 0, 0, 0, 0, 0, 0), i *
+                        60);
                     }
                 }
-                return detected;
             }
 
-            // =========================================================
-            //  🌐 APPLY TRANSLATIONS
-            // =========================================================
-            function applyLanguage(lang) {
-                const t = translations[lang] || translations.en;
-                document.querySelectorAll('[data-i18n]').forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    if (t[key] !== undefined) {
-                        if (el.querySelector('strong, span, br')) {
-                            el.innerHTML = t[key];
-                        } else {
-                            el.textContent = t[key];
+            function sfxLevelUp() { if (state.soundEnabled) zzfx(0.25, 0.35, 0, 0, 0.6, 0, 0, 2.5, 0, 0, 0, 0, 0, 0); }
+
+            function sfxStar() { if (state.soundEnabled) zzfx(0.08, 0.2, 0, 0, 0.8, 0, 0, 3.0, 0, 0, 0, 0, 0, 0); }
+
+            function sfxClick() { if (state.soundEnabled) zzfx(0.04, 0.2, 0, 0, 0.2, 0, 0, 1.0, 0, 0, 0, 0, 0, 0); }
+
+            function sfxError() { if (state.soundEnabled) zzfx(0.15, 0.3, 0.4, 0.1, 0.1, 0, 0, 0.5, 0, 0, 0, 0, 0, 0); }
+
+            function sfxPurchase() { if (state.soundEnabled) { zzfx(0.1, 0.3, 0, 0, 0.5, 0, 0, 1.5, 0, 0, 0, 0, 0, 0);
+                    setTimeout(() => zzfx(0.15, 0.3, 0, 0, 0.7, 0, 0, 2.0, 0, 0, 0, 0, 0, 0), 120); } }
+
+            // -------- LEVEL GENERATOR --------
+            function generateLevel(levelId) {
+                // Seed based on level
+                const seed = levelId * 137 + 42;
+                let rng = seed;
+
+                function nextRand() {
+                    rng = (rng * 9301 + 49297) % 233280;
+                    return rng / 233280;
+                }
+
+                // Create target pattern: each color appears exactly 6 times
+                const target = [];
+                const colorCounts = Array(NUM_COLORS).fill(0);
+                const totalCells = GRID_SIZE * GRID_SIZE;
+                const perColor = totalCells / NUM_COLORS;
+
+                // Fill target with balanced colors
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    target[r] = [];
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        // Pick a color with remaining slots
+                        let available = [];
+                        for (let i = 0; i < NUM_COLORS; i++) {
+                            if (colorCounts[i] < perColor) available.push(i);
+                        }
+                        let color = available[Math.floor(nextRand() * available.length)];
+                        target[r][c] = color;
+                        colorCounts[color]++;
+                    }
+                }
+
+                // Shuffle to create starting grid
+                const grid = target.map(row => [...row]);
+                const flat = [];
+                for (let r = 0; r < GRID_SIZE; r++)
+                    for (let c = 0; c < GRID_SIZE; c++)
+                        flat.push({ r, c, color: grid[r][c] });
+
+                // Fisher-Yates shuffle
+                for (let i = flat.length - 1; i > 0; i--) {
+                    const j = Math.floor(nextRand() * (i + 1));
+                    [flat[i], flat[j]] = [flat[j], flat[i]];
+                }
+                for (const item of flat) {
+                    grid[item.r][item.c] = item.color;
+                }
+
+                // Determine scramble difficulty
+                const baseMoves = Math.floor(10 + levelId * 0.7);
+                const scrambleMoves = Math.min(baseMoves + Math.floor(nextRand() * 8), 60);
+
+                // Solve by swapping to target (record solution path)
+                const solution = [];
+                let workingGrid = grid.map(row => [...row]);
+
+                // Greedy solve: find misplaced tiles and swap them into place
+                for (let step = 0; step < 200 && solution.length < 100; step++) {
+                    let swapped = false;
+                    for (let r = 0; r < GRID_SIZE && !swapped; r++) {
+                        for (let c = 0; c < GRID_SIZE && !swapped; c++) {
+                            if (workingGrid[r][c] !== target[r][c]) {
+                                // Find where this color should go
+                                let found = false;
+                                for (let r2 = 0; r2 < GRID_SIZE && !found; r2++) {
+                                    for (let c2 = 0; c2 < GRID_SIZE && !found; c2++) {
+                                        if (workingGrid[r2][c2] === target[r][c] && workingGrid[r2][c2] !== target[r2][c2]) {
+                                            // Swap them
+                                            [workingGrid[r][c], workingGrid[r2][c2]] = [workingGrid[r2][c2], workingGrid[r][
+                                            c]];
+                                            solution.push({ r1: r, c1: c, r2: r2, c2: c2 });
+                                            swapped = true;
+                                            found = true;
+                                        }
+                                    }
+                                }
+                                if (!found) {
+                                    // Fallback: swap with any tile that's not in correct position
+                                    for (let r2 = 0; r2 < GRID_SIZE && !found; r2++) {
+                                        for (let c2 = 0; c2 < GRID_SIZE && !found; c2++) {
+                                            if ((r2 !== r || c2 !== c) && workingGrid[r2][c2] !== target[r2][c2]) {
+                                                [workingGrid[r][c], workingGrid[r2][c2]] = [workingGrid[r2][c2],
+                                                    workingGrid[r][c]
+                                                ];
+                                                solution.push({ r1: r, c1: c, r2: r2, c2: c2 });
+                                                swapped = true;
+                                                found = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                });
-                document.documentElement.lang = lang;
-                window.__currentLang = lang;
+                    if (!swapped) break;
+                }
+
+                // Max moves = solution length + some buffer
+                const maxMoves = Math.max(solution.length + 4, Math.floor(solution.length * 1.3) + 2);
+
+                return {
+                    id: levelId,
+                    target: target,
+                    grid: grid,
+                    solution: solution,
+                    maxMoves: maxMoves,
+                    scrambleMoves: scrambleMoves,
+                };
             }
 
-            // =========================================================
-            //  🔄 LANGUAGE TOGGLE
-            // =========================================================
-            const langCycle = ['en', 'es', 'fa', 'ko', 'ar', 'ru', 'zh', 'so'];
-            document.getElementById('langToggle').addEventListener('click', function() {
-                const current = window.__currentLang || 'en';
-                let idx = langCycle.indexOf(current);
-                if (idx === -1) idx = 0;
-                idx = (idx + 1) % langCycle.length;
-                applyLanguage(langCycle[idx]);
-            });
-
-            // =========================================================
-            //  🚀 INITIAL LOAD
-            // =========================================================
-            function init() {
-                const detected = detectLanguage();
-                applyLanguage(detected);
+            // Pre-generate all levels
+            const LEVEL_CACHE = {};
+            for (let i = 1; i <= TOTAL_LEVELS; i++) {
+                LEVEL_CACHE[i] = generateLevel(i);
             }
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
+            // -------- SAVE SYSTEM --------
+            function saveGame() {
+                try {
+                    const data = {
+                        currentLevel: state.currentLevel,
+                        stars: state.stars,
+                        cores: state.cores,
+                        chaptersUnlocked: state.chaptersUnlocked,
+                        soundEnabled: state.soundEnabled,
+                        musicEnabled: state.musicEnabled,
+                    };
+                    localStorage.setItem('neonShiftSave', JSON.stringify(data));
+                } catch (e) { /* ignore */ }
             }
 
-            // =========================================================
-            //  ⏱️ COUNTDOWN TIMER (August 1, 2026)
-            // =========================================================
-            const targetDate = new Date('2026-08-01T00:00:00').getTime();
+            function loadGame() {
+                try {
+                    const raw = localStorage.getItem('neonShiftSave');
+                    if (!raw) return false;
+                    const data = JSON.parse(raw);
+                    state.currentLevel = data.currentLevel || 1;
+                    state.stars = data.stars || new Array(TOTAL_LEVELS + 1).fill(0);
+                    state.cores = data.cores || 0;
+                    state.chaptersUnlocked = data.chaptersUnlocked || [1, 2, 3];
+                    state.soundEnabled = data.soundEnabled !== undefined ? data.soundEnabled : true;
+                    state.musicEnabled = data.musicEnabled !== undefined ? data.musicEnabled : false;
+                    return true;
+                } catch (e) { return false; }
+            }
 
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const diff = targetDate - now;
+            // -------- CHAPTER SYSTEM --------
+            function isChapterUnlocked(chapterIdx) {
+                return state.chaptersUnlocked.includes(chapterIdx);
+            }
 
-                if (diff <= 0) {
-                    document.getElementById('days').textContent = '00';
-                    document.getElementById('hours').textContent = '00';
-                    document.getElementById('minutes').textContent = '00';
-                    document.getElementById('seconds').textContent = '00';
+            function isLevelUnlocked(levelId) {
+                if (levelId <= 0) return false;
+                if (levelId > TOTAL_LEVELS) return false;
+                const chapter = Math.ceil(levelId / CHAPTER_LEVELS);
+                if (isChapterUnlocked(chapter)) return true;
+                // First 3 chapters are free
+                if (chapter <= 3) return true;
+                // Check if previous level is completed (has stars)
+                if (levelId > 1 && state.stars[levelId - 1] > 0) return true;
+                return false;
+            }
+
+            function isLevelCompleted(levelId) {
+                return state.stars[levelId] > 0;
+            }
+
+            function getLevelStars(levelId) {
+                return state.stars[levelId] || 0;
+            }
+
+            function unlockChapter(chapterIdx) {
+                if (!state.chaptersUnlocked.includes(chapterIdx)) {
+                    state.chaptersUnlocked.push(chapterIdx);
+                    saveGame();
+                    return true;
+                }
+                return false;
+            }
+
+            function unlockAllChapters() {
+                let any = false;
+                for (let i = 1; i <= 10; i++) {
+                    if (!state.chaptersUnlocked.includes(i)) {
+                        state.chaptersUnlocked.push(i);
+                        any = true;
+                    }
+                }
+                if (any) saveGame();
+                return any;
+            }
+
+            // -------- GAME LOGIC --------
+            let levelData = null;
+            let gameGrid = [];
+            let gameSelected = null;
+            let gameMoves = 0;
+            let gameMaxMoves = 0;
+            let gameComplete = false;
+            let gameAnimating = false;
+            let gameUndoStack = [];
+            let gameUndoUsed = false;
+            let gameHintUsed = false;
+            let gameTutorialStep = 0;
+
+            function loadLevel(levelId) {
+                const data = LEVEL_CACHE[levelId];
+                if (!data) return;
+                levelData = data;
+                gameGrid = data.grid.map(row => [...row]);
+                gameSelected = null;
+                gameMoves = 0;
+                gameMaxMoves = data.maxMoves;
+                gameComplete = false;
+                gameAnimating = false;
+                gameUndoStack = [];
+                gameUndoUsed = false;
+                gameHintUsed = false;
+
+                // Update HUD
+                $('hudLevel').textContent = levelId;
+                $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
+                $('hudStars').textContent = getLevelStars(levelId);
+                $('hudCores').textContent = state.cores;
+
+                overlay.classList.remove('show');
+
+                // Tutorial for first 3 levels
+                if (levelId <= 3) {
+                    gameTutorialStep = 0;
+                    tutorialTip.textContent = '✨ Tap two adjacent tiles to swap them. Match the target pattern!';
+                    tutorialTip.style.display = 'block';
+                    setTimeout(() => {
+                        if (levelId === 1) {
+                            tutorialTip.textContent = '👆 Tap a tile to select it, then tap an adjacent tile to swap.';
+                        } else if (levelId === 2) {
+                            tutorialTip.textContent = '🎯 Watch the target pattern at the top. Match it within the move limit!';
+                        } else {
+                            tutorialTip.textContent = '⚡ Create cascades by matching rows or columns!';
+                        }
+                    }, 800);
+                } else {
+                    tutorialTip.style.display = 'none';
+                }
+
+                drawGame();
+                saveGame();
+            }
+
+            function getTileNeighbors(r, c) {
+                const dirs = [
+                    [-1, 0],
+                    [1, 0],
+                    [0, -1],
+                    [0, 1]
+                ];
+                const result = [];
+                for (const d of dirs) {
+                    const nr = r + d[0],
+                        nc = c + d[1];
+                    if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
+                        result.push({ r: nr, c: nc });
+                    }
+                }
+                return result;
+            }
+
+            function getTileColor(grid, r, c) {
+                return grid[r][c];
+            }
+
+            function isTileCorrect(grid, r, c) {
+                return grid[r][c] === levelData.target[r][c];
+            }
+
+            function countCorrect(grid) {
+                let count = 0;
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        if (isTileCorrect(grid, r, c)) count++;
+                    }
+                }
+                return count;
+            }
+
+            function isGridComplete(grid) {
+                return countCorrect(grid) === GRID_SIZE * GRID_SIZE;
+            }
+
+            function swapTiles(grid, r1, c1, r2, c2) {
+                [grid[r1][c1], grid[r2][c2]] = [grid[r2][c2], grid[r1][c1]];
+            }
+
+            function handleTileClick(r, c) {
+                if (gameComplete || gameAnimating) return;
+                if (!isLevelUnlocked(state.currentLevel)) {
+                    showChapterModal();
                     return;
                 }
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                if (gameSelected === null) {
+                    // Select tile
+                    gameSelected = { r, c };
+                    drawGame();
+                    return;
+                }
 
-                document.getElementById('days').textContent = String(days).padStart(2, '0');
-                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+                // Check if clicking the same tile
+                if (gameSelected.r === r && gameSelected.c === c) {
+                    gameSelected = null;
+                    drawGame();
+                    return;
+                }
+
+                // Check if adjacent
+                const neighbors = getTileNeighbors(gameSelected.r, gameSelected.c);
+                const isAdjacent = neighbors.some(n => n.r === r && n.c === c);
+                if (!isAdjacent) {
+                    // Select new tile instead
+                    gameSelected = { r, c };
+                    drawGame();
+                    return;
+                }
+
+                // Perform swap
+                const sr = gameSelected.r,
+                    sc = gameSelected.c;
+                const tr = r,
+                    tc = c;
+
+                // Store undo state
+                const prevGrid = gameGrid.map(row => [...row]);
+                gameUndoStack.push(prevGrid);
+
+                swapTiles(gameGrid, sr, sc, tr, tc);
+                gameMoves++;
+                $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
+                sfxSlide();
+
+                gameSelected = null;
+
+                // Check if complete
+                if (isGridComplete(gameGrid)) {
+                    gameComplete = true;
+                    sfxCascade();
+                    sfxLevelUp();
+                    const stars = calculateStars();
+                    if (stars > getLevelStars(state.currentLevel)) {
+                        state.stars[state.currentLevel] = stars;
+                        const coreEarn = stars * 10;
+                        state.cores += coreEarn;
+                        $('hudCores').textContent = state.cores;
+                        sfxStar();
+                    }
+                    $('hudStars').textContent = getLevelStars(state.currentLevel);
+                    saveGame();
+                    showLevelComplete(stars);
+                    drawGame();
+                    return;
+                }
+
+                // Check if moves exceeded
+                if (gameMoves >= gameMaxMoves) {
+                    // Not complete, but moves ran out
+                    gameComplete = true;
+                    showGameOver();
+                    drawGame();
+                    return;
+                }
+
+                drawGame();
+                saveGame();
+
+                // Auto-hint for tutorial
+                if (state.currentLevel <= 3 && gameMoves === 2) {
+                    setTimeout(() => {
+                        tutorialTip.textContent = '💡 Try to match the target pattern. Tiles glow when correct!';
+                        tutorialTip.style.display = 'block';
+                    }, 300);
+                }
             }
 
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-
-            // =========================================================
-            //  📧 CONTACT FORM (Google Apps Script)
-            // =========================================================
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbyn4MirbcMdJkfVNeH9wenmrEvQq-Z7wBNR2F4we89abcjq4f8Q3LFuGbg0ZjoO5jF6/exec';
-
-            const form = document.getElementById('contactForm');
-            const status = document.getElementById('formStatus');
-            const submitBtn = document.getElementById('submitBtn');
-
-            function setStatus(message, type) {
-                status.textContent = message;
-                status.className = 'form-status ' + type;
-                status.style.display = 'block';
+            function calculateStars() {
+                const ratio = gameMoves / gameMaxMoves;
+                if (ratio <= 0.5) return 3;
+                if (ratio <= 0.75) return 2;
+                if (ratio <= 1.0) return 1;
+                return 1;
             }
 
-            function resetStatus() {
-                status.className = 'form-status';
-                status.style.display = 'none';
-                status.textContent = '';
+            function showLevelComplete(stars) {
+                const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+                overlayIcon.textContent = '🎉';
+                overlayTitle.textContent = 'Level Complete!';
+                overlayStars.textContent = starStr;
+                const msgs = ['Keep going!', 'Great job!', 'Amazing!', 'Perfect!'];
+                overlaySub.textContent = msgs[stars - 1] || 'Well done!';
+                overlayBtn.textContent = state.currentLevel >= TOTAL_LEVELS ? '🏆 FINISHED' : '▶ NEXT LEVEL';
+                overlayBtn.dataset.action = 'next';
+                overlay.classList.add('show');
             }
 
-            form.addEventListener('submit', function(e) {
+            function showGameOver() {
+                overlayIcon.textContent = '💫';
+                overlayTitle.textContent = 'Moves Exceeded';
+                overlayStars.textContent = 'Try again!';
+                overlaySub.textContent = 'You can do it!';
+                overlayBtn.textContent = '🔄 RETRY';
+                overlayBtn.dataset.action = 'retry';
+                overlay.classList.add('show');
+            }
+
+            function showChapterModal() {
+                const modal = $('chapterModal');
+                const desc = $('chapterModalDesc');
+                const price = $('chapterModalPrice');
+                const sub = $('chapterModalSub');
+                const chapter = Math.ceil(state.currentLevel / CHAPTER_LEVELS);
+                if (chapter <= 3) {
+                    // Should not happen
+                    modal.classList.remove('show');
+                    return;
+                }
+                const remaining = TOTAL_LEVELS - (chapter - 1) * CHAPTER_LEVELS;
+                desc.textContent = `You've reached the end of the free content! Unlock Chapter ${chapter} (${remaining} more levels) and continue your neon journey.`;
+                const isFull = chapter >= 4;
+                price.textContent = isFull ? '$4.99' : '$1.99';
+                sub.textContent = isFull ? 'One-time purchase · All remaining chapters' :
+                    `Chapter ${chapter} pack · ${Math.min(remaining, CHAPTER_LEVELS)} levels`;
+                modal.dataset.chapter = chapter;
+                modal.classList.add('show');
+            }
+
+            // -------- DRAWING --------
+            let animFrame = null;
+            let glowPulse = 0;
+
+            function drawGame() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                const size = Math.min(rect.width, rect.height);
+                canvas.width = size;
+                canvas.height = size;
+                const cellSize = size / GRID_SIZE;
+                const pad = cellSize * 0.08;
+                const hexRadius = cellSize * 0.38;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Background glow
+                const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size * 0.6);
+                grad.addColorStop(0, 'rgba(20, 10, 50, 0.3)');
+                grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, size, size);
+
+                const colors = [
+                    '#00f0ff', // cyan
+                    '#ff00e5', // magenta
+                    '#ffcc00', // gold
+                    '#00ff88', // green
+                    '#ff6600', // orange
+                    '#aa66ff', // purple
+                ];
+
+                const glowColors = [
+                    'rgba(0,240,255,',
+                    'rgba(255,0,229,',
+                    'rgba(255,204,0,',
+                    'rgba(0,255,136,',
+                    'rgba(255,102,0,',
+                    'rgba(170,102,255,',
+                ];
+
+                // Draw target pattern (small preview)
+                const previewSize = Math.min(size * 0.18, 70);
+                const previewX = size - previewSize - 8;
+                const previewY = 8;
+                const previewCell = previewSize / GRID_SIZE;
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        const colorIdx = levelData.target[r][c];
+                        const x = previewX + c * previewCell;
+                        const y = previewY + r * previewCell;
+                        ctx.fillStyle = colors[colorIdx] + '66';
+                        ctx.shadowColor = colors[colorIdx] + '40';
+                        ctx.shadowBlur = 6;
+                        ctx.beginPath();
+                        ctx.roundRect(x + 1, y + 1, previewCell - 2, previewCell - 2, 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+                // Preview border
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(previewX, previewY, previewSize, previewSize);
+
+                // Label
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.font = `${Math.max(8, previewSize * 0.15)}px sans-serif`;
+                ctx.textAlign = 'left';
+                ctx.fillText('TARGET', previewX, previewY - 4);
+
+                // Draw grid
+                glowPulse = (glowPulse + 0.02) % (Math.PI * 2);
+
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        const x = c * cellSize + cellSize / 2;
+                        const y = r * cellSize + cellSize / 2;
+                        const colorIdx = gameGrid[r][c];
+                        const isCorrect = isTileCorrect(gameGrid, r, c);
+                        const isSelected = gameSelected && gameSelected.r === r && gameSelected.c === c;
+
+                        // Glow intensity
+                        let glowIntensity = isCorrect ? 0.6 + 0.4 * Math.sin(glowPulse + r + c) : 0.1;
+                        if (isSelected) glowIntensity = 0.9;
+
+                        // Shadow glow
+                        const shadowColor = glowColors[colorIdx] + (isCorrect ? '0.5' : '0.15') + ')';
+                        ctx.shadowColor = shadowColor;
+                        ctx.shadowBlur = isCorrect ? 25 + 10 * Math.sin(glowPulse + r + c) : 8;
+
+                        // Hexagon
+                        const points = 6;
+                        const radius = hexRadius * (isSelected ? 1.08 : 1);
+                        ctx.beginPath();
+                        for (let i = 0; i < points; i++) {
+                            const angle = (i / points) * Math.PI * 2 - Math.PI / 6;
+                            const px = x + radius * Math.cos(angle);
+                            const py = y + radius * Math.sin(angle);
+                            if (i === 0) ctx.moveTo(px, py);
+                            else ctx.lineTo(px, py);
+                        }
+                        ctx.closePath();
+
+                        // Fill
+                        const fillColor = colors[colorIdx];
+                        const alpha = isCorrect ? 0.95 : 0.6;
+                        ctx.fillStyle = fillColor + Math.round(alpha * 255).toString(16).padStart(2, '0');
+                        ctx.fill();
+
+                        // Border glow
+                        if (isCorrect || isSelected) {
+                            ctx.shadowBlur = 0;
+                            ctx.strokeStyle = isSelected ? '#ffffff' : fillColor;
+                            ctx.lineWidth = isSelected ? 2.5 : 1.5;
+                            ctx.stroke();
+                        }
+
+                        ctx.shadowBlur = 0;
+
+                        // Inner highlight
+                        if (isCorrect) {
+                            const grad2 = ctx.createRadialGradient(x - radius * 0.2, y - radius * 0.2, 0, x, y, radius);
+                            grad2.addColorStop(0, 'rgba(255,255,255,0.2)');
+                            grad2.addColorStop(1, 'rgba(255,255,255,0)');
+                            ctx.fillStyle = grad2;
+                            ctx.beginPath();
+                            for (let i = 0; i < points; i++) {
+                                const angle = (i / points) * Math.PI * 2 - Math.PI / 6;
+                                const px = x + radius * 0.9 * Math.cos(angle);
+                                const py = y + radius * 0.9 * Math.sin(angle);
+                                if (i === 0) ctx.moveTo(px, py);
+                                else ctx.lineTo(px, py);
+                            }
+                            ctx.closePath();
+                            ctx.fill();
+                        }
+
+                        // Selection ring
+                        if (isSelected) {
+                            ctx.shadowColor = 'rgba(255,255,255,0.4)';
+                            ctx.shadowBlur = 30;
+                            ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            for (let i = 0; i < points; i++) {
+                                const angle = (i / points) * Math.PI * 2 - Math.PI / 6;
+                                const px = x + (radius + 4) * Math.cos(angle);
+                                const py = y + (radius + 4) * Math.sin(angle);
+                                if (i === 0) ctx.moveTo(px, py);
+                                else ctx.lineTo(px, py);
+                            }
+                            ctx.closePath();
+                            ctx.stroke();
+                            ctx.shadowBlur = 0;
+                        }
+
+                        // Small indicator for correct position
+                        if (isCorrect) {
+                            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                            ctx.beginPath();
+                            ctx.arc(x, y, radius * 0.15, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
+
+                // Draw move counter and progress
+                const progress = gameMoves / gameMaxMoves;
+                const barY = size - 8;
+                const barW = size * 0.5;
+                const barX = (size - barW) / 2;
+                ctx.fillStyle = 'rgba(255,255,255,0.04)';
+                ctx.beginPath();
+                ctx.roundRect(barX, barY, barW, 4, 2);
+                ctx.fill();
+                const progColor = progress > 0.85 ? '#ff4444' : progress > 0.6 ? '#ffaa44' : '#44ff88';
+                ctx.fillStyle = progColor + '88';
+                ctx.beginPath();
+                ctx.roundRect(barX, barY, barW * Math.min(progress, 1), 4, 2);
+                ctx.fill();
+
+                // Moves text
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                ctx.font = `${Math.max(9, size * 0.025)}px sans-serif`;
+                ctx.textAlign = 'right';
+                ctx.fillText(`${gameMoves}/${gameMaxMoves}`, size - 4, barY + 12);
+                ctx.textAlign = 'left';
+                ctx.fillText('MOVES', 4, barY + 12);
+            }
+
+            // -------- CANVAS INTERACTION --------
+            function getGridPos(clientX, clientY) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const x = (clientX - rect.left) * scaleX;
+                const y = (clientY - rect.top) * scaleY;
+                const cellSize = canvas.width / GRID_SIZE;
+                const c = Math.floor(x / cellSize);
+                const r = Math.floor(y / cellSize);
+                if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE) {
+                    return { r, c };
+                }
+                return null;
+            }
+
+            canvas.addEventListener('click', (e) => {
+                const pos = getGridPos(e.clientX, e.clientY);
+                if (pos) handleTileClick(pos.r, pos.c);
+            });
+
+            canvas.addEventListener('touchstart', (e) => {
                 e.preventDefault();
+                const touch = e.touches[0];
+                const pos = getGridPos(touch.clientX, touch.clientY);
+                if (pos) handleTileClick(pos.r, pos.c);
+            }, { passive: false });
 
-                const name = document.getElementById('name').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const message = document.getElementById('message').value.trim();
+            // -------- UI EVENT BINDING --------
+            // Menu
+            $('menuPlayBtn').addEventListener('click', () => {
+                sfxClick();
+                const nextLevel = getNextUnlockedLevel();
+                state.currentLevel = nextLevel || 1;
+                switchScreen('game');
+                loadLevel(state.currentLevel);
+            });
 
-                if (!name || !email || !message) {
-                    const lang = window.__currentLang || 'en';
-                    const errorMsg = lang === 'es' ? 'Por favor, completa todos los campos.' :
-                                     lang === 'fa' ? 'لطفاً تمام فیلدها را پر کنید.' :
-                                     lang === 'ko' ? '모든 필드를 입력해주세요.' :
-                                     lang === 'ar' ? 'يرجى ملء جميع الحقول.' :
-                                     lang === 'ru' ? 'Пожалуйста, заполните все поля.' :
-                                     lang === 'zh' ? '请填写所有字段。' :
-                                     lang === 'so' ? 'Fadlan buuxi dhammaan goobaha.' :
-                                     'Please fill in all fields.';
-                    setStatus(errorMsg, 'error');
+            $('menuLevelsBtn').addEventListener('click', () => {
+                sfxClick();
+                switchScreen('levels');
+                renderLevelGrid();
+            });
+
+            $('menuShopBtn').addEventListener('click', () => {
+                sfxClick();
+                $('shopCores').textContent = state.cores;
+                $('shopModal').classList.add('show');
+            });
+
+            $('menuSoundBtn').addEventListener('click', function() {
+                state.soundEnabled = !state.soundEnabled;
+                this.textContent = state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF';
+                sfxClick();
+                saveGame();
+            });
+
+            // Level select
+            $('lsBackBtn').addEventListener('click', () => {
+                sfxClick();
+                switchScreen('menu');
+            });
+
+            // Game
+            $('gameBackBtn').addEventListener('click', () => {
+                sfxClick();
+                if (gameComplete) {
+                    switchScreen('levels');
+                    renderLevelGrid();
+                } else {
+                    if (confirm('Exit level? Progress will be lost.')) {
+                        switchScreen('levels');
+                        renderLevelGrid();
+                    }
+                }
+            });
+
+            $('gameHintBtn').addEventListener('click', () => {
+                sfxClick();
+                if (state.cores < 5) {
+                    alert('Not enough Neon Cores! (Need 5)');
                     return;
                 }
-
-                submitBtn.disabled = true;
-                const lang = window.__currentLang || 'en';
-                const sendingText = lang === 'es' ? '✧ Enviando...' :
-                                     lang === 'fa' ? '✧ در حال ارسال...' :
-                                     lang === 'ko' ? '✧ 보내는 중...' :
-                                     lang === 'ar' ? '✧ جاري الإرسال...' :
-                                     lang === 'ru' ? '✧ Отправка...' :
-                                     lang === 'zh' ? '✧ 发送中...' :
-                                     lang === 'so' ? '✧ Dirayaa...' :
-                                     '✧ Sending...';
-                submitBtn.innerHTML = sendingText;
-                resetStatus();
-
-                fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, message })
-                })
-                .then(function() {
-                    const lang = window.__currentLang || 'en';
-                    const successMsg = lang === 'es' ? '✓ ¡Mensaje enviado! Recibirás una respuesta en 24 horas.' :
-                                        lang === 'fa' ? '✓ پیام ارسال شد! در عرض ۲۴ ساعت پاسخ دریافت خواهید کرد.' :
-                                        lang === 'ko' ? '✓ 메시지가 전송되었습니다! 24시간 이내에 답변을 받으실 수 있습니다.' :
-                                        lang === 'ar' ? '✓ تم إرسال الرسالة! ستصلك رسالة رد خلال 24 ساعة.' :
-                                        lang === 'ru' ? '✓ Сообщение отправлено! Вы получите ответ в течение 24 часов.' :
-                                        lang === 'zh' ? '✓ 消息已发送！您将在24小时内收到回复。' :
-                                        lang === 'so' ? '✓ Fariinta waa la diray! Waxaad heli doontaa jawaab 24 saac gudahood.' :
-                                        '✓ Message sent! You\'ll receive a reply within 24 hours.';
-                    setStatus(successMsg, 'success');
-                    form.reset();
-                    submitBtn.disabled = false;
-                    const submitText = lang === 'es' ? '✧ Enviar mensaje' :
-                                        lang === 'fa' ? '✧ ارسال پیام' :
-                                        lang === 'ko' ? '✧ 메시지 보내기' :
-                                        lang === 'ar' ? '✧ إرسال الرسالة' :
-                                        lang === 'ru' ? '✧ Отправить сообщение' :
-                                        lang === 'zh' ? '✧ 发送消息' :
-                                        lang === 'so' ? '✧ Soo dir fariin' :
-                                        '✧ Send message';
-                    submitBtn.innerHTML = submitText;
-                })
-                .catch(function(err) {
-                    console.error('Error:', err);
-                    const lang = window.__currentLang || 'en';
-                    const errorMsg = lang === 'es' ? 'Algo salió mal. Intenta de nuevo o escríbenos directamente a hello@wordwell.com.' :
-                                      lang === 'fa' ? 'مشکلی پیش آمد. دوباره تلاش کنید یا مستقیماً به hello@wordwell.com ایمیل بزنید.' :
-                                      lang === 'ko' ? '문제가 발생했습니다. 다시 시도하거나 hello@wordwell.com으로 직접 이메일을 보내주세요.' :
-                                      lang === 'ar' ? 'حدث خطأ ما. يرجى المحاولة مرة أخرى أو مراسلتنا مباشرة على hello@wordwell.com.' :
-                                      lang === 'ru' ? 'Что-то пошло не так. Пожалуйста, попробуйте снова или напишите нам напрямую на hello@wordwell.com.' :
-                                      lang === 'zh' ? '出了点问题。请重试或直接发送邮件至 hello@wordwell.com。' :
-                                      lang === 'so' ? 'Wax qalad ayaa dhacay. Fadlan isku day mar kale ama noo soo dir iimayl toos ah hello@wordwell.com.' :
-                                      'Something went wrong. Please try again or email us directly at hello@wordwell.com.';
-                    setStatus(errorMsg, 'error');
-                    submitBtn.disabled = false;
-                    const submitText = lang === 'es' ? '✧ Enviar mensaje' :
-                                        lang === 'fa' ? '✧ ارسال پیام' :
-                                        lang === 'ko' ? '✧ 메시지 보내기' :
-                                        lang === 'ar' ? '✧ إرسال الرسالة' :
-                                        lang === 'ru' ? '✧ Отправить сообщение' :
-                                        lang === 'zh' ? '✧ 发送消息' :
-                                        lang === 'so' ? '✧ Soo dir fariin' :
-                                        '✧ Send message';
-                    submitBtn.innerHTML = submitText;
-                });
+                if (gameComplete || gameAnimating) return;
+                // Simple hint: highlight a misplaced tile
+                const misplaced = [];
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        if (gameGrid[r][c] !== levelData.target[r][c]) {
+                            misplaced.push({ r, c });
+                        }
+                    }
+                }
+                if (misplaced.length === 0) {
+                    alert('Already perfect!');
+                    return;
+                }
+                state.cores -= 5;
+                $('hudCores').textContent = state.cores;
+                saveGame();
+                // Highlight a misplaced tile
+                const idx = Math.floor(Math.random() * misplaced.length);
+                const tile = misplaced[idx];
+                gameSelected = { r: tile.r, c: tile.c };
+                drawGame();
+                setTimeout(() => {
+                    tutorialTip.textContent = `💡 Tile at (${tile.r+1}, ${tile.c+1}) needs to be swapped!`;
+                    tutorialTip.style.display = 'block';
+                    setTimeout(() => { tutorialTip.style.display = 'none'; }, 2000);
+                }, 200);
+                sfxMatch();
             });
+
+            $('gameUndoBtn').addEventListener('click', () => {
+                sfxClick();
+                if (gameComplete || gameAnimating) return;
+                if (gameUndoStack.length === 0) {
+                    alert('No moves to undo!');
+                    return;
+                }
+                if (gameUndoUsed) {
+                    if (state.cores < 2) {
+                        alert('Need 2 cores for extra undo.');
+                        return;
+                    }
+                    state.cores -= 2;
+                    $('hudCores').textContent = state.cores;
+                    saveGame();
+                } else {
+                    gameUndoUsed = true;
+                }
+                const prev = gameUndoStack.pop();
+                gameGrid = prev;
+                gameMoves--;
+                $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
+                gameSelected = null;
+                drawGame();
+                sfxSlide();
+            });
+
+            overlayBtn.addEventListener('click', () => {
+                sfxClick();
+                if (overlayBtn.dataset.action === 'next') {
+                    const next = state.currentLevel + 1;
+                    if (next > TOTAL_LEVELS) {
+                        alert('🎉 You completed all 100 levels! Congratulations!');
+                        switchScreen('menu');
+                        return;
+                    }
+                    state.currentLevel = next;
+                    loadLevel(next);
+                    drawGame();
+                } else {
+                    // Retry
+                    loadLevel(state.currentLevel);
+                    drawGame();
+                }
+            });
+
+            // Shop modal
+            $('shopCloseBtn').addEventListener('click', () => {
+                sfxClick();
+                $('shopModal').classList.remove('show');
+            });
+            $('shopHintBtn').addEventListener('click', () => {
+                sfxClick();
+                if (state.cores < 5) { alert('Not enough cores!'); return; }
+                state.cores -= 5;
+                $('hudCores').textContent = state.cores;
+                $('shopCores').textContent = state.cores;
+                saveGame();
+                alert('💡 Hint purchased! Use it in the game.');
+            });
+            $('shopUndoBtn').addEventListener('click', () => {
+                sfxClick();
+                if (state.cores < 2) { alert('Not enough cores!'); return; }
+                state.cores -= 2;
+                $('hudCores').textContent = state.cores;
+                $('shopCores').textContent = state.cores;
+                saveGame();
+                alert('↩ Extra undo purchased!');
+            });
+            $('shopFullUnlockBtn').addEventListener('click', () => {
+                sfxClick();
+                sfxPurchase();
+                if (unlockAllChapters()) {
+                    alert('🔓 All chapters unlocked! Thank you for your purchase!');
+                    $('shopModal').classList.remove('show');
+                    renderLevelGrid();
+                } else {
+                    alert('Already unlocked!');
+                }
+            });
+            $('shopChapterBtn').addEventListener('click', () => {
+                sfxClick();
+                // Find first locked chapter
+                let firstLocked = null;
+                for (let i = 4; i <= 10; i++) {
+                    if (!isChapterUnlocked(i)) { firstLocked = i; break; }
+                }
+                if (firstLocked === null) {
+                    alert('All chapters already unlocked!');
+                    return;
+                }
+                sfxPurchase();
+                if (unlockChapter(firstLocked)) {
+                    alert(`🔓 Chapter ${firstLocked} unlocked!`);
+                    $('shopModal').classList.remove('show');
+                    renderLevelGrid();
+                } else {
+                    alert('Something went wrong.');
+                }
+            });
+            $('shopRestoreBtn').addEventListener('click', () => {
+                sfxClick();
+                // Simulate restore
+                let restored = false;
+                for (let i = 4; i <= 10; i++) {
+                    if (!isChapterUnlocked(i)) {
+                        // In a real app, this would check with the store
+                        // For simulation, we'll just unlock
+                        if (i <= 6) { // Simulate that chapters 4-6 were purchased
+                            unlockChapter(i);
+                            restored = true;
+                        }
+                    }
+                }
+                if (restored) {
+                    alert('↻ Purchases restored!');
+                    renderLevelGrid();
+                } else {
+                    alert('No purchases to restore.');
+                }
+                saveGame();
+            });
+
+            // Chapter modal
+            $('chapterCloseBtn').addEventListener('click', () => {
+                sfxClick();
+                $('chapterModal').classList.remove('show');
+            });
+            $('chapterLaterBtn').addEventListener('click', () => {
+                sfxClick();
+                $('chapterModal').classList.remove('show');
+            });
+            $('chapterPurchaseBtn').addEventListener('click', () => {
+                sfxClick();
+                sfxPurchase();
+                const chapter = parseInt($('chapterModal').dataset.chapter) || 4;
+                if (chapter >= 4) {
+                    if (unlockChapter(chapter)) {
+                        alert(`🔓 Chapter ${chapter} unlocked! Enjoy!`);
+                        $('chapterModal').classList.remove('show');
+                        // Reload current level
+                        loadLevel(state.currentLevel);
+                        drawGame();
+                        renderLevelGrid();
+                    } else {
+                        alert('Already unlocked!');
+                    }
+                } else {
+                    // Full unlock
+                    if (unlockAllChapters()) {
+                        alert('🔓 All chapters unlocked!');
+                        $('chapterModal').classList.remove('show');
+                        loadLevel(state.currentLevel);
+                        drawGame();
+                        renderLevelGrid();
+                    }
+                }
+                saveGame();
+            });
+
+            // -------- SCREEN MANAGEMENT --------
+            function switchScreen(name) {
+                Object.keys(screens).forEach(key => {
+                    screens[key].classList.toggle('active', key === name);
+                });
+                // Hide modals
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+                if (name === 'game') {
+                    // Resize canvas
+                    setTimeout(() => drawGame(), 50);
+                }
+            }
+
+            // -------- LEVEL GRID --------
+            function renderLevelGrid() {
+                const grid = $('levelGrid');
+                grid.innerHTML = '';
+                const currentChapter = Math.ceil(state.currentLevel / CHAPTER_LEVELS);
+
+                for (let i = 1; i <= TOTAL_LEVELS; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'ls-cell';
+                    const unlocked = isLevelUnlocked(i);
+                    const completed = isLevelCompleted(i);
+                    const stars = getLevelStars(i);
+                    const isCurrent = i === state.currentLevel;
+
+                    if (completed) {
+                        cell.classList.add('completed');
+                        const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+                        cell.innerHTML =
+                            `<span class="level-num">${i}</span><span class="star-indicator">${starStr}</span>`;
+                    } else if (unlocked) {
+                        cell.classList.add('unlocked');
+                        if (isCurrent) cell.classList.add('current');
+                        cell.innerHTML = `<span class="level-num">${i}</span>`;
+                    } else {
+                        cell.classList.add('locked');
+                        cell.innerHTML = `<span class="level-num">${i}</span><span class="lock-icon">🔒</span>`;
+                    }
+
+                    cell.addEventListener('click', () => {
+                        sfxClick();
+                        if (unlocked) {
+                            state.currentLevel = i;
+                            switchScreen('game');
+                            loadLevel(i);
+                            drawGame();
+                        } else {
+                            // Show chapter unlock
+                            const chapter = Math.ceil(i / CHAPTER_LEVELS);
+                            if (chapter > 3) {
+                                state.currentLevel = i;
+                                showChapterModal();
+                            } else {
+                                alert('This level is locked. Complete previous levels to unlock.');
+                            }
+                        }
+                    });
+
+                    grid.appendChild(cell);
+                }
+            }
+
+            function getNextUnlockedLevel() {
+                for (let i = state.currentLevel; i <= TOTAL_LEVELS; i++) {
+                    if (isLevelUnlocked(i)) return i;
+                }
+                return 1;
+            }
+
+            // -------- ANIMATION LOOP --------
+            function gameLoop() {
+                if (screens.game.classList.contains('active') && !gameComplete) {
+                    glowPulse += 0.025;
+                    drawGame();
+                }
+                requestAnimationFrame(gameLoop);
+            }
+
+            // -------- POLYFILL roundRect --------
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+                    const r = typeof radii === 'number' ? radii : (radii || 0);
+                    this.moveTo(x + r, y);
+                    this.arcTo(x + w, y, x + w, y + h, r);
+                    this.arcTo(x + w, y + h, x, y + h, r);
+                    this.arcTo(x, y + h, x, y, r);
+                    this.arcTo(x, y, x + w, y, r);
+                    return this;
+                };
+            }
+
+            // -------- INIT --------
+            function init() {
+                loadGame();
+
+                // Ensure first 3 chapters are unlocked
+                [1, 2, 3].forEach(ch => {
+                    if (!state.chaptersUnlocked.includes(ch)) {
+                        state.chaptersUnlocked.push(ch);
+                    }
+                });
+
+                // Sound button state
+                $('menuSoundBtn').textContent = state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF';
+
+                // Start with menu
+                switchScreen('menu');
+
+                // Pre-load first level
+                loadLevel(state.currentLevel);
+
+                // Start loop
+                gameLoop();
+
+                console.log('🔮 NEON SHIFT loaded — 100 levels, 10 chapters');
+                console.log(`📊 Free: ${FREE_CHAPTERS * CHAPTER_LEVELS} levels · Paid: ${TOTAL_LEVELS - FREE_CHAPTERS * CHAPTER_LEVELS} levels`);
+            }
+
+            // Handle resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (screens.game.classList.contains('active')) {
+                        drawGame();
+                    }
+                }, 100);
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+                    if (screens.game.classList.contains('active')) {
+                        switchScreen('levels');
+                        renderLevelGrid();
+                    } else if (screens.levels.classList.contains('active')) {
+                        switchScreen('menu');
+                    }
+                }
+                if (e.key === 'r' && screens.game.classList.contains('active') && gameComplete) {
+                    overlayBtn.click();
+                }
+                if (e.key === 'h' && screens.game.classList.contains('active') && !gameComplete) {
+                    $('gameHintBtn').click();
+                }
+                if (e.key === 'u' && screens.game.classList.contains('active') && !gameComplete) {
+                    $('gameUndoBtn').click();
+                }
+            });
+
+            // Start
+            init();
 
         })();
     </script>
-
 </body>
 </html>
