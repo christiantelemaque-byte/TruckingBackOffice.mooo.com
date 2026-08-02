@@ -742,8 +742,7 @@
 
     <script>
         // ================================================================
-        //  NEON SHIFT — FULL GAME ENGINE
-        //  (c) 2026 · Single-file production build
+        //  NEON SHIFT — FULL GAME ENGINE (FIXED PURCHASE FLOW)
         // ================================================================
 
         (function() {
@@ -759,17 +758,16 @@
             // -------- STATE --------
             let state = {
                 currentLevel: 1,
-                stars: new Array(TOTAL_LEVELS + 1).fill(0), // 0=locked, 1-3=stars
+                stars: new Array(TOTAL_LEVELS + 1).fill(0),
                 cores: 0,
-                chaptersUnlocked: [1, 2, 3], // chapter indices 1-based
+                chaptersUnlocked: [1, 2, 3],
                 soundEnabled: true,
                 musicEnabled: false,
-                // runtime
                 grid: [],
                 target: [],
                 moves: 0,
                 maxMoves: 0,
-                selected: null, // {r, c} or null
+                selected: null,
                 isComplete: false,
                 isAnimating: false,
                 undoStack: [],
@@ -797,9 +795,7 @@
 
             // -------- SOUND (ZzFX) --------
             const zzfx = (...args) => {
-                // Minimal ZzFX implementation
-                let zzfxF = 0.05,
-                    zzfxR = 0,
+                let zzfxR = 0,
                     zzfxV = 0.3,
                     zzfxQ = 0,
                     zzfxS = 0,
@@ -814,8 +810,7 @@
                     zzfxH = 0,
                     zzfxG = 0;
                 let vol = 0.3,
-                    sampleRate = 44100,
-                    seed = 0;
+                    sampleRate = 44100;
                 if (args.length > 0) { zzfxR = args[0] || 0;
                     zzfxV = args[1] || 0.3;
                     zzfxQ = args[2] || 0;
@@ -830,154 +825,50 @@
                     zzfxW = args[11] || 0;
                     zzfxH = args[12] || 0;
                     zzfxG = args[13] || 0; }
-                let zzfxR0 = zzfxR,
-                    zzfxV0 = zzfxV,
-                    zzfxQ0 = zzfxQ,
-                    zzfxS0 = zzfxS,
-                    zzfxZ0 = zzfxZ,
-                    zzfxX0 = zzfxX,
-                    zzfxC0 = zzfxC,
-                    zzfxM0 = zzfxM,
-                    zzfxU0 = zzfxU,
-                    zzfxL0 = zzfxL,
-                    zzfxA0 = zzfxA,
-                    zzfxW0 = zzfxW,
-                    zzfxH0 = zzfxH,
-                    zzfxG0 = zzfxG;
-                let zzfxP = 0,
-                    zzfxO = 0,
-                    zzfxF0 = 0,
-                    zzfxF1 = 0,
-                    zzfxF2 = 0,
-                    zzfxF3 = 0,
-                    zzfxF4 = 0,
-                    zzfxF5 = 0,
-                    zzfxF6 = 0,
-                    zzfxF7 = 0,
-                    zzfxF8 = 0,
-                    zzfxF9 = 0,
-                    zzfxFA = 0,
-                    zzfxFB = 0,
-                    zzfxFC = 0,
-                    zzfxFD = 0,
-                    zzfxFE = 0,
-                    zzfxFF = 0;
-                let zzfxT = 0,
-                    zzfxN = 0,
-                    zzfxB = 0,
-                    zzfxI = 0,
-                    zzfxJ = 0,
-                    zzfxK = 0,
-                    zzfxD = 0,
-                    zzfxE = 0,
-                    zzfxY = 0,
-                    zzfx$ = 0,
-                    zzfx_ = 0,
-                    zzfx`` = 0,
-                    zzfx´ = 0,
-                    zzfx‘ = 0,
-                    zzfx’ = 0;
-                let zzfxBuffer = [];
-                const zzfxSampleRate = sampleRate;
-                const zzfxVolume = vol;
-                const zzfxSeed = seed;
-                const zzfxLoop = 0;
-                const zzfxDur = zzfxR0;
-                const zzfxFreq = 220;
-                const zzfxFreqRamp = 0;
-                const zzfxFreqRampRate = 0;
-                const zzfxFreqRampAmount = 0;
-                const zzfxFreqRampDelay = 0;
-                const zzfxFreqRampDuration = 0;
-                const zzfxFreqRampEnd = 0;
-                const zzfxFreqRampStart = 0;
-                const zzfxFreqRampStartFreq = 0;
-                const zzfxFreqRampEndFreq = 0;
-                const zzfxFreqRampStartDelay = 0;
-                const zzfxFreqRampEndDelay = 0;
-                const zzfxFreqRampStartDuration = 0;
-                const zzfxFreqRampEndDuration = 0;
-                const zzfxFreqRampStartAmount = 0;
-                const zzfxFreqRampEndAmount = 0;
-                const zzfxFreqRampStartRate = 0;
-                const zzfxFreqRampEndRate = 0;
-                const zzfxFreqRampStartFreqRamp = 0;
-                const zzfxFreqRampEndFreqRamp = 0;
-                const zzfxFreqRampStartFreqRampRate = 0;
-                const zzfxFreqRampEndFreqRampRate = 0;
-                const zzfxFreqRampStartFreqRampAmount = 0;
-                const zzfxFreqRampEndFreqRampAmount = 0;
-                const zzfxFreqRampStartFreqRampDelay = 0;
-                const zzfxFreqRampEndFreqRampDelay = 0;
-                const zzfxFreqRampStartFreqRampDuration = 0;
-                const zzfxFreqRampEndFreqRampDuration = 0;
-                const zzfxFreqRampStartFreqRampStart = 0;
-                const zzfxFreqRampEndFreqRampStart = 0;
-                const zzfxFreqRampStartFreqRampEnd = 0;
-                const zzfxFreqRampEndFreqRampEnd = 0;
-
-                // Simple sound generation
-                let sampleCount = Math.floor(zzfxDur * zzfxSampleRate);
+                let zzfxFreq = 220,
+                    zzfxFreqRamp = 0;
+                let sampleCount = Math.floor(zzfxR * sampleRate);
                 let phase = 0;
-                let phaseStep = (2 * Math.PI * zzfxFreq) / zzfxSampleRate;
-                let amp = zzfxVolume;
-
+                let amp = zzfxV;
+                let buffer = [];
                 for (let i = 0; i < sampleCount; i++) {
-                    let sample = 0;
-                    // Basic waveform: sine with some harmonics
-                    let t = i / zzfxSampleRate;
-                    let env = Math.exp(-t * 3) * (1 - t / zzfxDur);
-                    let freq = zzfxFreq * (1 + zzfxFreqRamp * t / zzfxDur);
-                    phase += (2 * Math.PI * freq) / zzfxSampleRate;
-                    sample = Math.sin(phase) * env * amp;
-                    // Add some square-ish distortion for edge
+                    let t = i / sampleRate;
+                    let env = Math.exp(-t * 3) * (1 - t / zzfxR);
+                    let freq = zzfxFreq * (1 + zzfxFreqRamp * t / zzfxR);
+                    phase += (2 * Math.PI * freq) / sampleRate;
+                    let sample = Math.sin(phase) * env * amp;
                     if (zzfxQ > 0.1) {
                         let sq = Math.sign(Math.sin(phase)) * env * amp * 0.3;
                         sample = sample * (1 - zzfxQ) + sq * zzfxQ;
                     }
-                    // Add noise
                     if (zzfxS > 0.01) {
                         let noise = (Math.random() * 2 - 1) * zzfxS * env * amp;
                         sample += noise;
                     }
-                    zzfxBuffer.push(sample);
+                    buffer.push(sample);
                 }
-
-                // Play using AudioContext
                 try {
                     const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-                    const buffer = audioCtx.createBuffer(1, zzfxBuffer.length, zzfxSampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let i = 0; i < zzfxBuffer.length; i++) {
-                        data[i] = zzfxBuffer[i] * 0.8;
-                    }
+                    const buffer2 = audioCtx.createBuffer(1, buffer.length, sampleRate);
+                    const data = buffer2.getChannelData(0);
+                    for (let i = 0; i < buffer.length; i++) data[i] = buffer[i] * 0.8;
                     const source = audioCtx.createBufferSource();
-                    source.buffer = buffer;
+                    source.buffer = buffer2;
                     const gain = audioCtx.createGain();
                     gain.gain.value = vol * 0.7;
                     source.connect(gain);
                     gain.connect(audioCtx.destination);
                     source.start();
-                    // Clean up
-                    setTimeout(() => {
-                        try { source.stop(); } catch (e) {}
-                    }, zzfxDur * 1000 + 200);
+                    setTimeout(() => { try { source.stop(); } catch (e) {} }, zzfxR * 1000 + 200);
                 } catch (e) { /* silent fail */ }
             };
 
-            // Sound helpers
             function sfxSlide() { if (state.soundEnabled) zzfx(0.08, 0.25, 0.15, 0.2, 0.3, 0, 0, 1.2, 0, 0, 0, 0, 0, 0); }
 
             function sfxMatch() { if (state.soundEnabled) zzfx(0.12, 0.3, 0, 0.1, 0.5, 0, 0, 2.0, 0, 0, 0, 0, 0, 0); }
 
-            function sfxCascade() {
-                if (state.soundEnabled) {
-                    for (let i = 0; i < 5; i++) {
-                        setTimeout(() => zzfx(0.06, 0.2, 0, 0.05, 0.4 + i * 0.1, 0, 0, 1.5 + i * 0.3, 0, 0, 0, 0, 0, 0), i *
-                        60);
-                    }
-                }
-            }
+            function sfxCascade() { if (state.soundEnabled) { for (let i = 0; i < 5; i++) { setTimeout(() => zzfx(0.06, 0.2,
+                        0, 0.05, 0.4 + i * 0.1, 0, 0, 1.5 + i * 0.3, 0, 0, 0, 0, 0, 0), i * 60); } } }
 
             function sfxLevelUp() { if (state.soundEnabled) zzfx(0.25, 0.35, 0, 0, 0.6, 0, 0, 2.5, 0, 0, 0, 0, 0, 0); }
 
@@ -992,7 +883,6 @@
 
             // -------- LEVEL GENERATOR --------
             function generateLevel(levelId) {
-                // Seed based on level
                 const seed = levelId * 137 + 42;
                 let rng = seed;
 
@@ -1000,18 +890,13 @@
                     rng = (rng * 9301 + 49297) % 233280;
                     return rng / 233280;
                 }
-
-                // Create target pattern: each color appears exactly 6 times
                 const target = [];
                 const colorCounts = Array(NUM_COLORS).fill(0);
                 const totalCells = GRID_SIZE * GRID_SIZE;
                 const perColor = totalCells / NUM_COLORS;
-
-                // Fill target with balanced colors
                 for (let r = 0; r < GRID_SIZE; r++) {
                     target[r] = [];
                     for (let c = 0; c < GRID_SIZE; c++) {
-                        // Pick a color with remaining slots
                         let available = [];
                         for (let i = 0; i < NUM_COLORS; i++) {
                             if (colorCounts[i] < perColor) available.push(i);
@@ -1021,15 +906,11 @@
                         colorCounts[color]++;
                     }
                 }
-
-                // Shuffle to create starting grid
                 const grid = target.map(row => [...row]);
                 const flat = [];
                 for (let r = 0; r < GRID_SIZE; r++)
                     for (let c = 0; c < GRID_SIZE; c++)
                         flat.push({ r, c, color: grid[r][c] });
-
-                // Fisher-Yates shuffle
                 for (let i = flat.length - 1; i > 0; i--) {
                     const j = Math.floor(nextRand() * (i + 1));
                     [flat[i], flat[j]] = [flat[j], flat[i]];
@@ -1037,27 +918,19 @@
                 for (const item of flat) {
                     grid[item.r][item.c] = item.color;
                 }
-
-                // Determine scramble difficulty
                 const baseMoves = Math.floor(10 + levelId * 0.7);
                 const scrambleMoves = Math.min(baseMoves + Math.floor(nextRand() * 8), 60);
-
-                // Solve by swapping to target (record solution path)
                 const solution = [];
                 let workingGrid = grid.map(row => [...row]);
-
-                // Greedy solve: find misplaced tiles and swap them into place
                 for (let step = 0; step < 200 && solution.length < 100; step++) {
                     let swapped = false;
                     for (let r = 0; r < GRID_SIZE && !swapped; r++) {
                         for (let c = 0; c < GRID_SIZE && !swapped; c++) {
                             if (workingGrid[r][c] !== target[r][c]) {
-                                // Find where this color should go
                                 let found = false;
                                 for (let r2 = 0; r2 < GRID_SIZE && !found; r2++) {
                                     for (let c2 = 0; c2 < GRID_SIZE && !found; c2++) {
                                         if (workingGrid[r2][c2] === target[r][c] && workingGrid[r2][c2] !== target[r2][c2]) {
-                                            // Swap them
                                             [workingGrid[r][c], workingGrid[r2][c2]] = [workingGrid[r2][c2], workingGrid[r][
                                             c]];
                                             solution.push({ r1: r, c1: c, r2: r2, c2: c2 });
@@ -1067,7 +940,6 @@
                                     }
                                 }
                                 if (!found) {
-                                    // Fallback: swap with any tile that's not in correct position
                                     for (let r2 = 0; r2 < GRID_SIZE && !found; r2++) {
                                         for (let c2 = 0; c2 < GRID_SIZE && !found; c2++) {
                                             if ((r2 !== r || c2 !== c) && workingGrid[r2][c2] !== target[r2][c2]) {
@@ -1086,21 +958,11 @@
                     }
                     if (!swapped) break;
                 }
-
-                // Max moves = solution length + some buffer
                 const maxMoves = Math.max(solution.length + 4, Math.floor(solution.length * 1.3) + 2);
-
-                return {
-                    id: levelId,
-                    target: target,
-                    grid: grid,
-                    solution: solution,
-                    maxMoves: maxMoves,
-                    scrambleMoves: scrambleMoves,
-                };
+                return { id: levelId, target: target, grid: grid, solution: solution, maxMoves: maxMoves,
+                scrambleMoves: scrambleMoves };
             }
 
-            // Pre-generate all levels
             const LEVEL_CACHE = {};
             for (let i = 1; i <= TOTAL_LEVELS; i++) {
                 LEVEL_CACHE[i] = generateLevel(i);
@@ -1142,13 +1004,10 @@
             }
 
             function isLevelUnlocked(levelId) {
-                if (levelId <= 0) return false;
-                if (levelId > TOTAL_LEVELS) return false;
+                if (levelId <= 0 || levelId > TOTAL_LEVELS) return false;
                 const chapter = Math.ceil(levelId / CHAPTER_LEVELS);
                 if (isChapterUnlocked(chapter)) return true;
-                // First 3 chapters are free
                 if (chapter <= 3) return true;
-                // Check if previous level is completed (has stars)
                 if (levelId > 1 && state.stars[levelId - 1] > 0) return true;
                 return false;
             }
@@ -1209,7 +1068,6 @@
                 gameUndoUsed = false;
                 gameHintUsed = false;
 
-                // Update HUD
                 $('hudLevel').textContent = levelId;
                 $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
                 $('hudStars').textContent = getLevelStars(levelId);
@@ -1217,7 +1075,6 @@
 
                 overlay.classList.remove('show');
 
-                // Tutorial for first 3 levels
                 if (levelId <= 3) {
                     gameTutorialStep = 0;
                     tutorialTip.textContent = '✨ Tap two adjacent tiles to swap them. Match the target pattern!';
@@ -1257,10 +1114,6 @@
                 return result;
             }
 
-            function getTileColor(grid, r, c) {
-                return grid[r][c];
-            }
-
             function isTileCorrect(grid, r, c) {
                 return grid[r][c] === levelData.target[r][c];
             }
@@ -1291,36 +1144,30 @@
                 }
 
                 if (gameSelected === null) {
-                    // Select tile
                     gameSelected = { r, c };
                     drawGame();
                     return;
                 }
 
-                // Check if clicking the same tile
                 if (gameSelected.r === r && gameSelected.c === c) {
                     gameSelected = null;
                     drawGame();
                     return;
                 }
 
-                // Check if adjacent
                 const neighbors = getTileNeighbors(gameSelected.r, gameSelected.c);
                 const isAdjacent = neighbors.some(n => n.r === r && n.c === c);
                 if (!isAdjacent) {
-                    // Select new tile instead
                     gameSelected = { r, c };
                     drawGame();
                     return;
                 }
 
-                // Perform swap
                 const sr = gameSelected.r,
                     sc = gameSelected.c;
                 const tr = r,
                     tc = c;
 
-                // Store undo state
                 const prevGrid = gameGrid.map(row => [...row]);
                 gameUndoStack.push(prevGrid);
 
@@ -1331,7 +1178,6 @@
 
                 gameSelected = null;
 
-                // Check if complete
                 if (isGridComplete(gameGrid)) {
                     gameComplete = true;
                     sfxCascade();
@@ -1351,9 +1197,7 @@
                     return;
                 }
 
-                // Check if moves exceeded
                 if (gameMoves >= gameMaxMoves) {
-                    // Not complete, but moves ran out
                     gameComplete = true;
                     showGameOver();
                     drawGame();
@@ -1363,7 +1207,6 @@
                 drawGame();
                 saveGame();
 
-                // Auto-hint for tutorial
                 if (state.currentLevel <= 3 && gameMoves === 2) {
                     setTimeout(() => {
                         tutorialTip.textContent = '💡 Try to match the target pattern. Tiles glow when correct!';
@@ -1402,29 +1245,28 @@
                 overlay.classList.add('show');
             }
 
+            // ---- FIXED: showChapterModal sets data-chapter ----
             function showChapterModal() {
                 const modal = $('chapterModal');
-                const desc = $('chapterModalDesc');
-                const price = $('chapterModalPrice');
-                const sub = $('chapterModalSub');
                 const chapter = Math.ceil(state.currentLevel / CHAPTER_LEVELS);
                 if (chapter <= 3) {
-                    // Should not happen
                     modal.classList.remove('show');
                     return;
                 }
                 const remaining = TOTAL_LEVELS - (chapter - 1) * CHAPTER_LEVELS;
+                const desc = $('chapterModalDesc');
+                const price = $('chapterModalPrice');
+                const sub = $('chapterModalSub');
                 desc.textContent = `You've reached the end of the free content! Unlock Chapter ${chapter} (${remaining} more levels) and continue your neon journey.`;
                 const isFull = chapter >= 4;
                 price.textContent = isFull ? '$4.99' : '$1.99';
                 sub.textContent = isFull ? 'One-time purchase · All remaining chapters' :
                     `Chapter ${chapter} pack · ${Math.min(remaining, CHAPTER_LEVELS)} levels`;
-                modal.dataset.chapter = chapter;
+                modal.dataset.chapter = chapter; // <-- crucial
                 modal.classList.add('show');
             }
 
             // -------- DRAWING --------
-            let animFrame = null;
             let glowPulse = 0;
 
             function drawGame() {
@@ -1438,7 +1280,6 @@
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Background glow
                 const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size * 0.6);
                 grad.addColorStop(0, 'rgba(20, 10, 50, 0.3)');
                 grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -1446,24 +1287,15 @@
                 ctx.fillRect(0, 0, size, size);
 
                 const colors = [
-                    '#00f0ff', // cyan
-                    '#ff00e5', // magenta
-                    '#ffcc00', // gold
-                    '#00ff88', // green
-                    '#ff6600', // orange
-                    '#aa66ff', // purple
+                    '#00f0ff', '#ff00e5', '#ffcc00',
+                    '#00ff88', '#ff6600', '#aa66ff'
                 ];
-
                 const glowColors = [
-                    'rgba(0,240,255,',
-                    'rgba(255,0,229,',
-                    'rgba(255,204,0,',
-                    'rgba(0,255,136,',
-                    'rgba(255,102,0,',
-                    'rgba(170,102,255,',
+                    'rgba(0,240,255,', 'rgba(255,0,229,', 'rgba(255,204,0,',
+                    'rgba(0,255,136,', 'rgba(255,102,0,', 'rgba(170,102,255,'
                 ];
 
-                // Draw target pattern (small preview)
+                // Target preview
                 const previewSize = Math.min(size * 0.18, 70);
                 const previewX = size - previewSize - 8;
                 const previewY = 8;
@@ -1482,18 +1314,14 @@
                         ctx.shadowBlur = 0;
                     }
                 }
-                // Preview border
                 ctx.strokeStyle = 'rgba(255,255,255,0.06)';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(previewX, previewY, previewSize, previewSize);
-
-                // Label
                 ctx.fillStyle = 'rgba(255,255,255,0.2)';
                 ctx.font = `${Math.max(8, previewSize * 0.15)}px sans-serif`;
                 ctx.textAlign = 'left';
                 ctx.fillText('TARGET', previewX, previewY - 4);
 
-                // Draw grid
                 glowPulse = (glowPulse + 0.02) % (Math.PI * 2);
 
                 for (let r = 0; r < GRID_SIZE; r++) {
@@ -1504,16 +1332,13 @@
                         const isCorrect = isTileCorrect(gameGrid, r, c);
                         const isSelected = gameSelected && gameSelected.r === r && gameSelected.c === c;
 
-                        // Glow intensity
                         let glowIntensity = isCorrect ? 0.6 + 0.4 * Math.sin(glowPulse + r + c) : 0.1;
                         if (isSelected) glowIntensity = 0.9;
 
-                        // Shadow glow
                         const shadowColor = glowColors[colorIdx] + (isCorrect ? '0.5' : '0.15') + ')';
                         ctx.shadowColor = shadowColor;
                         ctx.shadowBlur = isCorrect ? 25 + 10 * Math.sin(glowPulse + r + c) : 8;
 
-                        // Hexagon
                         const points = 6;
                         const radius = hexRadius * (isSelected ? 1.08 : 1);
                         ctx.beginPath();
@@ -1526,13 +1351,11 @@
                         }
                         ctx.closePath();
 
-                        // Fill
                         const fillColor = colors[colorIdx];
                         const alpha = isCorrect ? 0.95 : 0.6;
                         ctx.fillStyle = fillColor + Math.round(alpha * 255).toString(16).padStart(2, '0');
                         ctx.fill();
 
-                        // Border glow
                         if (isCorrect || isSelected) {
                             ctx.shadowBlur = 0;
                             ctx.strokeStyle = isSelected ? '#ffffff' : fillColor;
@@ -1542,7 +1365,6 @@
 
                         ctx.shadowBlur = 0;
 
-                        // Inner highlight
                         if (isCorrect) {
                             const grad2 = ctx.createRadialGradient(x - radius * 0.2, y - radius * 0.2, 0, x, y, radius);
                             grad2.addColorStop(0, 'rgba(255,255,255,0.2)');
@@ -1560,7 +1382,6 @@
                             ctx.fill();
                         }
 
-                        // Selection ring
                         if (isSelected) {
                             ctx.shadowColor = 'rgba(255,255,255,0.4)';
                             ctx.shadowBlur = 30;
@@ -1579,7 +1400,6 @@
                             ctx.shadowBlur = 0;
                         }
 
-                        // Small indicator for correct position
                         if (isCorrect) {
                             ctx.fillStyle = 'rgba(255,255,255,0.15)';
                             ctx.beginPath();
@@ -1589,7 +1409,6 @@
                     }
                 }
 
-                // Draw move counter and progress
                 const progress = gameMoves / gameMaxMoves;
                 const barY = size - 8;
                 const barW = size * 0.5;
@@ -1604,7 +1423,6 @@
                 ctx.roundRect(barX, barY, barW * Math.min(progress, 1), 4, 2);
                 ctx.fill();
 
-                // Moves text
                 ctx.fillStyle = 'rgba(255,255,255,0.15)';
                 ctx.font = `${Math.max(9, size * 0.025)}px sans-serif`;
                 ctx.textAlign = 'right';
@@ -1641,7 +1459,7 @@
                 if (pos) handleTileClick(pos.r, pos.c);
             }, { passive: false });
 
-            // -------- UI EVENT BINDING --------
+            // -------- UI EVENT BINDING (FIXED PURCHASE) --------
             // Menu
             $('menuPlayBtn').addEventListener('click', () => {
                 sfxClick();
@@ -1697,7 +1515,6 @@
                     return;
                 }
                 if (gameComplete || gameAnimating) return;
-                // Simple hint: highlight a misplaced tile
                 const misplaced = [];
                 for (let r = 0; r < GRID_SIZE; r++) {
                     for (let c = 0; c < GRID_SIZE; c++) {
@@ -1713,7 +1530,6 @@
                 state.cores -= 5;
                 $('hudCores').textContent = state.cores;
                 saveGame();
-                // Highlight a misplaced tile
                 const idx = Math.floor(Math.random() * misplaced.length);
                 const tile = misplaced[idx];
                 gameSelected = { r: tile.r, c: tile.c };
@@ -1766,7 +1582,6 @@
                     loadLevel(next);
                     drawGame();
                 } else {
-                    // Retry
                     loadLevel(state.currentLevel);
                     drawGame();
                 }
@@ -1795,46 +1610,55 @@
                 saveGame();
                 alert('↩ Extra undo purchased!');
             });
-            $('shopFullUnlockBtn').addEventListener('click', () => {
+
+            // ---- FIXED PURCHASE HANDLERS ----
+            // Full unlock from shop
+            $('shopFullUnlockBtn').addEventListener('click', function(e) {
+                e.preventDefault();
                 sfxClick();
                 sfxPurchase();
+                console.log('[Shop] Full unlock attempted');
                 if (unlockAllChapters()) {
                     alert('🔓 All chapters unlocked! Thank you for your purchase!');
                     $('shopModal').classList.remove('show');
                     renderLevelGrid();
                 } else {
-                    alert('Already unlocked!');
+                    alert('All chapters are already unlocked.');
                 }
+                saveGame();
             });
-            $('shopChapterBtn').addEventListener('click', () => {
+
+            // Chapter pack from shop
+            $('shopChapterBtn').addEventListener('click', function(e) {
+                e.preventDefault();
                 sfxClick();
-                // Find first locked chapter
+                sfxPurchase();
                 let firstLocked = null;
                 for (let i = 4; i <= 10; i++) {
                     if (!isChapterUnlocked(i)) { firstLocked = i; break; }
                 }
+                console.log(`[Shop] First locked chapter: ${firstLocked}`);
                 if (firstLocked === null) {
                     alert('All chapters already unlocked!');
                     return;
                 }
-                sfxPurchase();
                 if (unlockChapter(firstLocked)) {
                     alert(`🔓 Chapter ${firstLocked} unlocked!`);
                     $('shopModal').classList.remove('show');
                     renderLevelGrid();
                 } else {
-                    alert('Something went wrong.');
+                    alert('Something went wrong. Please try again.');
                 }
+                saveGame();
             });
+
             $('shopRestoreBtn').addEventListener('click', () => {
                 sfxClick();
-                // Simulate restore
                 let restored = false;
                 for (let i = 4; i <= 10; i++) {
                     if (!isChapterUnlocked(i)) {
-                        // In a real app, this would check with the store
-                        // For simulation, we'll just unlock
-                        if (i <= 6) { // Simulate that chapters 4-6 were purchased
+                        // Simulate restore for chapters 4-6
+                        if (i <= 6) {
                             unlockChapter(i);
                             restored = true;
                         }
@@ -1858,30 +1682,33 @@
                 sfxClick();
                 $('chapterModal').classList.remove('show');
             });
-            $('chapterPurchaseBtn').addEventListener('click', () => {
+
+            // Chapter purchase button (fixed)
+            $('chapterPurchaseBtn').addEventListener('click', function(e) {
+                e.preventDefault();
                 sfxClick();
                 sfxPurchase();
-                const chapter = parseInt($('chapterModal').dataset.chapter) || 4;
+
+                let chapter = parseInt($('chapterModal').dataset.chapter);
+                if (isNaN(chapter) || chapter < 4) chapter = 4; // fallback
+                console.log(`[Chapter] Attempting to unlock chapter ${chapter}`);
+
+                let success = false;
                 if (chapter >= 4) {
-                    if (unlockChapter(chapter)) {
-                        alert(`🔓 Chapter ${chapter} unlocked! Enjoy!`);
-                        $('chapterModal').classList.remove('show');
-                        // Reload current level
-                        loadLevel(state.currentLevel);
-                        drawGame();
-                        renderLevelGrid();
-                    } else {
-                        alert('Already unlocked!');
-                    }
+                    success = unlockChapter(chapter);
                 } else {
-                    // Full unlock
-                    if (unlockAllChapters()) {
-                        alert('🔓 All chapters unlocked!');
-                        $('chapterModal').classList.remove('show');
-                        loadLevel(state.currentLevel);
-                        drawGame();
-                        renderLevelGrid();
-                    }
+                    success = unlockAllChapters();
+                }
+
+                if (success) {
+                    const msg = chapter >= 4 ? `🔓 Chapter ${chapter} unlocked!` : '🔓 All chapters unlocked!';
+                    alert(msg);
+                    $('chapterModal').classList.remove('show');
+                    renderLevelGrid();
+                    loadLevel(state.currentLevel); // reload to reflect unlock
+                    drawGame();
+                } else {
+                    alert('Already unlocked or an error occurred.');
                 }
                 saveGame();
             });
@@ -1891,10 +1718,8 @@
                 Object.keys(screens).forEach(key => {
                     screens[key].classList.toggle('active', key === name);
                 });
-                // Hide modals
                 document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
                 if (name === 'game') {
-                    // Resize canvas
                     setTimeout(() => drawGame(), 50);
                 }
             }
@@ -1935,7 +1760,6 @@
                             loadLevel(i);
                             drawGame();
                         } else {
-                            // Show chapter unlock
                             const chapter = Math.ceil(i / CHAPTER_LEVELS);
                             if (chapter > 3) {
                                 state.currentLevel = i;
@@ -1982,31 +1806,19 @@
             // -------- INIT --------
             function init() {
                 loadGame();
-
-                // Ensure first 3 chapters are unlocked
                 [1, 2, 3].forEach(ch => {
                     if (!state.chaptersUnlocked.includes(ch)) {
                         state.chaptersUnlocked.push(ch);
                     }
                 });
-
-                // Sound button state
                 $('menuSoundBtn').textContent = state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF';
-
-                // Start with menu
                 switchScreen('menu');
-
-                // Pre-load first level
                 loadLevel(state.currentLevel);
-
-                // Start loop
                 gameLoop();
-
                 console.log('🔮 NEON SHIFT loaded — 100 levels, 10 chapters');
                 console.log(`📊 Free: ${FREE_CHAPTERS * CHAPTER_LEVELS} levels · Paid: ${TOTAL_LEVELS - FREE_CHAPTERS * CHAPTER_LEVELS} levels`);
             }
 
-            // Handle resize
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
@@ -2017,7 +1829,6 @@
                 }, 100);
             });
 
-            // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
@@ -2039,9 +1850,7 @@
                 }
             });
 
-            // Start
             init();
-
         })();
     </script>
 </body>
