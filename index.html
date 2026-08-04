@@ -218,21 +218,9 @@
                 height: 40px;
             }
         }
-        @media (pointer: coarse) {
-            /* show joystick only on touch devices */
-            #joystick-container {
-                display: flex;
-            }
-        }
-        @media (pointer: fine) {
-            #joystick-container {
-                display: none; /* hide on desktop with mouse, keyboard is enough */
-            }
-        }
-        /* But we want it visible for mouse testing, so we can force it on */
-        /* For development, we'll keep it always visible, but you can adjust */
+        /* always show for demo */
         #joystick-container {
-            display: flex !important; /* always show for demo */
+            display: flex !important;
         }
     </style>
 </head>
@@ -316,7 +304,6 @@
                 e.preventDefault(); }
             if (k === 'ArrowRight' || k === 'd') { keys.right = false;
                 e.preventDefault(); }
-            // If no keys pressed, clear movePressed (will be set again on next down)
             if (!keys.up && !keys.down && !keys.left && !keys.right) {
                 movePressed = false;
             }
@@ -326,14 +313,12 @@
         const joystickContainer = document.getElementById('joystick-container');
         const joystickHandle = document.getElementById('joystick-handle');
         let joystickActive = false;
-        let joystickId = null; // for pointer events
+        let joystickId = null;
 
         function setJoystickDirection(dx, dy) {
-            // dx, dy are normalized (-1..1)
             const deadZone = 0.15;
             const magnitude = Math.sqrt(dx * dx + dy * dy);
             if (magnitude < deadZone) {
-                // release all
                 keys.up = false;
                 keys.down = false;
                 keys.left = false;
@@ -342,21 +327,17 @@
                 joystickHandle.classList.remove('active');
                 return;
             }
-            // Determine dominant direction
-            const angle = Math.atan2(dy, dx); // -PI to PI
-            // 0 = right, PI/2 = down, -PI/2 = up
+            // Determine cardinal direction based on angle
+            const angle = Math.atan2(dy, dx);
             const absAngle = Math.abs(angle);
-            // Decide cardinal direction
             let up = false,
                 down = false,
                 left = false,
                 right = false;
             if (absAngle < Math.PI / 4 || absAngle > 3 * Math.PI / 4) {
-                // horizontal
                 if (angle > 0) right = true;
                 else left = true;
             } else {
-                // vertical
                 if (angle > 0) down = true;
                 else up = true;
             }
@@ -377,9 +358,8 @@
             const maxRadius = rect.width / 2 - 10;
             const dist = Math.sqrt(dx * dx + dy * dy);
             const clampedDist = Math.min(dist, maxRadius);
-            const normX = dx / dist || 0;
-            const normY = dy / dist || 0;
-            // move handle
+            const normX = dx / (dist || 1);
+            const normY = dy / (dist || 1);
             const handleOffsetX = normX * clampedDist;
             const handleOffsetY = normY * clampedDist;
             joystickHandle.style.transform = `translate(calc(-50% + ${handleOffsetX}px), calc(-50% + ${handleOffsetY}px))`;
@@ -397,8 +377,8 @@
             const maxRadius = rect.width / 2 - 10;
             const dist = Math.sqrt(dx * dx + dy * dy);
             const clampedDist = Math.min(dist, maxRadius);
-            const normX = dx / dist || 0;
-            const normY = dy / dist || 0;
+            const normX = dx / (dist || 1);
+            const normY = dy / (dist || 1);
             const handleOffsetX = normX * clampedDist;
             const handleOffsetY = normY * clampedDist;
             joystickHandle.style.transform = `translate(calc(-50% + ${handleOffsetX}px), calc(-50% + ${handleOffsetY}px))`;
@@ -416,7 +396,7 @@
             movePressed = false;
         }
 
-        // Pointer events (works for both mouse and touch)
+        // Pointer events
         joystickContainer.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             joystickContainer.setPointerCapture(e.pointerId);
@@ -451,6 +431,7 @@
 
         // ─── GAME STATE ────────────────────────────────────────────────
         let state = {};
+        let lastDirection = { dx: 0, dy: -1 }; // for rotation
 
         function initState(mission) {
             const config = createMissionConfig(mission);
@@ -526,7 +507,6 @@
                 exitPrev: { x: exit.x, y: exit.y },
                 bossPhase: 0,
                 projectiles: [],
-                // fog explored
                 explored: null,
                 rotationOffset: 0,
             };
@@ -536,6 +516,7 @@
                     state.explored[y] = new Array(size).fill(false);
                 }
             }
+            lastDirection = { dx: 0, dy: -1 };
             updateUI();
         }
 
@@ -564,59 +545,42 @@
                 desc: ""
             };
 
-            // --- PHASE 1 (1-10) : Standard ---
             if (mission <= 10) {
                 base.name = "THE DESCENT";
                 base.desc = "classic dungeon crawl";
-            }
-            // --- PHASE 2 (11-20) : Crumbling floor ---
-            else if (mission <= 20) {
+            } else if (mission <= 20) {
                 base.flags.floorCrumble = true;
                 base.name = "QUICKSAND";
                 base.desc = "floors collapse behind you";
-            }
-            // --- PHASE 3 (21-30) : Reverse controls ---
-            else if (mission <= 30) {
+            } else if (mission <= 30) {
                 base.flags.reverse = true;
                 base.name = "MIRROR WORLD";
                 base.desc = "controls are inverted";
-            }
-            // --- PHASE 4 (31-40) : Control the exit ---
-            else if (mission <= 40) {
+            } else if (mission <= 40) {
                 base.flags.controlExit = true;
                 base.name = "PUPPETEER";
                 base.desc = "move the exit, not yourself";
-            }
-            // --- PHASE 5 (41-50) : Torus + shooter enemies ---
-            else if (mission <= 50) {
+            } else if (mission <= 50) {
                 base.flags.torus = true;
                 base.flags.enemiesShoot = true;
                 base.name = "WARP ZONE";
                 base.desc = "world wraps, enemies shoot";
-            }
-            // --- PHASE 6 (51-60) : Time-on-move + split enemies ---
-            else if (mission <= 60) {
+            } else if (mission <= 60) {
                 base.flags.timeOnMove = true;
                 base.flags.enemiesSplit = true;
                 base.name = "FROZEN TIME";
                 base.desc = "time moves only when you do, enemies split";
-            }
-            // --- PHASE 7 (61-70) : Fog + teleporting enemies ---
-            else if (mission <= 70) {
+            } else if (mission <= 70) {
                 base.flags.fog = true;
                 base.flags.enemiesTeleport = true;
                 base.name = "SHADOW REALM";
                 base.desc = "fog of war, teleporting foes";
-            }
-            // --- PHASE 8 (71-80) : Gravity + rotating map ---
-            else if (mission <= 80) {
+            } else if (mission <= 80) {
                 base.flags.gravity = true;
                 base.flags.rotateMap = true;
                 base.name = "TWISTED DIMENSION";
                 base.desc = "gravity shifts, map rotates";
-            }
-            // --- PHASE 9 (81-99) : Chaos combo ---
-            else if (mission <= 99) {
+            } else if (mission <= 99) {
                 base.flags.floorCrumble = true;
                 base.flags.enemiesShoot = true;
                 base.flags.timeOnMove = true;
@@ -624,9 +588,7 @@
                 base.name = "CHAOS ENGINE";
                 base.desc = "everything breaks at once";
                 base.enemyCount = 3 + Math.floor(mission / 10);
-            }
-            // --- PHASE 10 (100) : The Boss ---
-            else {
+            } else {
                 base.flags.boss = true;
                 base.flags.controlExit = true;
                 base.flags.torus = true;
@@ -638,15 +600,12 @@
                 base.enemyCount = 1;
                 base.size = 16;
             }
-
-            // cap size
             if (base.size > 30) base.size = 30;
             return base;
         }
 
-        // ─── MAZE GENERATION (Recursive Backtracking) ────────────────
+        // ─── MAZE GENERATION ────────────────────────────────────────────
         function generateMaze(size, seed) {
-            // seeded random for deterministic maps per mission
             let s = seed * 1337 + 42;
 
             function seededRandom() {
@@ -666,7 +625,6 @@
                     [-2, 0],
                     [2, 0]
                 ];
-                // shuffle with seeded random
                 for (let i = dirs.length - 1; i > 0; i--) {
                     const j = Math.floor(seededRandom() * (i + 1));
                     [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
@@ -681,7 +639,6 @@
                 }
             }
             carve(1, 1);
-            // ensure at least some open space
             for (let y = 0; y < size; y++) {
                 for (let x = 0; x < size; x++) {
                     if (map[y][x] === 1 && Math.random() < 0.15) map[y][x] = 0;
@@ -697,19 +654,16 @@
             const flags = config.flags;
             const size = state.size;
 
-            // ---- Turn-based trigger ----
             if (flags.timeOnMove) {
                 if (!movePressed) return;
                 movePressed = false;
                 state.turn++;
             }
 
-            // ---- Rotation ----
             if (flags.rotateMap && state.turn % 8 === 0 && state.turn > 0) {
                 state.rotationOffset = (state.rotationOffset + 1) % 4;
             }
 
-            // ---- Player movement ----
             let dx = 0,
                 dy = 0;
             if (keys.up) dy = -1;
@@ -717,20 +671,19 @@
             if (keys.left) dx = -1;
             if (keys.right) dx = 1;
 
-            // gravity
             if (flags.gravity) {
-                if (dx === 0 && dy === 0) dy = 1; // pull down
+                if (dx === 0 && dy === 0) dy = 1;
             }
-
-            // reverse
             if (flags.reverse) { dx = -dx;
                 dy = -dy; }
 
-            // control exit
-            let pdx = dx,
-                pdy = dy;
+            // Store direction for rotation (only if moving)
+            if (dx !== 0 || dy !== 0) {
+                lastDirection.dx = dx;
+                lastDirection.dy = dy;
+            }
+
             if (flags.controlExit) {
-                // move exit instead
                 let ex = state.exit.x + dx;
                 let ey = state.exit.y + dy;
                 if (flags.torus) {
@@ -742,18 +695,15 @@
                     state.exit.x = ex;
                     state.exit.y = ey;
                 }
-                // player follows exit's previous position
                 const targetX = state.exitPrev.x;
                 const targetY = state.exitPrev.y;
                 if (state.map[targetY] && state.map[targetY][targetX] === 0) {
                     state.player.x = targetX;
                     state.player.y = targetY;
                 }
-                // force no movement for player
                 dx = 0;
                 dy = 0;
             } else {
-                // normal move
                 let nx = state.player.x + dx;
                 let ny = state.player.y + dy;
                 if (flags.torus) {
@@ -766,19 +716,19 @@
                 }
             }
 
-            // ---- Floor crumble ----
+            // Floor crumble
             if (flags.floorCrumble && state.floorLife) {
                 const px = state.player.x,
                     py = state.player.y;
                 if (state.floorLife[py] && state.floorLife[py][px] !== undefined) {
                     state.floorLife[py][px] -= 1;
                     if (state.floorLife[py][px] <= 0) {
-                        state.map[py][px] = 1; // becomes wall
+                        state.map[py][px] = 1;
                     }
                 }
             }
 
-            // ---- Fog exploration ----
+            // Fog
             if (flags.fog && state.explored) {
                 const px = state.player.x,
                     py = state.player.y;
@@ -793,15 +743,11 @@
                 }
             }
 
-            // ---- Enemies AI ----
+            // Enemies AI
             const enemies = state.enemies;
-            const speed = config.enemySpeed;
-
-            // teleport
             if (flags.enemiesTeleport && state.turn % 3 === 0) {
                 for (let e of enemies) {
                     if (e.hp <= 0) continue;
-                    // teleport to random floor near player
                     for (let attempt = 0; attempt < 10; attempt++) {
                         const tx = state.player.x + Math.floor(Math.random() * 5) - 2;
                         const ty = state.player.y + Math.floor(Math.random() * 5) - 2;
@@ -815,10 +761,8 @@
                 }
             }
 
-            // enemy movement (chase)
             for (let e of enemies) {
                 if (e.hp <= 0) continue;
-                // shoot
                 if (flags.enemiesShoot && e.cooldown <= 0 && Math.random() < 0.04) {
                     const dx = state.player.x - e.x;
                     const dy = state.player.y - e.y;
@@ -836,9 +780,6 @@
                 }
                 if (e.cooldown > 0) e.cooldown--;
 
-                // move towards player
-                let ex = e.x,
-                    ey = e.y;
                 let bestDist = Infinity;
                 let bestDx = 0,
                     bestDy = 0;
@@ -878,12 +819,11 @@
                 }
             }
 
-            // ---- Projectiles ----
+            // Projectiles
             for (let p of state.projectiles) {
                 p.x += p.vx;
                 p.y += p.vy;
                 p.life--;
-                // check hit player
                 if (Math.abs(p.x - state.player.x) < 0.6 && Math.abs(p.y - state.player.y) < 0.6) {
                     if (state.player.invincible <= 0) {
                         state.player.hp--;
@@ -894,14 +834,13 @@
             }
             state.projectiles = state.projectiles.filter(p => p.life > 0 && p.x > 0 && p.x < size && p.y > 0 && p.y < size);
 
-            // ---- Enemy collision with player ----
+            // Enemy collision
             for (let e of enemies) {
                 if (e.hp <= 0) continue;
                 if (e.x === state.player.x && e.y === state.player.y) {
                     if (state.player.invincible <= 0) {
                         state.player.hp--;
                         state.player.invincible = 20;
-                        // push enemy back
                         const dx = e.x - state.player.x;
                         const dy = e.y - state.player.y;
                         if (dx === 0 && dy === 0) { e.x += 1;
@@ -911,17 +850,14 @@
                 }
             }
 
-            // ---- player invincibility timer ----
             if (state.player.invincible > 0) state.player.invincible--;
 
-            // ---- check win condition ----
             if (state.player.x === state.exit.x && state.player.y === state.exit.y) {
                 state.won = true;
                 showWin();
                 return;
             }
 
-            // ---- check game over ----
             if (state.player.hp <= 0) {
                 state.gameOver = true;
                 state.player.hp = 0;
@@ -929,11 +865,9 @@
                 return;
             }
 
-            // ---- Boss special ----
             if (flags.boss && enemies.length > 0) {
                 const boss = enemies[0];
                 if (boss.hp > 0 && boss.hp < boss.maxHp * 0.5) {
-                    // spawn adds
                     if (state.bossPhase === 0) {
                         state.bossPhase = 1;
                         for (let i = 0; i < 4; i++) {
@@ -947,7 +881,6 @@
                 }
             }
 
-            // ---- enemy split ----
             if (flags.enemiesSplit) {
                 const toAdd = [];
                 for (let e of enemies) {
@@ -964,15 +897,11 @@
                 }
                 enemies.push(...toAdd);
             }
-            // remove dead enemies (unless they are split)
             for (let i = enemies.length - 1; i >= 0; i--) {
                 if (enemies[i].hp <= 0 && enemies[i].split === true) {
                     enemies.splice(i, 1);
                 }
             }
-
-            // ---- enemy hp reset for non-boss? no, keep them dead.
-            // clean up projectiles
             updateUI();
         }
 
@@ -984,7 +913,6 @@
 
             ctx.clearRect(0, 0, W, H);
 
-            // ---- apply rotation ----
             let rot = 0;
             if (flags.rotateMap) {
                 rot = state.rotationOffset * Math.PI / 2;
@@ -994,19 +922,16 @@
             ctx.rotate(rot);
             ctx.translate(-W / 2, -H / 2);
 
-            // ---- draw floor & walls ----
+            // Draw floor & walls
             for (let y = 0; y < size; y++) {
                 for (let x = 0; x < size; x++) {
                     const cx = x * cellSize,
                         cy = y * cellSize;
-
-                    // fog
                     if (flags.fog && explored && !explored[y]?.[x]) {
                         ctx.fillStyle = '#0a0a12';
                         ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
                         continue;
                     }
-
                     const isWall = map[y][x] === 1;
                     if (isWall) {
                         ctx.fillStyle = '#1e1e30';
@@ -1015,7 +940,6 @@
                         ctx.lineWidth = 0.5;
                         ctx.strokeRect(cx, cy, cellSize, cellSize);
                     } else {
-                        // floor
                         let alpha = 1;
                         if (floorLife && floorLife[y] && floorLife[y][x] !== undefined) {
                             alpha = floorLife[y][x] / 3;
@@ -1023,7 +947,6 @@
                         }
                         ctx.fillStyle = `rgba(18, 18, 34, ${alpha})`;
                         ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
-                        // subtle grid
                         ctx.strokeStyle = '#22223a';
                         ctx.lineWidth = 0.5;
                         ctx.strokeRect(cx, cy, cellSize, cellSize);
@@ -1031,7 +954,7 @@
                 }
             }
 
-            // ---- draw projectiles ----
+            // Projectiles
             for (let p of projectiles) {
                 ctx.beginPath();
                 ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, cellSize * 0.2, 0, Math.PI * 2);
@@ -1042,7 +965,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // ---- draw enemies ----
+            // Enemies
             for (let e of enemies) {
                 if (e.hp <= 0) continue;
                 const cx = e.x * cellSize + cellSize / 2;
@@ -1056,7 +979,6 @@
                 ctx.shadowColor = '#ff0000';
                 ctx.shadowBlur = isBoss ? 25 : 12;
                 ctx.fill();
-                // HP bar for boss
                 if (isBoss && e.maxHp > 1) {
                     ctx.shadowBlur = 0;
                     ctx.fillStyle = '#222';
@@ -1067,7 +989,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // ---- draw exit ----
+            // Exit
             const ex = exit.x * cellSize + cellSize / 2;
             const ey = exit.y * cellSize + cellSize / 2;
             const glow = 8 + 4 * Math.sin(Date.now() / 300);
@@ -1083,28 +1005,33 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // ---- draw player ----
+            // Player (triangle with rotation)
             if (!state.gameOver) {
                 const px = player.x * cellSize + cellSize / 2;
                 const py = player.y * cellSize + cellSize / 2;
                 const flash = player.invincible > 0 && Math.floor(Date.now() / 100) % 2 === 0;
                 if (!flash) {
+                    ctx.save();
+                    ctx.translate(px, py);
+                    // rotate to face last direction
+                    const angle = Math.atan2(lastDirection.dy, lastDirection.dx);
+                    ctx.rotate(angle);
                     ctx.shadowColor = '#00ffff';
                     ctx.shadowBlur = 20;
                     ctx.fillStyle = '#00ffff';
                     ctx.beginPath();
-                    ctx.moveTo(px, py - cellSize * 0.45);
-                    ctx.lineTo(px - cellSize * 0.35, py + cellSize * 0.35);
-                    ctx.lineTo(px + cellSize * 0.35, py + cellSize * 0.35);
+                    // triangle pointing right (0 rad)
+                    ctx.moveTo(cellSize * 0.5, 0);
+                    ctx.lineTo(-cellSize * 0.3, -cellSize * 0.35);
+                    ctx.lineTo(-cellSize * 0.3, cellSize * 0.35);
                     ctx.closePath();
                     ctx.fill();
                     ctx.shadowBlur = 0;
+                    ctx.restore();
                 }
             }
 
             ctx.restore();
-
-            // ---- UI overlay (mission, hp) ----
             updateUI();
         }
 
@@ -1123,7 +1050,7 @@
             winOverlay.classList.add('show');
             if (state.mission >= 100) {
                 winTitle.textContent = '✦ YOU WIN ✦';
-                winSub.textContent = 'You have conquered all 100 layers of Null Geometry.';
+                winSub.textContent = 'You have conquered all 100 layers.';
                 winBtn.textContent = '★ PLAY AGAIN ★';
             } else {
                 winTitle.textContent = `MISSION ${state.mission} COMPLETE`;
@@ -1135,7 +1062,6 @@
         function hideWin() {
             winOverlay.classList.remove('show');
             if (state.mission >= 100) {
-                // restart from 1
                 state.mission = 0;
             }
             state.mission++;
@@ -1146,7 +1072,7 @@
 
         winBtn.addEventListener('click', hideWin);
         resetBtn.addEventListener('click', () => {
-            // FIX: restart current mission without advancing
+            // Restart current mission without advancing
             if (state.mission) {
                 initState(state.mission);
                 gameLoop();
@@ -1165,9 +1091,8 @@
                 }
                 render();
                 if (state.gameOver) {
-                    // show lose overlay
                     winTitle.textContent = '☠ YOU DIED ☠';
-                    winSub.textContent = `Failed at Mission ${state.mission} · Press CONTINUE to retry`;
+                    winSub.textContent = `Failed at Mission ${state.mission} · Retry?`;
                     winBtn.textContent = '↻ RETRY';
                     winOverlay.classList.add('show');
                 }
@@ -1180,7 +1105,7 @@
         initState(1);
         gameLoop();
 
-        // ─── HANDLE RESIZE (keep canvas crisp) ────────────────────────
+        // ─── RESIZE ──────────────────────────────────────────────────────
         function resizeCanvas() {
             const wrapper = canvas.parentElement;
             const maxW = window.innerWidth - 60;
@@ -1189,7 +1114,6 @@
             size = Math.max(300, size);
             canvas.style.width = size + 'px';
             canvas.style.height = size + 'px';
-            // also adjust joystick position if needed
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
