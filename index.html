@@ -169,13 +169,13 @@
         /* ── JOYSTICK ── */
         #joystick-container {
             position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 120px;
-            height: 120px;
+            bottom: 10px;           /* moved lower */
+            left: 10px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
             touch-action: none;
             display: flex;
@@ -189,8 +189,8 @@
             background: rgba(255, 255, 255, 0.10);
         }
         #joystick-handle {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: radial-gradient(circle, #00ffff 0%, #0088aa 100%);
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
@@ -208,17 +208,16 @@
         }
         @media (max-width: 700px) {
             #joystick-container {
-                width: 100px;
-                height: 100px;
-                bottom: 20px;
-                left: 20px;
+                width: 90px;
+                height: 90px;
+                bottom: 8px;
+                left: 8px;
             }
             #joystick-handle {
-                width: 40px;
-                height: 40px;
+                width: 38px;
+                height: 38px;
             }
         }
-        /* always show for demo */
         #joystick-container {
             display: flex !important;
         }
@@ -314,38 +313,21 @@
         const joystickHandle = document.getElementById('joystick-handle');
         let joystickActive = false;
         let joystickId = null;
+        // Direct joystick direction (overrides keys when active)
+        let joystickDir = { dx: 0, dy: 0 };
 
         function setJoystickDirection(dx, dy) {
             const deadZone = 0.15;
             const magnitude = Math.sqrt(dx * dx + dy * dy);
             if (magnitude < deadZone) {
-                keys.up = false;
-                keys.down = false;
-                keys.left = false;
-                keys.right = false;
-                movePressed = false;
+                joystickDir.dx = 0;
+                joystickDir.dy = 0;
                 joystickHandle.classList.remove('active');
                 return;
             }
-            // Determine cardinal direction based on angle
-            const angle = Math.atan2(dy, dx);
-            const absAngle = Math.abs(angle);
-            let up = false,
-                down = false,
-                left = false,
-                right = false;
-            if (absAngle < Math.PI / 4 || absAngle > 3 * Math.PI / 4) {
-                if (angle > 0) right = true;
-                else left = true;
-            } else {
-                if (angle > 0) down = true;
-                else up = true;
-            }
-            keys.up = up;
-            keys.down = down;
-            keys.left = left;
-            keys.right = right;
-            movePressed = true;
+            // Store normalized direction
+            joystickDir.dx = dx / magnitude;
+            joystickDir.dy = dy / magnitude;
             joystickHandle.classList.add('active');
         }
 
@@ -389,11 +371,8 @@
             joystickActive = false;
             joystickHandle.style.transform = 'translate(-50%, -50%)';
             joystickHandle.classList.remove('active');
-            keys.up = false;
-            keys.down = false;
-            keys.left = false;
-            keys.right = false;
-            movePressed = false;
+            joystickDir.dx = 0;
+            joystickDir.dy = 0;
         }
 
         // Pointer events
@@ -654,8 +633,46 @@
             const flags = config.flags;
             const size = state.size;
 
+            // ---- Determine movement input ----
+            let dx = 0,
+                dy = 0;
+            // Joystick overrides keyboard if active
+            if (joystickActive) {
+                dx = joystickDir.dx;
+                dy = joystickDir.dy;
+                // Convert to cardinal directions for movement (snap to 4 dirs)
+                // We'll keep analog but for grid movement we snap to nearest cardinal
+                const angle = Math.atan2(dy, dx);
+                const absAngle = Math.abs(angle);
+                let moveX = 0,
+                    moveY = 0;
+                if (absAngle < Math.PI / 4 || absAngle > 3 * Math.PI / 4) {
+                    moveX = (angle > 0) ? 1 : -1;
+                } else {
+                    moveY = (angle > 0) ? 1 : -1;
+                }
+                dx = moveX;
+                dy = moveY;
+                // Update lastDirection for rotation
+                if (dx !== 0 || dy !== 0) {
+                    lastDirection.dx = dx;
+                    lastDirection.dy = dy;
+                }
+            } else {
+                // Keyboard
+                if (keys.up) dy = -1;
+                if (keys.down) dy = 1;
+                if (keys.left) dx = -1;
+                if (keys.right) dx = 1;
+                if (dx !== 0 || dy !== 0) {
+                    lastDirection.dx = dx;
+                    lastDirection.dy = dy;
+                }
+            }
+
+            // For timeOnMove, we need a movePressed flag
             if (flags.timeOnMove) {
-                if (!movePressed) return;
+                if (!movePressed && !joystickActive) return;
                 movePressed = false;
                 state.turn++;
             }
@@ -664,25 +681,13 @@
                 state.rotationOffset = (state.rotationOffset + 1) % 4;
             }
 
-            let dx = 0,
-                dy = 0;
-            if (keys.up) dy = -1;
-            if (keys.down) dy = 1;
-            if (keys.left) dx = -1;
-            if (keys.right) dx = 1;
-
             if (flags.gravity) {
                 if (dx === 0 && dy === 0) dy = 1;
             }
             if (flags.reverse) { dx = -dx;
                 dy = -dy; }
 
-            // Store direction for rotation (only if moving)
-            if (dx !== 0 || dy !== 0) {
-                lastDirection.dx = dx;
-                lastDirection.dy = dy;
-            }
-
+            // ---- Apply movement ----
             if (flags.controlExit) {
                 let ex = state.exit.x + dx;
                 let ey = state.exit.y + dy;
@@ -701,8 +706,6 @@
                     state.player.x = targetX;
                     state.player.y = targetY;
                 }
-                dx = 0;
-                dy = 0;
             } else {
                 let nx = state.player.x + dx;
                 let ny = state.player.y + dy;
@@ -716,7 +719,7 @@
                 }
             }
 
-            // Floor crumble
+            // ---- Floor crumble ----
             if (flags.floorCrumble && state.floorLife) {
                 const px = state.player.x,
                     py = state.player.y;
@@ -728,7 +731,7 @@
                 }
             }
 
-            // Fog
+            // ---- Fog ----
             if (flags.fog && state.explored) {
                 const px = state.player.x,
                     py = state.player.y;
@@ -743,7 +746,7 @@
                 }
             }
 
-            // Enemies AI
+            // ---- Enemies ----
             const enemies = state.enemies;
             if (flags.enemiesTeleport && state.turn % 3 === 0) {
                 for (let e of enemies) {
@@ -819,7 +822,7 @@
                 }
             }
 
-            // Projectiles
+            // ---- Projectiles ----
             for (let p of state.projectiles) {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -834,7 +837,7 @@
             }
             state.projectiles = state.projectiles.filter(p => p.life > 0 && p.x > 0 && p.x < size && p.y > 0 && p.y < size);
 
-            // Enemy collision
+            // ---- Enemy collision ----
             for (let e of enemies) {
                 if (e.hp <= 0) continue;
                 if (e.x === state.player.x && e.y === state.player.y) {
@@ -852,6 +855,7 @@
 
             if (state.player.invincible > 0) state.player.invincible--;
 
+            // ---- Win / Lose ----
             if (state.player.x === state.exit.x && state.player.y === state.exit.y) {
                 state.won = true;
                 showWin();
@@ -865,6 +869,7 @@
                 return;
             }
 
+            // ---- Boss ----
             if (flags.boss && enemies.length > 0) {
                 const boss = enemies[0];
                 if (boss.hp > 0 && boss.hp < boss.maxHp * 0.5) {
@@ -881,6 +886,7 @@
                 }
             }
 
+            // ---- Split ----
             if (flags.enemiesSplit) {
                 const toAdd = [];
                 for (let e of enemies) {
@@ -922,7 +928,7 @@
             ctx.rotate(rot);
             ctx.translate(-W / 2, -H / 2);
 
-            // Draw floor & walls
+            // Draw floor & walls (improved contrast)
             for (let y = 0; y < size; y++) {
                 for (let x = 0; x < size; x++) {
                     const cx = x * cellSize,
@@ -934,9 +940,10 @@
                     }
                     const isWall = map[y][x] === 1;
                     if (isWall) {
-                        ctx.fillStyle = '#1e1e30';
+                        // Brighter, more visible walls
+                        ctx.fillStyle = '#3a3a5a';
                         ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
-                        ctx.strokeStyle = '#2e2e48';
+                        ctx.strokeStyle = '#4a4a6a';
                         ctx.lineWidth = 0.5;
                         ctx.strokeRect(cx, cy, cellSize, cellSize);
                     } else {
@@ -1013,14 +1020,12 @@
                 if (!flash) {
                     ctx.save();
                     ctx.translate(px, py);
-                    // rotate to face last direction
                     const angle = Math.atan2(lastDirection.dy, lastDirection.dx);
                     ctx.rotate(angle);
                     ctx.shadowColor = '#00ffff';
                     ctx.shadowBlur = 20;
                     ctx.fillStyle = '#00ffff';
                     ctx.beginPath();
-                    // triangle pointing right (0 rad)
                     ctx.moveTo(cellSize * 0.5, 0);
                     ctx.lineTo(-cellSize * 0.3, -cellSize * 0.35);
                     ctx.lineTo(-cellSize * 0.3, cellSize * 0.35);
@@ -1072,7 +1077,6 @@
 
         winBtn.addEventListener('click', hideWin);
         resetBtn.addEventListener('click', () => {
-            // Restart current mission without advancing
             if (state.mission) {
                 initState(state.mission);
                 gameLoop();
