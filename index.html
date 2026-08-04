@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>NULL GEOMETRY · 100 Rules of Ruin</title>
     <style>
         * {
@@ -18,6 +18,7 @@
             justify-content: center;
             align-items: center;
             font-family: 'Courier New', monospace;
+            touch-action: none;
         }
         .game-wrapper {
             background: #14141e;
@@ -25,6 +26,7 @@
             border-radius: 24px;
             box-shadow: 0 0 60px rgba(0, 255, 255, 0.08);
             border: 1px solid #2a2a3e;
+            position: relative;
         }
         canvas {
             display: block;
@@ -33,6 +35,7 @@
             box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
             background: #10101a;
             image-rendering: pixelated;
+            touch-action: none;
         }
         .info-panel {
             display: flex;
@@ -162,6 +165,75 @@
             transform: scale(1.05);
             background: #ffe44d;
         }
+
+        /* ── JOYSTICK ── */
+        #joystick-container {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            transition: opacity 0.2s;
+        }
+        #joystick-container:active {
+            background: rgba(255, 255, 255, 0.10);
+        }
+        #joystick-handle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00ffff 0%, #0088aa 100%);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: none;
+            will-change: transform;
+            pointer-events: none;
+        }
+        #joystick-handle.active {
+            background: radial-gradient(circle, #66ffff 0%, #00aacc 100%);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        }
+        @media (max-width: 700px) {
+            #joystick-container {
+                width: 100px;
+                height: 100px;
+                bottom: 20px;
+                left: 20px;
+            }
+            #joystick-handle {
+                width: 40px;
+                height: 40px;
+            }
+        }
+        @media (pointer: coarse) {
+            /* show joystick only on touch devices */
+            #joystick-container {
+                display: flex;
+            }
+        }
+        @media (pointer: fine) {
+            #joystick-container {
+                display: none; /* hide on desktop with mouse, keyboard is enough */
+            }
+        }
+        /* But we want it visible for mouse testing, so we can force it on */
+        /* For development, we'll keep it always visible, but you can adjust */
+        #joystick-container {
+            display: flex !important; /* always show for demo */
+        }
     </style>
 </head>
 <body>
@@ -178,6 +250,12 @@
 
     <div class="game-wrapper">
         <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+        <!-- JOYSTICK OVERLAY -->
+        <div id="joystick-container">
+            <div id="joystick-handle"></div>
+        </div>
+
         <div class="info-panel">
             <div class="mission">MISSION <span id="missionNum">1</span>/100</div>
             <div class="hp">❤️ <span id="hpDisplay">5</span></div>
@@ -212,6 +290,7 @@
         const keys = { up: false, down: false, left: false, right: false };
         let movePressed = false;
 
+        // Keyboard
         window.addEventListener('keydown', (e) => {
             const k = e.key;
             if (k === 'ArrowUp' || k === 'w') { keys.up = true;
@@ -237,6 +316,137 @@
                 e.preventDefault(); }
             if (k === 'ArrowRight' || k === 'd') { keys.right = false;
                 e.preventDefault(); }
+            // If no keys pressed, clear movePressed (will be set again on next down)
+            if (!keys.up && !keys.down && !keys.left && !keys.right) {
+                movePressed = false;
+            }
+        });
+
+        // ─── JOYSTICK (Pointer / Touch) ──────────────────────────────
+        const joystickContainer = document.getElementById('joystick-container');
+        const joystickHandle = document.getElementById('joystick-handle');
+        let joystickActive = false;
+        let joystickId = null; // for pointer events
+
+        function setJoystickDirection(dx, dy) {
+            // dx, dy are normalized (-1..1)
+            const deadZone = 0.15;
+            const magnitude = Math.sqrt(dx * dx + dy * dy);
+            if (magnitude < deadZone) {
+                // release all
+                keys.up = false;
+                keys.down = false;
+                keys.left = false;
+                keys.right = false;
+                movePressed = false;
+                joystickHandle.classList.remove('active');
+                return;
+            }
+            // Determine dominant direction
+            const angle = Math.atan2(dy, dx); // -PI to PI
+            // 0 = right, PI/2 = down, -PI/2 = up
+            const absAngle = Math.abs(angle);
+            // Decide cardinal direction
+            let up = false,
+                down = false,
+                left = false,
+                right = false;
+            if (absAngle < Math.PI / 4 || absAngle > 3 * Math.PI / 4) {
+                // horizontal
+                if (angle > 0) right = true;
+                else left = true;
+            } else {
+                // vertical
+                if (angle > 0) down = true;
+                else up = true;
+            }
+            keys.up = up;
+            keys.down = down;
+            keys.left = left;
+            keys.right = right;
+            movePressed = true;
+            joystickHandle.classList.add('active');
+        }
+
+        function handleJoystickStart(clientX, clientY) {
+            const rect = joystickContainer.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = clientX - cx;
+            const dy = clientY - cy;
+            const maxRadius = rect.width / 2 - 10;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const clampedDist = Math.min(dist, maxRadius);
+            const normX = dx / dist || 0;
+            const normY = dy / dist || 0;
+            // move handle
+            const handleOffsetX = normX * clampedDist;
+            const handleOffsetY = normY * clampedDist;
+            joystickHandle.style.transform = `translate(calc(-50% + ${handleOffsetX}px), calc(-50% + ${handleOffsetY}px))`;
+            setJoystickDirection(normX, normY);
+            joystickActive = true;
+        }
+
+        function handleJoystickMove(clientX, clientY) {
+            if (!joystickActive) return;
+            const rect = joystickContainer.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = clientX - cx;
+            const dy = clientY - cy;
+            const maxRadius = rect.width / 2 - 10;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const clampedDist = Math.min(dist, maxRadius);
+            const normX = dx / dist || 0;
+            const normY = dy / dist || 0;
+            const handleOffsetX = normX * clampedDist;
+            const handleOffsetY = normY * clampedDist;
+            joystickHandle.style.transform = `translate(calc(-50% + ${handleOffsetX}px), calc(-50% + ${handleOffsetY}px))`;
+            setJoystickDirection(normX, normY);
+        }
+
+        function handleJoystickEnd() {
+            joystickActive = false;
+            joystickHandle.style.transform = 'translate(-50%, -50%)';
+            joystickHandle.classList.remove('active');
+            keys.up = false;
+            keys.down = false;
+            keys.left = false;
+            keys.right = false;
+            movePressed = false;
+        }
+
+        // Pointer events (works for both mouse and touch)
+        joystickContainer.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            joystickContainer.setPointerCapture(e.pointerId);
+            joystickId = e.pointerId;
+            handleJoystickStart(e.clientX, e.clientY);
+        });
+
+        joystickContainer.addEventListener('pointermove', (e) => {
+            e.preventDefault();
+            if (joystickId !== null && joystickId === e.pointerId) {
+                handleJoystickMove(e.clientX, e.clientY);
+            }
+        });
+
+        joystickContainer.addEventListener('pointerup', (e) => {
+            e.preventDefault();
+            if (joystickId !== null && joystickId === e.pointerId) {
+                joystickContainer.releasePointerCapture(e.pointerId);
+                joystickId = null;
+                handleJoystickEnd();
+            }
+        });
+
+        joystickContainer.addEventListener('pointercancel', (e) => {
+            e.preventDefault();
+            if (joystickId !== null) {
+                joystickContainer.releasePointerCapture(e.pointerId);
+                joystickId = null;
+                handleJoystickEnd();
+            }
         });
 
         // ─── GAME STATE ────────────────────────────────────────────────
@@ -318,6 +528,7 @@
                 projectiles: [],
                 // fog explored
                 explored: null,
+                rotationOffset: 0,
             };
             if (config.flags.fog) {
                 state.explored = [];
@@ -325,8 +536,6 @@
                     state.explored[y] = new Array(size).fill(false);
                 }
             }
-            // initial camera offset for rotation
-            state.rotationOffset = 0;
             updateUI();
         }
 
@@ -937,9 +1146,11 @@
 
         winBtn.addEventListener('click', hideWin);
         resetBtn.addEventListener('click', () => {
-            hideWin();
-            initState(state.mission || 1);
-            gameLoop();
+            // FIX: restart current mission without advancing
+            if (state.mission) {
+                initState(state.mission);
+                gameLoop();
+            }
         });
 
         // ─── GAME LOOP ──────────────────────────────────────────────────
@@ -978,9 +1189,10 @@
             size = Math.max(300, size);
             canvas.style.width = size + 'px';
             canvas.style.height = size + 'px';
+            // also adjust joystick position if needed
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
     </script>
 </body>
-  </html>
+    </html>
