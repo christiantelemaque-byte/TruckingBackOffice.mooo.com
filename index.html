@@ -169,7 +169,7 @@
         /* ── JOYSTICK ── */
         #joystick-container {
             position: absolute;
-            bottom: 10px;           /* moved lower */
+            bottom: 10px;
             left: 10px;
             width: 110px;
             height: 110px;
@@ -313,7 +313,6 @@
         const joystickHandle = document.getElementById('joystick-handle');
         let joystickActive = false;
         let joystickId = null;
-        // Direct joystick direction (overrides keys when active)
         let joystickDir = { dx: 0, dy: 0 };
 
         function setJoystickDirection(dx, dy) {
@@ -325,7 +324,6 @@
                 joystickHandle.classList.remove('active');
                 return;
             }
-            // Store normalized direction
             joystickDir.dx = dx / magnitude;
             joystickDir.dy = dy / magnitude;
             joystickHandle.classList.add('active');
@@ -375,7 +373,6 @@
             joystickDir.dy = 0;
         }
 
-        // Pointer events
         joystickContainer.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             joystickContainer.setPointerCapture(e.pointerId);
@@ -410,7 +407,12 @@
 
         // ─── GAME STATE ────────────────────────────────────────────────
         let state = {};
-        let lastDirection = { dx: 0, dy: -1 }; // for rotation
+        let lastDirection = { dx: 0, dy: -1 };
+        // Cooldowns for movement speed control
+        let moveCooldown = 0;        // player movement cooldown (frames)
+        let enemyCooldown = 0;       // enemy movement cooldown (frames)
+        const MOVE_DELAY = 12;       // ~200ms at 60fps
+        const ENEMY_DELAY = 18;      // ~300ms
 
         function initState(mission) {
             const config = createMissionConfig(mission);
@@ -488,6 +490,7 @@
                 projectiles: [],
                 explored: null,
                 rotationOffset: 0,
+                isGameOverLoss: false, // flag to distinguish loss from win
             };
             if (config.flags.fog) {
                 state.explored = [];
@@ -496,6 +499,8 @@
                 }
             }
             lastDirection = { dx: 0, dy: -1 };
+            moveCooldown = 0;
+            enemyCooldown = 0;
             updateUI();
         }
 
@@ -633,33 +638,26 @@
             const flags = config.flags;
             const size = state.size;
 
-            // ---- Determine movement input ----
+            // ---- Cooldowns ----
+            if (moveCooldown > 0) moveCooldown--;
+            if (enemyCooldown > 0) enemyCooldown--;
+
+            // ---- Determine if player wants to move ----
             let dx = 0,
                 dy = 0;
-            // Joystick overrides keyboard if active
             if (joystickActive) {
-                dx = joystickDir.dx;
-                dy = joystickDir.dy;
-                // Convert to cardinal directions for movement (snap to 4 dirs)
-                // We'll keep analog but for grid movement we snap to nearest cardinal
-                const angle = Math.atan2(dy, dx);
+                const angle = Math.atan2(joystickDir.dy, joystickDir.dx);
                 const absAngle = Math.abs(angle);
-                let moveX = 0,
-                    moveY = 0;
                 if (absAngle < Math.PI / 4 || absAngle > 3 * Math.PI / 4) {
-                    moveX = (angle > 0) ? 1 : -1;
+                    dx = (angle > 0) ? 1 : -1;
                 } else {
-                    moveY = (angle > 0) ? 1 : -1;
+                    dy = (angle > 0) ? 1 : -1;
                 }
-                dx = moveX;
-                dy = moveY;
-                // Update lastDirection for rotation
                 if (dx !== 0 || dy !== 0) {
                     lastDirection.dx = dx;
                     lastDirection.dy = dy;
                 }
             } else {
-                // Keyboard
                 if (keys.up) dy = -1;
                 if (keys.down) dy = 1;
                 if (keys.left) dx = -1;
@@ -670,53 +668,53 @@
                 }
             }
 
-            // For timeOnMove, we need a movePressed flag
+            // For timeOnMove, we only move if movePressed (or joystick active)
             if (flags.timeOnMove) {
                 if (!movePressed && !joystickActive) return;
                 movePressed = false;
                 state.turn++;
             }
 
-            if (flags.rotateMap && state.turn % 8 === 0 && state.turn > 0) {
-                state.rotationOffset = (state.rotationOffset + 1) % 4;
-            }
+            // ---- Player movement with cooldown ----
+            if (moveCooldown === 0 && (dx !== 0 || dy !== 0)) {
+                // apply gravity / reverse
+                if (flags.gravity) {
+                    if (dx === 0 && dy === 0) dy = 1;
+                }
+                if (flags.reverse) { dx = -dx;
+                    dy = -dy; }
 
-            if (flags.gravity) {
-                if (dx === 0 && dy === 0) dy = 1;
-            }
-            if (flags.reverse) { dx = -dx;
-                dy = -dy; }
-
-            // ---- Apply movement ----
-            if (flags.controlExit) {
-                let ex = state.exit.x + dx;
-                let ey = state.exit.y + dy;
-                if (flags.torus) {
-                    ex = (ex + size) % size;
-                    ey = (ey + size) % size;
+                if (flags.controlExit) {
+                    let ex = state.exit.x + dx;
+                    let ey = state.exit.y + dy;
+                    if (flags.torus) {
+                        ex = (ex + size) % size;
+                        ey = (ey + size) % size;
+                    }
+                    if (ex >= 0 && ex < size && ey >= 0 && ey < size && state.map[ey][ex] === 0) {
+                        state.exitPrev = { x: state.exit.x, y: state.exit.y };
+                        state.exit.x = ex;
+                        state.exit.y = ey;
+                    }
+                    const targetX = state.exitPrev.x;
+                    const targetY = state.exitPrev.y;
+                    if (state.map[targetY] && state.map[targetY][targetX] === 0) {
+                        state.player.x = targetX;
+                        state.player.y = targetY;
+                    }
+                } else {
+                    let nx = state.player.x + dx;
+                    let ny = state.player.y + dy;
+                    if (flags.torus) {
+                        nx = (nx + size) % size;
+                        ny = (ny + size) % size;
+                    }
+                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                        state.player.x = nx;
+                        state.player.y = ny;
+                    }
                 }
-                if (ex >= 0 && ex < size && ey >= 0 && ey < size && state.map[ey][ex] === 0) {
-                    state.exitPrev = { x: state.exit.x, y: state.exit.y };
-                    state.exit.x = ex;
-                    state.exit.y = ey;
-                }
-                const targetX = state.exitPrev.x;
-                const targetY = state.exitPrev.y;
-                if (state.map[targetY] && state.map[targetY][targetX] === 0) {
-                    state.player.x = targetX;
-                    state.player.y = targetY;
-                }
-            } else {
-                let nx = state.player.x + dx;
-                let ny = state.player.y + dy;
-                if (flags.torus) {
-                    nx = (nx + size) % size;
-                    ny = (ny + size) % size;
-                }
-                if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
-                    state.player.x = nx;
-                    state.player.y = ny;
-                }
+                moveCooldown = MOVE_DELAY; // reset cooldown
             }
 
             // ---- Floor crumble ----
@@ -731,7 +729,7 @@
                 }
             }
 
-            // ---- Fog ----
+            // ---- Fog exploration ----
             if (flags.fog && state.explored) {
                 const px = state.player.x,
                     py = state.player.y;
@@ -746,83 +744,91 @@
                 }
             }
 
-            // ---- Enemies ----
-            const enemies = state.enemies;
-            if (flags.enemiesTeleport && state.turn % 3 === 0) {
+            // ---- Enemies AI (only when enemyCooldown is 0) ----
+            if (enemyCooldown === 0) {
+                const enemies = state.enemies;
+
+                // teleport
+                if (flags.enemiesTeleport && state.turn % 3 === 0) {
+                    for (let e of enemies) {
+                        if (e.hp <= 0) continue;
+                        for (let attempt = 0; attempt < 10; attempt++) {
+                            const tx = state.player.x + Math.floor(Math.random() * 5) - 2;
+                            const ty = state.player.y + Math.floor(Math.random() * 5) - 2;
+                            if (tx >= 0 && tx < size && ty >= 0 && ty < size && state.map[ty][tx] === 0 && !(tx === state
+                                    .player.x && ty === state.player.y)) {
+                                e.x = tx;
+                                e.y = ty;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // enemy movement
                 for (let e of enemies) {
                     if (e.hp <= 0) continue;
-                    for (let attempt = 0; attempt < 10; attempt++) {
-                        const tx = state.player.x + Math.floor(Math.random() * 5) - 2;
-                        const ty = state.player.y + Math.floor(Math.random() * 5) - 2;
-                        if (tx >= 0 && tx < size && ty >= 0 && ty < size && state.map[ty][tx] === 0 && !(tx === state
-                                .player.x && ty === state.player.y)) {
-                            e.x = tx;
-                            e.y = ty;
-                            break;
+                    // shoot
+                    if (flags.enemiesShoot && e.cooldown <= 0 && Math.random() < 0.04) {
+                        const dx = state.player.x - e.x;
+                        const dy = state.player.y - e.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > 0 && dist < 8) {
+                            state.projectiles.push({
+                                x: e.x,
+                                y: e.y,
+                                vx: (dx / dist) * 0.15,
+                                vy: (dy / dist) * 0.15,
+                                life: 40
+                            });
+                            e.cooldown = 15;
+                        }
+                    }
+                    if (e.cooldown > 0) e.cooldown--;
+
+                    // move towards player
+                    let bestDist = Infinity;
+                    let bestDx = 0,
+                        bestDy = 0;
+                    const dirs = [
+                        [0, -1],
+                        [0, 1],
+                        [-1, 0],
+                        [1, 0]
+                    ];
+                    for (let d of dirs) {
+                        let nx = e.x + d[0],
+                            ny = e.y + d[1];
+                        if (flags.torus) {
+                            nx = (nx + size) % size;
+                            ny = (ny + size) % size;
+                        }
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                            const dist = Math.abs(nx - state.player.x) + Math.abs(ny - state.player.y);
+                            if (dist < bestDist) {
+                                bestDist = dist;
+                                bestDx = d[0];
+                                bestDy = d[1];
+                            }
+                        }
+                    }
+                    if (bestDist < Infinity) {
+                        let nx = e.x + bestDx,
+                            ny = e.y + bestDy;
+                        if (flags.torus) {
+                            nx = (nx + size) % size;
+                            ny = (ny + size) % size;
+                        }
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                            e.x = nx;
+                            e.y = ny;
                         }
                     }
                 }
+                enemyCooldown = ENEMY_DELAY;
             }
 
-            for (let e of enemies) {
-                if (e.hp <= 0) continue;
-                if (flags.enemiesShoot && e.cooldown <= 0 && Math.random() < 0.04) {
-                    const dx = state.player.x - e.x;
-                    const dy = state.player.y - e.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist > 0 && dist < 8) {
-                        state.projectiles.push({
-                            x: e.x,
-                            y: e.y,
-                            vx: (dx / dist) * 0.15,
-                            vy: (dy / dist) * 0.15,
-                            life: 40
-                        });
-                        e.cooldown = 15;
-                    }
-                }
-                if (e.cooldown > 0) e.cooldown--;
-
-                let bestDist = Infinity;
-                let bestDx = 0,
-                    bestDy = 0;
-                const dirs = [
-                    [0, -1],
-                    [0, 1],
-                    [-1, 0],
-                    [1, 0]
-                ];
-                for (let d of dirs) {
-                    let nx = e.x + d[0],
-                        ny = e.y + d[1];
-                    if (flags.torus) {
-                        nx = (nx + size) % size;
-                        ny = (ny + size) % size;
-                    }
-                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
-                        const dist = Math.abs(nx - state.player.x) + Math.abs(ny - state.player.y);
-                        if (dist < bestDist) {
-                            bestDist = dist;
-                            bestDx = d[0];
-                            bestDy = d[1];
-                        }
-                    }
-                }
-                if (bestDist < Infinity) {
-                    let nx = e.x + bestDx,
-                        ny = e.y + bestDy;
-                    if (flags.torus) {
-                        nx = (nx + size) % size;
-                        ny = (ny + size) % size;
-                    }
-                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
-                        e.x = nx;
-                        e.y = ny;
-                    }
-                }
-            }
-
-            // ---- Projectiles ----
+            // ---- Projectiles (update every frame) ----
             for (let p of state.projectiles) {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -837,8 +843,8 @@
             }
             state.projectiles = state.projectiles.filter(p => p.life > 0 && p.x > 0 && p.x < size && p.y > 0 && p.y < size);
 
-            // ---- Enemy collision ----
-            for (let e of enemies) {
+            // ---- Enemy collision (every frame) ----
+            for (let e of state.enemies) {
                 if (e.hp <= 0) continue;
                 if (e.x === state.player.x && e.y === state.player.y) {
                     if (state.player.invincible <= 0) {
@@ -858,20 +864,27 @@
             // ---- Win / Lose ----
             if (state.player.x === state.exit.x && state.player.y === state.exit.y) {
                 state.won = true;
+                state.isGameOverLoss = false;
                 showWin();
                 return;
             }
 
             if (state.player.hp <= 0) {
                 state.gameOver = true;
+                state.isGameOverLoss = true;
                 state.player.hp = 0;
                 updateUI();
+                // show lose overlay
+                winTitle.textContent = '☠ YOU DIED ☠';
+                winSub.textContent = `Failed at Mission ${state.mission} · Retry?`;
+                winBtn.textContent = '↻ RETRY';
+                winOverlay.classList.add('show');
                 return;
             }
 
-            // ---- Boss ----
-            if (flags.boss && enemies.length > 0) {
-                const boss = enemies[0];
+            // ---- Boss special ----
+            if (flags.boss && state.enemies.length > 0) {
+                const boss = state.enemies[0];
                 if (boss.hp > 0 && boss.hp < boss.maxHp * 0.5) {
                     if (state.bossPhase === 0) {
                         state.bossPhase = 1;
@@ -886,10 +899,10 @@
                 }
             }
 
-            // ---- Split ----
+            // ---- enemy split ----
             if (flags.enemiesSplit) {
                 const toAdd = [];
-                for (let e of enemies) {
+                for (let e of state.enemies) {
                     if (e.hp <= 0 && !e.split) {
                         e.split = true;
                         for (let i = 0; i < 2; i++) {
@@ -901,11 +914,11 @@
                         }
                     }
                 }
-                enemies.push(...toAdd);
+                state.enemies.push(...toAdd);
             }
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                if (enemies[i].hp <= 0 && enemies[i].split === true) {
-                    enemies.splice(i, 1);
+            for (let i = state.enemies.length - 1; i >= 0; i--) {
+                if (state.enemies[i].hp <= 0 && state.enemies[i].split === true) {
+                    state.enemies.splice(i, 1);
                 }
             }
             updateUI();
@@ -928,7 +941,7 @@
             ctx.rotate(rot);
             ctx.translate(-W / 2, -H / 2);
 
-            // Draw floor & walls (improved contrast)
+            // Draw floor & walls
             for (let y = 0; y < size; y++) {
                 for (let x = 0; x < size; x++) {
                     const cx = x * cellSize,
@@ -940,7 +953,6 @@
                     }
                     const isWall = map[y][x] === 1;
                     if (isWall) {
-                        // Brighter, more visible walls
                         ctx.fillStyle = '#3a3a5a';
                         ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
                         ctx.strokeStyle = '#4a4a6a';
@@ -1012,7 +1024,7 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Player (triangle with rotation)
+            // Player
             if (!state.gameOver) {
                 const px = player.x * cellSize + cellSize / 2;
                 const py = player.y * cellSize + cellSize / 2;
@@ -1066,6 +1078,13 @@
 
         function hideWin() {
             winOverlay.classList.remove('show');
+            // If it's a loss (game over), restart same mission
+            if (state.isGameOverLoss) {
+                initState(state.mission);
+                gameLoop();
+                return;
+            }
+            // It's a win: advance mission
             if (state.mission >= 100) {
                 state.mission = 0;
             }
@@ -1078,6 +1097,8 @@
         winBtn.addEventListener('click', hideWin);
         resetBtn.addEventListener('click', () => {
             if (state.mission) {
+                // force reset current mission, clear any overlay
+                winOverlay.classList.remove('show');
                 initState(state.mission);
                 gameLoop();
             }
@@ -1094,12 +1115,6 @@
                     updateState();
                 }
                 render();
-                if (state.gameOver) {
-                    winTitle.textContent = '☠ YOU DIED ☠';
-                    winSub.textContent = `Failed at Mission ${state.mission} · Retry?`;
-                    winBtn.textContent = '↻ RETRY';
-                    winOverlay.classList.add('show');
-                }
                 animationId = requestAnimationFrame(loop);
             }
             loop();
