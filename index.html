@@ -408,11 +408,10 @@
         // ─── GAME STATE ────────────────────────────────────────────────
         let state = {};
         let lastDirection = { dx: 0, dy: -1 };
-        // Cooldowns for movement speed control
-        let moveCooldown = 0;        // player movement cooldown (frames)
-        let enemyCooldown = 0;       // enemy movement cooldown (frames)
-        const MOVE_DELAY = 12;       // ~200ms at 60fps
-        const ENEMY_DELAY = 18;      // ~300ms
+        let moveCooldown = 0;
+        let enemyCooldown = 0;
+        const MOVE_DELAY = 12;
+        const ENEMY_DELAY = 18;
 
         function initState(mission) {
             const config = createMissionConfig(mission);
@@ -490,7 +489,7 @@
                 projectiles: [],
                 explored: null,
                 rotationOffset: 0,
-                isGameOverLoss: false, // flag to distinguish loss from win
+                isGameOverLoss: false,
             };
             if (config.flags.fog) {
                 state.explored = [];
@@ -623,11 +622,24 @@
                 }
             }
             carve(1, 1);
+            
+            // Randomly open some extra passages
             for (let y = 0; y < size; y++) {
                 for (let x = 0; x < size; x++) {
                     if (map[y][x] === 1 && Math.random() < 0.15) map[y][x] = 0;
                 }
             }
+
+            // ★ RULE 2: Force all 4 borders (edges) to be solid walls
+            for (let y = 0; y < size; y++) {
+                map[y][0] = 1;
+                map[y][size - 1] = 1;
+            }
+            for (let x = 0; x < size; x++) {
+                map[0][x] = 1;
+                map[size - 1][x] = 1;
+            }
+
             return map;
         }
 
@@ -638,11 +650,9 @@
             const flags = config.flags;
             const size = state.size;
 
-            // ---- Cooldowns ----
             if (moveCooldown > 0) moveCooldown--;
             if (enemyCooldown > 0) enemyCooldown--;
 
-            // ---- Determine if player wants to move ----
             let dx = 0,
                 dy = 0;
             if (joystickActive) {
@@ -668,16 +678,13 @@
                 }
             }
 
-            // For timeOnMove, we only move if movePressed (or joystick active)
             if (flags.timeOnMove) {
                 if (!movePressed && !joystickActive) return;
                 movePressed = false;
                 state.turn++;
             }
 
-            // ---- Player movement with cooldown ----
             if (moveCooldown === 0 && (dx !== 0 || dy !== 0)) {
-                // apply gravity / reverse
                 if (flags.gravity) {
                     if (dx === 0 && dy === 0) dy = 1;
                 }
@@ -714,10 +721,9 @@
                         state.player.y = ny;
                     }
                 }
-                moveCooldown = MOVE_DELAY; // reset cooldown
+                moveCooldown = MOVE_DELAY;
             }
 
-            // ---- Floor crumble ----
             if (flags.floorCrumble && state.floorLife) {
                 const px = state.player.x,
                     py = state.player.y;
@@ -729,7 +735,6 @@
                 }
             }
 
-            // ---- Fog exploration ----
             if (flags.fog && state.explored) {
                 const px = state.player.x,
                     py = state.player.y;
@@ -744,11 +749,10 @@
                 }
             }
 
-            // ---- Enemies AI (only when enemyCooldown is 0) ----
+            // ─── ENEMY AI: FLEEING (RULE 1) ──────────────────────────────
             if (enemyCooldown === 0) {
                 const enemies = state.enemies;
 
-                // teleport
                 if (flags.enemiesTeleport && state.turn % 3 === 0) {
                     for (let e of enemies) {
                         if (e.hp <= 0) continue;
@@ -765,10 +769,8 @@
                     }
                 }
 
-                // enemy movement
                 for (let e of enemies) {
                     if (e.hp <= 0) continue;
-                    // shoot
                     if (flags.enemiesShoot && e.cooldown <= 0 && Math.random() < 0.04) {
                         const dx = state.player.x - e.x;
                         const dy = state.player.y - e.y;
@@ -786,8 +788,8 @@
                     }
                     if (e.cooldown > 0) e.cooldown--;
 
-                    // move towards player
-                    let bestDist = Infinity;
+                    // ★ RULE 1: Flee from player (move to the tile that maximizes distance)
+                    let bestDist = -1;
                     let bestDx = 0,
                         bestDy = 0;
                     const dirs = [
@@ -804,15 +806,17 @@
                             ny = (ny + size) % size;
                         }
                         if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                            // Calculate Manhattan distance to player (larger = better for fleeing)
                             const dist = Math.abs(nx - state.player.x) + Math.abs(ny - state.player.y);
-                            if (dist < bestDist) {
+                            if (dist > bestDist) {
                                 bestDist = dist;
                                 bestDx = d[0];
                                 bestDy = d[1];
                             }
                         }
                     }
-                    if (bestDist < Infinity) {
+                    // Only move if a valid tile was found (bestDist > -1)
+                    if (bestDist > -1) {
                         let nx = e.x + bestDx,
                             ny = e.y + bestDy;
                         if (flags.torus) {
@@ -828,7 +832,7 @@
                 enemyCooldown = ENEMY_DELAY;
             }
 
-            // ---- Projectiles (update every frame) ----
+            // Projectiles
             for (let p of state.projectiles) {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -843,7 +847,6 @@
             }
             state.projectiles = state.projectiles.filter(p => p.life > 0 && p.x > 0 && p.x < size && p.y > 0 && p.y < size);
 
-            // ---- Enemy collision (every frame) ----
             for (let e of state.enemies) {
                 if (e.hp <= 0) continue;
                 if (e.x === state.player.x && e.y === state.player.y) {
@@ -861,7 +864,6 @@
 
             if (state.player.invincible > 0) state.player.invincible--;
 
-            // ---- Win / Lose ----
             if (state.player.x === state.exit.x && state.player.y === state.exit.y) {
                 state.won = true;
                 state.isGameOverLoss = false;
@@ -874,7 +876,6 @@
                 state.isGameOverLoss = true;
                 state.player.hp = 0;
                 updateUI();
-                // show lose overlay
                 winTitle.textContent = '☠ YOU DIED ☠';
                 winSub.textContent = `Failed at Mission ${state.mission} · Retry?`;
                 winBtn.textContent = '↻ RETRY';
@@ -882,7 +883,6 @@
                 return;
             }
 
-            // ---- Boss special ----
             if (flags.boss && state.enemies.length > 0) {
                 const boss = state.enemies[0];
                 if (boss.hp > 0 && boss.hp < boss.maxHp * 0.5) {
@@ -899,7 +899,6 @@
                 }
             }
 
-            // ---- enemy split ----
             if (flags.enemiesSplit) {
                 const toAdd = [];
                 for (let e of state.enemies) {
@@ -941,7 +940,6 @@
             ctx.rotate(rot);
             ctx.translate(-W / 2, -H / 2);
 
-            // Draw floor & walls
             for (let y = 0; y < size; y++) {
                 for (let x = 0; x < size; x++) {
                     const cx = x * cellSize,
@@ -973,7 +971,6 @@
                 }
             }
 
-            // Projectiles
             for (let p of projectiles) {
                 ctx.beginPath();
                 ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, cellSize * 0.2, 0, Math.PI * 2);
@@ -984,7 +981,6 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Enemies
             for (let e of enemies) {
                 if (e.hp <= 0) continue;
                 const cx = e.x * cellSize + cellSize / 2;
@@ -1008,7 +1004,6 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Exit
             const ex = exit.x * cellSize + cellSize / 2;
             const ey = exit.y * cellSize + cellSize / 2;
             const glow = 8 + 4 * Math.sin(Date.now() / 300);
@@ -1024,7 +1019,6 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Player
             if (!state.gameOver) {
                 const px = player.x * cellSize + cellSize / 2;
                 const py = player.y * cellSize + cellSize / 2;
@@ -1078,13 +1072,11 @@
 
         function hideWin() {
             winOverlay.classList.remove('show');
-            // If it's a loss (game over), restart same mission
             if (state.isGameOverLoss) {
                 initState(state.mission);
                 gameLoop();
                 return;
             }
-            // It's a win: advance mission
             if (state.mission >= 100) {
                 state.mission = 0;
             }
@@ -1097,7 +1089,6 @@
         winBtn.addEventListener('click', hideWin);
         resetBtn.addEventListener('click', () => {
             if (state.mission) {
-                // force reset current mission, clear any overlay
                 winOverlay.classList.remove('show');
                 initState(state.mission);
                 gameLoop();
