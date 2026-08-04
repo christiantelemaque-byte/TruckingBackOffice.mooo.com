@@ -1,1857 +1,803 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>NEON SHIFT · Puzzle Cascade</title>
-
-    <style>
-        /* ========== RESET & BASE ========== */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        :root {
-            --bg-primary: #0a0a1a;
-            --bg-secondary: #1a0a2e;
-            --neon-cyan: #00f0ff;
-            --neon-magenta: #ff00e5;
-            --neon-gold: #ffcc00;
-            --neon-cyan-dim: rgba(0, 240, 255, 0.15);
-            --neon-magenta-dim: rgba(255, 0, 229, 0.15);
-            --glass-bg: rgba(10, 10, 30, 0.75);
-            --glass-border: rgba(0, 240, 255, 0.2);
-            --text-primary: #e0e8ff;
-            --text-secondary: #8899cc;
-            --radius: 16px;
-            --shadow-glow: 0 0 30px rgba(0, 240, 255, 0.15);
-            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        html,
-        body {
-            height: 100%;
-            background: var(--bg-primary);
-            font-family: var(--font);
-            color: var(--text-primary);
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-        #app {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            max-width: 520px;
-            margin: 0 auto;
-            background: radial-gradient(ellipse at 50% 0%, var(--bg-secondary), var(--bg-primary) 70%);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 80px rgba(0, 240, 255, 0.06);
-        }
-
-        /* ========== SCREENS ========== */
-        .screen {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            transform: scale(0.97);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .screen.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1);
-        }
-        .screen::-webkit-scrollbar {
-            width: 3px;
-        }
-        .screen::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .screen::-webkit-scrollbar-thumb {
-            background: var(--neon-cyan);
-            border-radius: 10px;
-        }
-
-        /* ========== MAIN MENU ========== */
-        #menu-screen {
-            justify-content: center;
-            gap: 28px;
-            padding: 30px 20px;
-        }
-        .menu-title {
-            font-size: clamp(44px, 12vw, 72px);
-            font-weight: 900;
-            letter-spacing: 4px;
-            text-align: center;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta), var(--neon-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 60px rgba(0, 240, 255, 0.3), 0 0 120px rgba(255, 0, 229, 0.15);
-            animation: titlePulse 3s ease-in-out infinite;
-            line-height: 1.1;
-        }
-        .menu-subtitle {
-            font-size: clamp(14px, 3vw, 20px);
-            color: var(--text-secondary);
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            margin-top: -12px;
-            text-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-        }
-        @keyframes titlePulse {
-            0%,
-            100% {
-                filter: brightness(1);
-            }
-            50% {
-                filter: brightness(1.25);
-            }
-        }
-
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            width: 100%;
-            max-width: 320px;
-            margin-top: 8px;
-        }
-        .btn {
-            position: relative;
-            padding: 16px 24px;
-            border: none;
-            border-radius: 60px;
-            font-size: clamp(18px, 4vw, 24px);
-            font-weight: 700;
-            color: #fff;
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(255, 0, 229, 0.08));
-            border: 1.5px solid var(--neon-cyan);
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.05), inset 0 0 30px rgba(0, 240, 255, 0.02);
-            backdrop-filter: blur(4px);
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 50px rgba(0, 240, 255, 0.2), inset 0 0 30px rgba(0, 240, 255, 0.05);
-            border-color: var(--neon-gold);
-        }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--neon-cyan), #0088ff);
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
-        }
-        .btn-primary:hover {
-            box-shadow: 0 0 70px rgba(0, 240, 255, 0.4);
-        }
-        .btn-secondary {
-            border-color: var(--neon-magenta);
-            box-shadow: 0 0 30px rgba(255, 0, 229, 0.05);
-        }
-        .btn-secondary:hover {
-            border-color: var(--neon-gold);
-            box-shadow: 0 0 50px rgba(255, 0, 229, 0.15);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, var(--neon-gold), #e6a800);
-            border-color: var(--neon-gold);
-            color: #0a0a1a;
-            box-shadow: 0 0 40px rgba(255, 204, 0, 0.2);
-        }
-        .btn-gold:hover {
-            box-shadow: 0 0 70px rgba(255, 204, 0, 0.35);
-        }
-        .btn-sm {
-            padding: 10px 18px;
-            font-size: clamp(13px, 2.5vw, 16px);
-        }
-        .btn-icon {
-            font-size: 22px;
-        }
-
-        .menu-footer {
-            margin-top: 8px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            opacity: 0.6;
-            letter-spacing: 2px;
-        }
-
-        /* ========== LEVEL SELECT ========== */
-        #level-select-screen {
-            padding: 16px 12px 20px;
-            justify-content: flex-start;
-            padding-top: 20px;
-        }
-        .ls-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 0 4px 16px 4px;
-            flex-shrink: 0;
-        }
-        .ls-header h2 {
-            font-size: clamp(20px, 5vw, 28px);
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .ls-back {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 40px;
-            padding: 8px 16px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ls-back:hover {
-            border-color: var(--neon-cyan);
-            color: #fff;
-        }
-
-        .ls-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            width: 100%;
-            max-width: 480px;
-            padding: 4px 0 20px;
-            flex: 1;
-            align-content: start;
-        }
-        .ls-cell {
-            aspect-ratio: 1;
-            border-radius: 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(16px, 3.5vw, 22px);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1.5px solid rgba(255, 255, 255, 0.06);
-            background: rgba(255, 255, 255, 0.02);
-            position: relative;
-            gap: 2px;
-            min-height: 44px;
-        }
-        .ls-cell .star-indicator {
-            font-size: 10px;
-            letter-spacing: 1px;
-            color: var(--neon-gold);
-        }
-        .ls-cell.locked {
-            opacity: 0.35;
-            cursor: not-allowed;
-            border-color: rgba(255, 0, 229, 0.15);
-        }
-        .ls-cell.locked::after {
-            content: '🔒';
-            font-size: 18px;
-            opacity: 0.7;
-        }
-        .ls-cell.unlocked {
-            border-color: rgba(0, 240, 255, 0.15);
-        }
-        .ls-cell.unlocked:hover {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-            transform: scale(1.04);
-        }
-        .ls-cell.completed {
-            border-color: var(--neon-gold);
-            background: rgba(255, 204, 0, 0.06);
-        }
-        .ls-cell.completed .star-indicator {
-            color: var(--neon-gold);
-        }
-        .ls-cell.current {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
-            background: rgba(0, 240, 255, 0.06);
-        }
-        .ls-cell .level-num {
-            line-height: 1;
-        }
-        .ls-cell .lock-icon {
-            font-size: 16px;
-        }
-
-        /* ========== GAME SCREEN ========== */
-        #game-screen {
-            padding: 10px 12px 14px;
-            justify-content: flex-start;
-            padding-top: 12px;
-        }
-
-        .game-hud {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 0 2px 10px 2px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .hud-left,
-        .hud-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .hud-item {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 40px;
-            padding: 4px 14px;
-            font-size: clamp(13px, 2.5vw, 16px);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-        .hud-item .val {
-            color: #fff;
-            font-weight: 700;
-        }
-        .hud-item .val.gold {
-            color: var(--neon-gold);
-        }
-        .hud-item .val.cyan {
-            color: var(--neon-cyan);
-        }
-        .hud-item .val.magenta {
-            color: var(--neon-magenta);
-        }
-        .hud-back {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 40px;
-            padding: 4px 12px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.2s;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 38px;
-            min-height: 38px;
-        }
-        .hud-back:hover {
-            border-color: var(--neon-cyan);
-            color: #fff;
-        }
-
-        /* ---- Canvas ---- */
-        .game-board-wrap {
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            aspect-ratio: 1;
-            margin: 0 auto;
-            flex: 1;
-            min-height: 0;
-        }
-        #gameCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            border-radius: 20px;
-            background: radial-gradient(ellipse at 50% 50%, #12102a, #08081a);
-            box-shadow: 0 0 60px rgba(0, 240, 255, 0.04), inset 0 0 80px rgba(0, 0, 0, 0.5);
-            touch-action: none;
-            cursor: pointer;
-        }
-
-        /* ---- Game Overlay ---- */
-        .game-overlay {
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background: rgba(10, 10, 26, 0.82);
-            backdrop-filter: blur(6px);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 30px;
-            text-align: center;
-            z-index: 10;
-        }
-        .game-overlay.show {
-            display: flex;
-        }
-        .game-overlay .big-icon {
-            font-size: 54px;
-        }
-        .game-overlay .title {
-            font-size: clamp(24px, 5vw, 34px);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .game-overlay .sub {
-            font-size: clamp(14px, 2.5vw, 18px);
-            color: var(--text-secondary);
-        }
-        .game-overlay .stars-display {
-            font-size: 32px;
-            letter-spacing: 6px;
-            margin: 2px 0;
-        }
-        .game-overlay .btn {
-            margin-top: 8px;
-            min-width: 160px;
-        }
-
-        /* ========== MODALS ========== */
-        .modal-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            z-index: 20;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-overlay.show {
-            display: flex;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.94);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal-box {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 28px 24px 32px;
-            max-width: 420px;
-            width: 100%;
-            box-shadow: 0 0 80px rgba(0, 240, 255, 0.06), inset 0 0 60px rgba(0, 240, 255, 0.02);
-            text-align: center;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-box h2 {
-            font-size: clamp(22px, 5vw, 30px);
-            font-weight: 700;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .modal-box p {
-            color: var(--text-secondary);
-            font-size: clamp(14px, 2.5vw, 17px);
-            line-height: 1.6;
-            margin: 8px 0 16px;
-        }
-        .modal-box .price-tag {
-            font-size: clamp(28px, 6vw, 38px);
-            font-weight: 900;
-            color: var(--neon-gold);
-            text-shadow: 0 0 40px rgba(255, 204, 0, 0.2);
-            margin: 6px 0;
-        }
-        .modal-box .btn {
-            width: 100%;
-            max-width: 260px;
-            margin: 6px auto;
-        }
-        .modal-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 28px;
-            cursor: pointer;
-            transition: 0.2s;
-            padding: 4px 8px;
-        }
-        .modal-close:hover {
-            color: #fff;
-            transform: rotate(90deg);
-        }
-        .modal-box .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        /* ========== TUTORIAL ========== */
-        .tutorial-tip {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 240, 255, 0.08);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 40px;
-            padding: 8px 20px;
-            font-size: clamp(12px, 2vw, 15px);
-            color: var(--text-secondary);
-            backdrop-filter: blur(4px);
-            white-space: nowrap;
-            z-index: 5;
-            animation: floatTip 2s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes floatTip {
-            0%,
-            100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                transform: translateX(-50%) translateY(-4px);
-            }
-        }
-
-        /* ========== SCROLLBAR ========== */
-        ::-webkit-scrollbar {
-            width: 3px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--neon-cyan);
-            border-radius: 10px;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 480px) {
-            .ls-grid {
-                gap: 6px;
-            }
-            .ls-cell {
-                border-radius: 10px;
-                font-size: 14px;
-            }
-            .hud-item {
-                padding: 2px 10px;
-                font-size: 12px;
-            }
-            .modal-box {
-                padding: 20px 16px 24px;
-            }
-            .game-overlay .big-icon {
-                font-size: 40px;
-            }
-        }
-        @media (max-width: 380px) {
-            .ls-grid {
-                gap: 4px;
-            }
-            .ls-cell {
-                font-size: 12px;
-                border-radius: 8px;
-                min-height: 36px;
-            }
-            .hud-item {
-                font-size: 10px;
-                padding: 2px 8px;
-            }
-            .btn {
-                font-size: 15px;
-                padding: 12px 16px;
-            }
-        }
-        @media (min-height: 800px) {
-            #game-screen {
-                padding-top: 20px;
-            }
-            .game-hud {
-                padding-bottom: 16px;
-            }
-        }
-
-        /* ========== UTILITY ========== */
-        .hidden {
-            display: none !important;
-        }
-        .flex-center {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .gap-8 {
-            gap: 8px;
-        }
-        .gap-12 {
-            gap: 12px;
-        }
-        .text-glow {
-            text-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
-        }
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .mb-8 {
-            margin-bottom: 8px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NEON SURVIVOR</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
+      background: #0a0a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      touch-action: none;
+    }
+    #gameWrapper {
+      position: relative;
+      background: #0d0d20;
+      border-radius: 24px;
+      box-shadow: 0 0 60px rgba(0, 240, 255, 0.08), inset 0 0 60px rgba(0, 0, 0, 0.6);
+      padding: 12px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      background: radial-gradient(circle at center, #141430, #050510);
+      border-radius: 16px;
+      image-rendering: pixelated;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    #ui {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      color: #aaccff;
+      font-size: 18px;
+      font-weight: 600;
+      text-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
+    }
+    #ui span {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      padding: 6px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(0, 240, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #ui .gold {
+      color: #ffcc00;
+    }
+    #ui .hp {
+      color: #ff4466;
+    }
+    #gameOverlay {
+      position: absolute;
+      inset: 12px;
+      border-radius: 16px;
+      background: rgba(5, 5, 20, 0.8);
+      backdrop-filter: blur(6px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      pointer-events: auto;
+      z-index: 10;
+    }
+    #gameOverlay.show {
+      display: flex;
+    }
+    #gameOverlay h1 {
+      font-size: 48px;
+      background: linear-gradient(135deg, #ff00e5, #00f0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #gameOverlay p {
+      color: #8899cc;
+      font-size: 20px;
+    }
+    #gameOverlay .btn {
+      padding: 14px 44px;
+      border: none;
+      border-radius: 60px;
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00f0ff, #0066ff);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+      transition: 0.2s;
+      pointer-events: auto;
+      margin-top: 8px;
+    }
+    #gameOverlay .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 60px rgba(0, 240, 255, 0.5);
+    }
+    #gameOverlay .btn:active {
+      transform: scale(0.95);
+    }
+    #controls {
+      position: absolute;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      pointer-events: none;
+    }
+    #controls button {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 40px;
+      padding: 8px 20px;
+      color: #aaccff;
+      font-size: 14px;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #controls button:hover {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: #00f0ff;
+    }
+    @media (max-width: 500px) {
+      #ui {
+        font-size: 14px;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+      }
+      #ui span {
+        padding: 4px 12px;
+      }
+      #gameOverlay h1 {
+        font-size: 32px;
+      }
+      #gameOverlay .btn {
+        padding: 10px 30px;
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <div id="app">
-        <!-- ===== MAIN MENU ===== -->
-        <div id="menu-screen" class="screen active">
-            <div class="menu-title">NEON SHIFT</div>
-            <div class="menu-subtitle">⚡ Puzzle Cascade ⚡</div>
-            <div class="menu-buttons">
-                <button class="btn btn-primary" id="menuPlayBtn">▶ &nbsp;PLAY</button>
-                <button class="btn btn-secondary" id="menuLevelsBtn">◈ &nbsp;LEVELS</button>
-                <button class="btn" id="menuShopBtn" style="border-color:var(--neon-gold);color:var(--neon-gold);">
-                    ✦ &nbsp;SHOP
-                </button>
-                <button class="btn btn-sm" id="menuSoundBtn" style="border-color:rgba(255,255,255,0.08);font-size:14px;">
-                    🔊 &nbsp;SOUND: ON
-                </button>
-            </div>
-            <div class="menu-footer">✦ 100 levels · neon cascade ✦</div>
-        </div>
-
-        <!-- ===== LEVEL SELECT ===== -->
-        <div id="level-select-screen" class="screen">
-            <div class="ls-header">
-                <button class="ls-back" id="lsBackBtn">‹ BACK</button>
-                <h2>◈ LEVELS</h2>
-                <div style="width:60px;"></div>
-            </div>
-            <div class="ls-grid" id="levelGrid"></div>
-        </div>
-
-        <!-- ===== GAME SCREEN ===== -->
-        <div id="game-screen" class="screen">
-            <div class="game-hud">
-                <div class="hud-left">
-                    <button class="hud-back" id="gameBackBtn">‹</button>
-                    <span class="hud-item">LEVEL <span class="val cyan" id="hudLevel">1</span></span>
-                </div>
-                <div class="hud-right">
-                    <span class="hud-item">🎯 <span class="val" id="hudMoves">0</span></span>
-                    <span class="hud-item">⭐ <span class="val gold" id="hudStars">0</span></span>
-                    <span class="hud-item">✦ <span class="val gold" id="hudCores">0</span></span>
-                    <button class="hud-back" id="gameHintBtn" title="Hint (5 cores)">💡</button>
-                    <button class="hud-back" id="gameUndoBtn" title="Undo (free once)">↩</button>
-                </div>
-            </div>
-            <div class="game-board-wrap">
-                <canvas id="gameCanvas"></canvas>
-                <div class="game-overlay" id="gameOverlay">
-                    <div class="big-icon" id="overlayIcon">🎉</div>
-                    <div class="title" id="overlayTitle">Level Complete!</div>
-                    <div class="stars-display" id="overlayStars">⭐⭐⭐</div>
-                    <div class="sub" id="overlaySub">Amazing!</div>
-                    <button class="btn btn-primary" id="overlayBtn">▶ NEXT LEVEL</button>
-                </div>
-                <div class="tutorial-tip" id="tutorialTip">✨ Tap two adjacent tiles to swap them</div>
-            </div>
-        </div>
-
-        <!-- ===== SHOP MODAL ===== -->
-        <div class="modal-overlay" id="shopModal">
-            <div class="modal-box" style="position:relative;">
-                <button class="modal-close" id="shopCloseBtn">✕</button>
-                <h2>✦ NEON SHOP</h2>
-                <p style="margin-bottom:4px;">Spend your Neon Cores on power-ups!</p>
-                <div style="display:flex;justify-content:center;gap:20px;margin:12px 0 16px;flex-wrap:wrap;">
-                    <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px 16px;border:1px solid rgba(255,255,255,0.06);min-width:90px;">
-                        <div style="font-size:28px;">✦</div>
-                        <div style="font-size:20px;font-weight:700;color:var(--neon-gold);" id="shopCores">0</div>
-                        <div style="font-size:11px;color:var(--text-secondary);">Cores</div>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-sm" id="shopHintBtn" style="border-color:var(--neon-cyan);">💡 Hint (5 cores)</button>
-                    <button class="btn btn-sm" id="shopUndoBtn" style="border-color:var(--neon-magenta);">↩ Extra Undo (2 cores)</button>
-                    <button class="btn btn-sm btn-gold" id="shopFullUnlockBtn" style="margin-top:4px;">🔓 Unlock All Chapters — $4.99</button>
-                    <button class="btn btn-sm" id="shopChapterBtn" style="border-color:var(--neon-gold);color:var(--neon-gold);">📦 Unlock Chapter Pack — $1.99</button>
-                    <button class="btn btn-sm" style="border-color:rgba(255,255,255,0.06);font-size:12px;color:var(--text-secondary);" id="shopRestoreBtn">↻ Restore Purchases</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== CHAPTER UNLOCK MODAL ===== -->
-        <div class="modal-overlay" id="chapterModal">
-            <div class="modal-box" style="position:relative;">
-                <button class="modal-close" id="chapterCloseBtn">✕</button>
-                <h2>🔓 CHAPTER UNLOCK</h2>
-                <p id="chapterModalDesc">You've completed the free chapters! Unlock the full game to continue your neon journey.</p>
-                <div class="price-tag" id="chapterModalPrice">$4.99</div>
-                <p style="font-size:13px;color:var(--text-secondary);" id="chapterModalSub">One-time purchase · 70 more levels</p>
-                <div class="btn-group">
-                    <button class="btn btn-gold" id="chapterPurchaseBtn">💎 PURCHASE</button>
-                    <button class="btn btn-sm" style="border-color:rgba(255,255,255,0.06);" id="chapterLaterBtn">Maybe later</button>
-                </div>
-            </div>
-        </div>
+  <div id="gameWrapper">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <div id="ui">
+      <span>❤️ <span class="hp" id="hpDisplay">100</span></span>
+      <span>⚡ <span id="scoreDisplay">0</span></span>
+      <span>🌊 <span id="waveDisplay">1</span></span>
     </div>
+    <div id="gameOverlay">
+      <h1 id="overlayTitle">GAME OVER</h1>
+      <p id="overlayScore">Score: 0</p>
+      <button class="btn" id="restartBtn">▶ PLAY AGAIN</button>
+    </div>
+    <div id="controls">
+      <button id="pauseBtn">⏸ PAUSE</button>
+    </div>
+  </div>
 
-    <script>
-        // ================================================================
-        //  NEON SHIFT — FULL GAME ENGINE (FIXED PURCHASE FLOW)
-        // ================================================================
+  <script>
+    // ================================================================
+    //  NEON SURVIVOR – Full Game (Canvas + ZzFX Sound)
+    // ================================================================
 
-        (function() {
-            'use strict';
+    (function() {
+      'use strict';
 
-            // -------- CONSTANTS --------
-            const GRID_SIZE = 6;
-            const NUM_COLORS = 6;
-            const TOTAL_LEVELS = 100;
-            const FREE_CHAPTERS = 3; // chapters 1-3 free (levels 1-30)
-            const CHAPTER_LEVELS = 10; // levels per chapter
+      // -------- DOM refs --------
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const hpSpan = document.getElementById('hpDisplay');
+      const scoreSpan = document.getElementById('scoreDisplay');
+      const waveSpan = document.getElementById('waveDisplay');
+      const overlay = document.getElementById('gameOverlay');
+      const overlayTitle = document.getElementById('overlayTitle');
+      const overlayScore = document.getElementById('overlayScore');
+      const restartBtn = document.getElementById('restartBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
 
-            // -------- STATE --------
-            let state = {
-                currentLevel: 1,
-                stars: new Array(TOTAL_LEVELS + 1).fill(0),
-                cores: 0,
-                chaptersUnlocked: [1, 2, 3],
-                soundEnabled: true,
-                musicEnabled: false,
-                grid: [],
-                target: [],
-                moves: 0,
-                maxMoves: 0,
-                selected: null,
-                isComplete: false,
-                isAnimating: false,
-                undoStack: [],
-                undoUsed: false,
-                hintUsed: false,
-                tutorialLevel: 0,
-            };
+      // -------- Constants --------
+      const W = 600,
+        H = 600;
+      const PLAYER_RADIUS = 16;
+      const ENEMY_BASE_RADIUS = 12;
+      const PLAYER_SPEED = 4.5;
+      const BULLET_SPEED = 8;
+      const BULLET_RADIUS = 4;
+      const MAX_HP = 100;
 
-            // -------- DOM REFS --------
-            const $ = id => document.getElementById(id);
-            const canvas = $('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            const screens = {
-                menu: $('menu-screen'),
-                levels: $('level-select-screen'),
-                game: $('game-screen'),
-            };
-            const overlay = $('gameOverlay');
-            const overlayIcon = $('overlayIcon');
-            const overlayTitle = $('overlayTitle');
-            const overlayStars = $('overlayStars');
-            const overlaySub = $('overlaySub');
-            const overlayBtn = $('overlayBtn');
-            const tutorialTip = $('tutorialTip');
+      // -------- State --------
+      let player = { x: W / 2, y: H / 2, radius: PLAYER_RADIUS, hp: MAX_HP, maxHp: MAX_HP };
+      let bullets = [];
+      let enemies = [];
+      let particles = [];
+      let score = 0;
+      let wave = 1;
+      let gameRunning = true;
+      let gamePaused = false;
+      let gameOver = false;
+      let frame = 0;
+      let keys = { w: false, a: false, s: false, d: false, up: false, down: false, left: false, right: false };
+      let mouse = { x: W / 2, y: H / 2, pressed: false };
 
-            // -------- SOUND (ZzFX) --------
-            const zzfx = (...args) => {
-                let zzfxR = 0,
-                    zzfxV = 0.3,
-                    zzfxQ = 0,
-                    zzfxS = 0,
-                    zzfxZ = 0,
-                    zzfxX = 0,
-                    zzfxC = 0,
-                    zzfxM = 0,
-                    zzfxU = 0,
-                    zzfxL = 0,
-                    zzfxA = 0,
-                    zzfxW = 0,
-                    zzfxH = 0,
-                    zzfxG = 0;
-                let vol = 0.3,
-                    sampleRate = 44100;
-                if (args.length > 0) { zzfxR = args[0] || 0;
-                    zzfxV = args[1] || 0.3;
-                    zzfxQ = args[2] || 0;
-                    zzfxS = args[3] || 0;
-                    zzfxZ = args[4] || 0;
-                    zzfxX = args[5] || 0;
-                    zzfxC = args[6] || 0;
-                    zzfxM = args[7] || 0;
-                    zzfxU = args[8] || 0;
-                    zzfxL = args[9] || 0;
-                    zzfxA = args[10] || 0;
-                    zzfxW = args[11] || 0;
-                    zzfxH = args[12] || 0;
-                    zzfxG = args[13] || 0; }
-                let zzfxFreq = 220,
-                    zzfxFreqRamp = 0;
-                let sampleCount = Math.floor(zzfxR * sampleRate);
-                let phase = 0;
-                let amp = zzfxV;
-                let buffer = [];
-                for (let i = 0; i < sampleCount; i++) {
-                    let t = i / sampleRate;
-                    let env = Math.exp(-t * 3) * (1 - t / zzfxR);
-                    let freq = zzfxFreq * (1 + zzfxFreqRamp * t / zzfxR);
-                    phase += (2 * Math.PI * freq) / sampleRate;
-                    let sample = Math.sin(phase) * env * amp;
-                    if (zzfxQ > 0.1) {
-                        let sq = Math.sign(Math.sin(phase)) * env * amp * 0.3;
-                        sample = sample * (1 - zzfxQ) + sq * zzfxQ;
-                    }
-                    if (zzfxS > 0.01) {
-                        let noise = (Math.random() * 2 - 1) * zzfxS * env * amp;
-                        sample += noise;
-                    }
-                    buffer.push(sample);
+      // Enemy spawning parameters
+      let spawnTimer = 0;
+      let spawnInterval = 60; // frames
+      let enemiesPerWave = 5;
+      let enemySpeed = 1.2;
+      let enemyCount = 0;
+
+      // -------- Sound (ZzFX) --------
+      const zzfx = (...args) => {
+        let zzfxR = 0,
+          zzfxV = 0.3,
+          zzfxQ = 0,
+          zzfxS = 0,
+          zzfxZ = 0,
+          zzfxX = 0,
+          zzfxC = 0,
+          zzfxM = 0,
+          zzfxU = 0,
+          zzfxL = 0,
+          zzfxA = 0,
+          zzfxW = 0,
+          zzfxH = 0,
+          zzfxG = 0;
+        let vol = 0.3,
+          sampleRate = 44100;
+        if (args.length > 0) { zzfxR = args[0] || 0;
+          zzfxV = args[1] || 0.3;
+          zzfxQ = args[2] || 0;
+          zzfxS = args[3] || 0;
+          zzfxZ = args[4] || 0;
+          zzfxX = args[5] || 0;
+          zzfxC = args[6] || 0;
+          zzfxM = args[7] || 0;
+          zzfxU = args[8] || 0;
+          zzfxL = args[9] || 0;
+          zzfxA = args[10] || 0;
+          zzfxW = args[11] || 0;
+          zzfxH = args[12] || 0;
+          zzfxG = args[13] || 0; }
+        let zzfxFreq = 220,
+          zzfxFreqRamp = 0;
+        let sampleCount = Math.floor(zzfxR * sampleRate);
+        let phase = 0;
+        let amp = zzfxV;
+        let buffer = [];
+        for (let i = 0; i < sampleCount; i++) {
+          let t = i / sampleRate;
+          let env = Math.exp(-t * 3) * (1 - t / zzfxR);
+          let freq = zzfxFreq * (1 + zzfxFreqRamp * t / zzfxR);
+          phase += (2 * Math.PI * freq) / sampleRate;
+          let sample = Math.sin(phase) * env * amp;
+          if (zzfxQ > 0.1) {
+            let sq = Math.sign(Math.sin(phase)) * env * amp * 0.3;
+            sample = sample * (1 - zzfxQ) + sq * zzfxQ;
+          }
+          if (zzfxS > 0.01) {
+            let noise = (Math.random() * 2 - 1) * zzfxS * env * amp;
+            sample += noise;
+          }
+          buffer.push(sample);
+        }
+        try {
+          const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+          const buffer2 = audioCtx.createBuffer(1, buffer.length, sampleRate);
+          const data = buffer2.getChannelData(0);
+          for (let i = 0; i < buffer.length; i++) data[i] = buffer[i] * 0.8;
+          const source = audioCtx.createBufferSource();
+          source.buffer = buffer2;
+          const gain = audioCtx.createGain();
+          gain.gain.value = vol * 0.7;
+          source.connect(gain);
+          gain.connect(audioCtx.destination);
+          source.start();
+          setTimeout(() => { try { source.stop(); } catch (e) {} }, zzfxR * 1000 + 200);
+        } catch (e) { /* ignore */ }
+      };
+
+      function sfxShoot() { zzfx(0.05, 0.2, 0, 0, 0.3, 0, 0, 1.5, 0, 0, 0, 0, 0, 0); }
+
+      function sfxHit() { zzfx(0.08, 0.25, 0.2, 0.1, 0.5, 0, 0, 1.2, 0, 0, 0, 0, 0, 0); }
+
+      function sfxEnemyDie() { zzfx(0.12, 0.3, 0.1, 0.05, 0.7, 0, 0, 2.0, 0, 0, 0, 0, 0, 0); }
+
+      function sfxDamage() { zzfx(0.15, 0.35, 0.4, 0.1, 0.2, 0, 0, 0.6, 0, 0, 0, 0, 0, 0); }
+
+      function sfxWave() { zzfx(0.2, 0.3, 0, 0, 0.6, 0, 0, 3.0, 0, 0, 0, 0, 0, 0); }
+
+      // -------- Utility --------
+      function dist(a, b) {
+        return Math.hypot(a.x - b.x, a.y - b.y);
+      }
+
+      function rand(min, max) { return Math.random() * (max - min) + min; }
+
+      function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+
+      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+      // -------- Particles --------
+      function spawnParticles(x, y, color, count = 15, speed = 4) {
+        for (let i = 0; i < count; i++) {
+          const angle = rand(0, Math.PI * 2);
+          const spd = rand(0.5, speed);
+          particles.push({
+            x,
+            y,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd,
+            life: rand(20, 50),
+            maxLife: 50,
+            radius: rand(2, 5),
+            color: color,
+          });
+        }
+      }
+
+      // -------- Spawn enemies --------
+      function spawnEnemy() {
+        const side = randInt(0, 3);
+        let x, y;
+        const margin = 30;
+        if (side === 0) { x = rand(-margin, W + margin);
+          y = -margin; } else if (side === 1) { x = W + margin;
+          y = rand(-margin, H + margin); } else if (side === 2) { x = rand(-margin, W + margin);
+          y = H + margin; } else { x = -margin;
+          y = rand(-margin, H + margin); }
+        const radius = ENEMY_BASE_RADIUS + rand(-3, 5);
+        const speed = enemySpeed + rand(-0.2, 0.4);
+        const hp = 1 + Math.floor(wave / 5);
+        enemies.push({
+          x,
+          y,
+          radius: Math.max(6, radius),
+          speed: Math.max(0.5, speed),
+          hp: hp,
+          maxHp: hp,
+          color: `hsl(${randInt(200, 320)}, 80%, 60%)`,
+        });
+      }
+
+      // -------- Wave management --------
+      function startWave() {
+        enemiesPerWave = Math.min(5 + wave * 2, 40);
+        enemySpeed = 1.2 + wave * 0.15;
+        spawnInterval = Math.max(15, 60 - wave * 2);
+        enemyCount = 0;
+        spawnTimer = 0;
+        sfxWave();
+        waveSpan.textContent = wave;
+      }
+
+      // -------- Reset game --------
+      function resetGame() {
+        player.x = W / 2;
+        player.y = H / 2;
+        player.hp = MAX_HP;
+        bullets = [];
+        enemies = [];
+        particles = [];
+        score = 0;
+        wave = 1;
+        gameOver = false;
+        gameRunning = true;
+        gamePaused = false;
+        frame = 0;
+        spawnTimer = 0;
+        enemySpeed = 1.2;
+        enemiesPerWave = 5;
+        spawnInterval = 60;
+        enemyCount = 0;
+        hpSpan.textContent = player.hp;
+        scoreSpan.textContent = score;
+        waveSpan.textContent = wave;
+        overlay.classList.remove('show');
+        startWave();
+      }
+
+      // -------- Game update --------
+      function update() {
+        if (!gameRunning || gamePaused || gameOver) return;
+        frame++;
+
+        // Player movement
+        let dx = 0,
+          dy = 0;
+        if (keys.w || keys.up) dy = -1;
+        if (keys.s || keys.down) dy = 1;
+        if (keys.a || keys.left) dx = -1;
+        if (keys.d || keys.right) dx = 1;
+        if (dx !== 0 && dy !== 0) {
+          dx *= 0.707;
+          dy *= 0.707;
+        }
+        player.x += dx * PLAYER_SPEED;
+        player.y += dy * PLAYER_SPEED;
+        player.x = clamp(player.x, player.radius, W - player.radius);
+        player.y = clamp(player.y, player.radius, H - player.radius);
+
+        // Shooting (mouse click or space)
+        if (mouse.pressed) {
+          const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+          bullets.push({
+            x: player.x + Math.cos(angle) * (player.radius + 4),
+            y: player.y + Math.sin(angle) * (player.radius + 4),
+            vx: Math.cos(angle) * BULLET_SPEED,
+            vy: Math.sin(angle) * BULLET_SPEED,
+            radius: BULLET_RADIUS,
+            life: 120,
+          });
+          sfxShoot();
+          mouse.pressed = false; // single shot per click
+        }
+
+        // Update bullets
+        for (let i = bullets.length - 1; i >= 0; i--) {
+          const b = bullets[i];
+          b.x += b.vx;
+          b.y += b.vy;
+          b.life--;
+          if (b.x < -10 || b.x > W + 10 || b.y < -10 || b.y > H + 10 || b.life <= 0) {
+            bullets.splice(i, 1);
+            continue;
+          }
+          // Collision with enemies
+          let hit = false;
+          for (let j = enemies.length - 1; j >= 0; j--) {
+            const e = enemies[j];
+            if (dist(b, e) < b.radius + e.radius) {
+              e.hp--;
+              sfxHit();
+              spawnParticles(b.x, b.y, e.color, 8, 3);
+              if (e.hp <= 0) {
+                // enemy dies
+                sfxEnemyDie();
+                spawnParticles(e.x, e.y, e.color, 20, 5);
+                score += 10 + Math.floor(wave * 2);
+                scoreSpan.textContent = score;
+                enemies.splice(j, 1);
+                enemyCount++;
+                // Check wave completion
+                if (enemyCount >= enemiesPerWave && enemies.length === 0) {
+                  wave++;
+                  startWave();
                 }
-                try {
-                    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-                    const buffer2 = audioCtx.createBuffer(1, buffer.length, sampleRate);
-                    const data = buffer2.getChannelData(0);
-                    for (let i = 0; i < buffer.length; i++) data[i] = buffer[i] * 0.8;
-                    const source = audioCtx.createBufferSource();
-                    source.buffer = buffer2;
-                    const gain = audioCtx.createGain();
-                    gain.gain.value = vol * 0.7;
-                    source.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    source.start();
-                    setTimeout(() => { try { source.stop(); } catch (e) {} }, zzfxR * 1000 + 200);
-                } catch (e) { /* silent fail */ }
-            };
-
-            function sfxSlide() { if (state.soundEnabled) zzfx(0.08, 0.25, 0.15, 0.2, 0.3, 0, 0, 1.2, 0, 0, 0, 0, 0, 0); }
-
-            function sfxMatch() { if (state.soundEnabled) zzfx(0.12, 0.3, 0, 0.1, 0.5, 0, 0, 2.0, 0, 0, 0, 0, 0, 0); }
-
-            function sfxCascade() { if (state.soundEnabled) { for (let i = 0; i < 5; i++) { setTimeout(() => zzfx(0.06, 0.2,
-                        0, 0.05, 0.4 + i * 0.1, 0, 0, 1.5 + i * 0.3, 0, 0, 0, 0, 0, 0), i * 60); } } }
-
-            function sfxLevelUp() { if (state.soundEnabled) zzfx(0.25, 0.35, 0, 0, 0.6, 0, 0, 2.5, 0, 0, 0, 0, 0, 0); }
-
-            function sfxStar() { if (state.soundEnabled) zzfx(0.08, 0.2, 0, 0, 0.8, 0, 0, 3.0, 0, 0, 0, 0, 0, 0); }
-
-            function sfxClick() { if (state.soundEnabled) zzfx(0.04, 0.2, 0, 0, 0.2, 0, 0, 1.0, 0, 0, 0, 0, 0, 0); }
-
-            function sfxError() { if (state.soundEnabled) zzfx(0.15, 0.3, 0.4, 0.1, 0.1, 0, 0, 0.5, 0, 0, 0, 0, 0, 0); }
-
-            function sfxPurchase() { if (state.soundEnabled) { zzfx(0.1, 0.3, 0, 0, 0.5, 0, 0, 1.5, 0, 0, 0, 0, 0, 0);
-                    setTimeout(() => zzfx(0.15, 0.3, 0, 0, 0.7, 0, 0, 2.0, 0, 0, 0, 0, 0, 0), 120); } }
-
-            // -------- LEVEL GENERATOR --------
-            function generateLevel(levelId) {
-                const seed = levelId * 137 + 42;
-                let rng = seed;
-
-                function nextRand() {
-                    rng = (rng * 9301 + 49297) % 233280;
-                    return rng / 233280;
-                }
-                const target = [];
-                const colorCounts = Array(NUM_COLORS).fill(0);
-                const totalCells = GRID_SIZE * GRID_SIZE;
-                const perColor = totalCells / NUM_COLORS;
-                for (let r = 0; r < GRID_SIZE; r++) {
-                    target[r] = [];
-                    for (let c = 0; c < GRID_SIZE; c++) {
-                        let available = [];
-                        for (let i = 0; i < NUM_COLORS; i++) {
-                            if (colorCounts[i] < perColor) available.push(i);
-                        }
-                        let color = available[Math.floor(nextRand() * available.length)];
-                        target[r][c] = color;
-                        colorCounts[color]++;
-                    }
-                }
-                const grid = target.map(row => [...row]);
-                const flat = [];
-                for (let r = 0; r < GRID_SIZE; r++)
-                    for (let c = 0; c < GRID_SIZE; c++)
-                        flat.push({ r, c, color: grid[r][c] });
-                for (let i = flat.length - 1; i > 0; i--) {
-                    const j = Math.floor(nextRand() * (i + 1));
-                    [flat[i], flat[j]] = [flat[j], flat[i]];
-                }
-                for (const item of flat) {
-                    grid[item.r][item.c] = item.color;
-                }
-                const baseMoves = Math.floor(10 + levelId * 0.7);
-                const scrambleMoves = Math.min(baseMoves + Math.floor(nextRand() * 8), 60);
-                const solution = [];
-                let workingGrid = grid.map(row => [...row]);
-                for (let step = 0; step < 200 && solution.length < 100; step++) {
-                    let swapped = false;
-                    for (let r = 0; r < GRID_SIZE && !swapped; r++) {
-                        for (let c = 0; c < GRID_SIZE && !swapped; c++) {
-                            if (workingGrid[r][c] !== target[r][c]) {
-                                let found = false;
-                                for (let r2 = 0; r2 < GRID_SIZE && !found; r2++) {
-                                    for (let c2 = 0; c2 < GRID_SIZE && !found; c2++) {
-                                        if (workingGrid[r2][c2] === target[r][c] && workingGrid[r2][c2] !== target[r2][c2]) {
-                                            [workingGrid[r][c], workingGrid[r2][c2]] = [workingGrid[r2][c2], workingGrid[r][
-                                            c]];
-                                            solution.push({ r1: r, c1: c, r2: r2, c2: c2 });
-                                            swapped = true;
-                                            found = true;
-                                        }
-                                    }
-                                }
-                                if (!found) {
-                                    for (let r2 = 0; r2 < GRID_SIZE && !found; r2++) {
-                                        for (let c2 = 0; c2 < GRID_SIZE && !found; c2++) {
-                                            if ((r2 !== r || c2 !== c) && workingGrid[r2][c2] !== target[r2][c2]) {
-                                                [workingGrid[r][c], workingGrid[r2][c2]] = [workingGrid[r2][c2],
-                                                    workingGrid[r][c]
-                                                ];
-                                                solution.push({ r1: r, c1: c, r2: r2, c2: c2 });
-                                                swapped = true;
-                                                found = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!swapped) break;
-                }
-                const maxMoves = Math.max(solution.length + 4, Math.floor(solution.length * 1.3) + 2);
-                return { id: levelId, target: target, grid: grid, solution: solution, maxMoves: maxMoves,
-                scrambleMoves: scrambleMoves };
+              }
+              hit = true;
+              break;
             }
+          }
+          if (hit) {
+            bullets.splice(i, 1);
+          }
+        }
 
-            const LEVEL_CACHE = {};
-            for (let i = 1; i <= TOTAL_LEVELS; i++) {
-                LEVEL_CACHE[i] = generateLevel(i);
+        // Spawn enemies
+        spawnTimer++;
+        if (spawnTimer >= spawnInterval && enemies.length < enemiesPerWave - enemyCount) {
+          spawnEnemy();
+          spawnTimer = 0;
+        }
+
+        // Update enemies
+        for (let i = enemies.length - 1; i >= 0; i--) {
+          const e = enemies[i];
+          const angle = Math.atan2(player.y - e.y, player.x - e.x);
+          e.x += Math.cos(angle) * e.speed;
+          e.y += Math.sin(angle) * e.speed;
+          // Collision with player
+          if (dist(e, player) < e.radius + player.radius) {
+            // Damage player
+            player.hp -= 10 + Math.floor(wave / 3);
+            sfxDamage();
+            spawnParticles(player.x, player.y, '#ff4466', 20, 6);
+            enemies.splice(i, 1);
+            if (player.hp <= 0) {
+              player.hp = 0;
+              gameOver = true;
+              gameRunning = false;
+              overlayTitle.textContent = '💀 GAME OVER';
+              overlayScore.textContent = `Score: ${score}  ·  Wave: ${wave}`;
+              overlay.classList.add('show');
             }
-
-            // -------- SAVE SYSTEM --------
-            function saveGame() {
-                try {
-                    const data = {
-                        currentLevel: state.currentLevel,
-                        stars: state.stars,
-                        cores: state.cores,
-                        chaptersUnlocked: state.chaptersUnlocked,
-                        soundEnabled: state.soundEnabled,
-                        musicEnabled: state.musicEnabled,
-                    };
-                    localStorage.setItem('neonShiftSave', JSON.stringify(data));
-                } catch (e) { /* ignore */ }
-            }
-
-            function loadGame() {
-                try {
-                    const raw = localStorage.getItem('neonShiftSave');
-                    if (!raw) return false;
-                    const data = JSON.parse(raw);
-                    state.currentLevel = data.currentLevel || 1;
-                    state.stars = data.stars || new Array(TOTAL_LEVELS + 1).fill(0);
-                    state.cores = data.cores || 0;
-                    state.chaptersUnlocked = data.chaptersUnlocked || [1, 2, 3];
-                    state.soundEnabled = data.soundEnabled !== undefined ? data.soundEnabled : true;
-                    state.musicEnabled = data.musicEnabled !== undefined ? data.musicEnabled : false;
-                    return true;
-                } catch (e) { return false; }
-            }
-
-            // -------- CHAPTER SYSTEM --------
-            function isChapterUnlocked(chapterIdx) {
-                return state.chaptersUnlocked.includes(chapterIdx);
-            }
-
-            function isLevelUnlocked(levelId) {
-                if (levelId <= 0 || levelId > TOTAL_LEVELS) return false;
-                const chapter = Math.ceil(levelId / CHAPTER_LEVELS);
-                if (isChapterUnlocked(chapter)) return true;
-                if (chapter <= 3) return true;
-                if (levelId > 1 && state.stars[levelId - 1] > 0) return true;
-                return false;
-            }
-
-            function isLevelCompleted(levelId) {
-                return state.stars[levelId] > 0;
-            }
-
-            function getLevelStars(levelId) {
-                return state.stars[levelId] || 0;
-            }
-
-            function unlockChapter(chapterIdx) {
-                if (!state.chaptersUnlocked.includes(chapterIdx)) {
-                    state.chaptersUnlocked.push(chapterIdx);
-                    saveGame();
-                    return true;
-                }
-                return false;
-            }
-
-            function unlockAllChapters() {
-                let any = false;
-                for (let i = 1; i <= 10; i++) {
-                    if (!state.chaptersUnlocked.includes(i)) {
-                        state.chaptersUnlocked.push(i);
-                        any = true;
-                    }
-                }
-                if (any) saveGame();
-                return any;
-            }
-
-            // -------- GAME LOGIC --------
-            let levelData = null;
-            let gameGrid = [];
-            let gameSelected = null;
-            let gameMoves = 0;
-            let gameMaxMoves = 0;
-            let gameComplete = false;
-            let gameAnimating = false;
-            let gameUndoStack = [];
-            let gameUndoUsed = false;
-            let gameHintUsed = false;
-            let gameTutorialStep = 0;
-
-            function loadLevel(levelId) {
-                const data = LEVEL_CACHE[levelId];
-                if (!data) return;
-                levelData = data;
-                gameGrid = data.grid.map(row => [...row]);
-                gameSelected = null;
-                gameMoves = 0;
-                gameMaxMoves = data.maxMoves;
-                gameComplete = false;
-                gameAnimating = false;
-                gameUndoStack = [];
-                gameUndoUsed = false;
-                gameHintUsed = false;
-
-                $('hudLevel').textContent = levelId;
-                $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
-                $('hudStars').textContent = getLevelStars(levelId);
-                $('hudCores').textContent = state.cores;
-
-                overlay.classList.remove('show');
-
-                if (levelId <= 3) {
-                    gameTutorialStep = 0;
-                    tutorialTip.textContent = '✨ Tap two adjacent tiles to swap them. Match the target pattern!';
-                    tutorialTip.style.display = 'block';
-                    setTimeout(() => {
-                        if (levelId === 1) {
-                            tutorialTip.textContent = '👆 Tap a tile to select it, then tap an adjacent tile to swap.';
-                        } else if (levelId === 2) {
-                            tutorialTip.textContent = '🎯 Watch the target pattern at the top. Match it within the move limit!';
-                        } else {
-                            tutorialTip.textContent = '⚡ Create cascades by matching rows or columns!';
-                        }
-                    }, 800);
-                } else {
-                    tutorialTip.style.display = 'none';
-                }
-
-                drawGame();
-                saveGame();
-            }
-
-            function getTileNeighbors(r, c) {
-                const dirs = [
-                    [-1, 0],
-                    [1, 0],
-                    [0, -1],
-                    [0, 1]
-                ];
-                const result = [];
-                for (const d of dirs) {
-                    const nr = r + d[0],
-                        nc = c + d[1];
-                    if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
-                        result.push({ r: nr, c: nc });
-                    }
-                }
-                return result;
-            }
-
-            function isTileCorrect(grid, r, c) {
-                return grid[r][c] === levelData.target[r][c];
-            }
-
-            function countCorrect(grid) {
-                let count = 0;
-                for (let r = 0; r < GRID_SIZE; r++) {
-                    for (let c = 0; c < GRID_SIZE; c++) {
-                        if (isTileCorrect(grid, r, c)) count++;
-                    }
-                }
-                return count;
-            }
-
-            function isGridComplete(grid) {
-                return countCorrect(grid) === GRID_SIZE * GRID_SIZE;
-            }
-
-            function swapTiles(grid, r1, c1, r2, c2) {
-                [grid[r1][c1], grid[r2][c2]] = [grid[r2][c2], grid[r1][c1]];
-            }
-
-            function handleTileClick(r, c) {
-                if (gameComplete || gameAnimating) return;
-                if (!isLevelUnlocked(state.currentLevel)) {
-                    showChapterModal();
-                    return;
-                }
-
-                if (gameSelected === null) {
-                    gameSelected = { r, c };
-                    drawGame();
-                    return;
-                }
-
-                if (gameSelected.r === r && gameSelected.c === c) {
-                    gameSelected = null;
-                    drawGame();
-                    return;
-                }
-
-                const neighbors = getTileNeighbors(gameSelected.r, gameSelected.c);
-                const isAdjacent = neighbors.some(n => n.r === r && n.c === c);
-                if (!isAdjacent) {
-                    gameSelected = { r, c };
-                    drawGame();
-                    return;
-                }
-
-                const sr = gameSelected.r,
-                    sc = gameSelected.c;
-                const tr = r,
-                    tc = c;
-
-                const prevGrid = gameGrid.map(row => [...row]);
-                gameUndoStack.push(prevGrid);
-
-                swapTiles(gameGrid, sr, sc, tr, tc);
-                gameMoves++;
-                $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
-                sfxSlide();
-
-                gameSelected = null;
-
-                if (isGridComplete(gameGrid)) {
-                    gameComplete = true;
-                    sfxCascade();
-                    sfxLevelUp();
-                    const stars = calculateStars();
-                    if (stars > getLevelStars(state.currentLevel)) {
-                        state.stars[state.currentLevel] = stars;
-                        const coreEarn = stars * 10;
-                        state.cores += coreEarn;
-                        $('hudCores').textContent = state.cores;
-                        sfxStar();
-                    }
-                    $('hudStars').textContent = getLevelStars(state.currentLevel);
-                    saveGame();
-                    showLevelComplete(stars);
-                    drawGame();
-                    return;
-                }
-
-                if (gameMoves >= gameMaxMoves) {
-                    gameComplete = true;
-                    showGameOver();
-                    drawGame();
-                    return;
-                }
-
-                drawGame();
-                saveGame();
-
-                if (state.currentLevel <= 3 && gameMoves === 2) {
-                    setTimeout(() => {
-                        tutorialTip.textContent = '💡 Try to match the target pattern. Tiles glow when correct!';
-                        tutorialTip.style.display = 'block';
-                    }, 300);
-                }
-            }
-
-            function calculateStars() {
-                const ratio = gameMoves / gameMaxMoves;
-                if (ratio <= 0.5) return 3;
-                if (ratio <= 0.75) return 2;
-                if (ratio <= 1.0) return 1;
-                return 1;
-            }
-
-            function showLevelComplete(stars) {
-                const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
-                overlayIcon.textContent = '🎉';
-                overlayTitle.textContent = 'Level Complete!';
-                overlayStars.textContent = starStr;
-                const msgs = ['Keep going!', 'Great job!', 'Amazing!', 'Perfect!'];
-                overlaySub.textContent = msgs[stars - 1] || 'Well done!';
-                overlayBtn.textContent = state.currentLevel >= TOTAL_LEVELS ? '🏆 FINISHED' : '▶ NEXT LEVEL';
-                overlayBtn.dataset.action = 'next';
-                overlay.classList.add('show');
-            }
-
-            function showGameOver() {
-                overlayIcon.textContent = '💫';
-                overlayTitle.textContent = 'Moves Exceeded';
-                overlayStars.textContent = 'Try again!';
-                overlaySub.textContent = 'You can do it!';
-                overlayBtn.textContent = '🔄 RETRY';
-                overlayBtn.dataset.action = 'retry';
-                overlay.classList.add('show');
-            }
-
-            // ---- FIXED: showChapterModal sets data-chapter ----
-            function showChapterModal() {
-                const modal = $('chapterModal');
-                const chapter = Math.ceil(state.currentLevel / CHAPTER_LEVELS);
-                if (chapter <= 3) {
-                    modal.classList.remove('show');
-                    return;
-                }
-                const remaining = TOTAL_LEVELS - (chapter - 1) * CHAPTER_LEVELS;
-                const desc = $('chapterModalDesc');
-                const price = $('chapterModalPrice');
-                const sub = $('chapterModalSub');
-                desc.textContent = `You've reached the end of the free content! Unlock Chapter ${chapter} (${remaining} more levels) and continue your neon journey.`;
-                const isFull = chapter >= 4;
-                price.textContent = isFull ? '$4.99' : '$1.99';
-                sub.textContent = isFull ? 'One-time purchase · All remaining chapters' :
-                    `Chapter ${chapter} pack · ${Math.min(remaining, CHAPTER_LEVELS)} levels`;
-                modal.dataset.chapter = chapter; // <-- crucial
-                modal.classList.add('show');
-            }
-
-            // -------- DRAWING --------
-            let glowPulse = 0;
-
-            function drawGame() {
-                const rect = canvas.parentElement.getBoundingClientRect();
-                const size = Math.min(rect.width, rect.height);
-                canvas.width = size;
-                canvas.height = size;
-                const cellSize = size / GRID_SIZE;
-                const pad = cellSize * 0.08;
-                const hexRadius = cellSize * 0.38;
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size * 0.6);
-                grad.addColorStop(0, 'rgba(20, 10, 50, 0.3)');
-                grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, size, size);
-
-                const colors = [
-                    '#00f0ff', '#ff00e5', '#ffcc00',
-                    '#00ff88', '#ff6600', '#aa66ff'
-                ];
-                const glowColors = [
-                    'rgba(0,240,255,', 'rgba(255,0,229,', 'rgba(255,204,0,',
-                    'rgba(0,255,136,', 'rgba(255,102,0,', 'rgba(170,102,255,'
-                ];
-
-                // Target preview
-                const previewSize = Math.min(size * 0.18, 70);
-                const previewX = size - previewSize - 8;
-                const previewY = 8;
-                const previewCell = previewSize / GRID_SIZE;
-                for (let r = 0; r < GRID_SIZE; r++) {
-                    for (let c = 0; c < GRID_SIZE; c++) {
-                        const colorIdx = levelData.target[r][c];
-                        const x = previewX + c * previewCell;
-                        const y = previewY + r * previewCell;
-                        ctx.fillStyle = colors[colorIdx] + '66';
-                        ctx.shadowColor = colors[colorIdx] + '40';
-                        ctx.shadowBlur = 6;
-                        ctx.beginPath();
-                        ctx.roundRect(x + 1, y + 1, previewCell - 2, previewCell - 2, 2);
-                        ctx.fill();
-                        ctx.shadowBlur = 0;
-                    }
-                }
-                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(previewX, previewY, previewSize, previewSize);
-                ctx.fillStyle = 'rgba(255,255,255,0.2)';
-                ctx.font = `${Math.max(8, previewSize * 0.15)}px sans-serif`;
-                ctx.textAlign = 'left';
-                ctx.fillText('TARGET', previewX, previewY - 4);
-
-                glowPulse = (glowPulse + 0.02) % (Math.PI * 2);
-
-                for (let r = 0; r < GRID_SIZE; r++) {
-                    for (let c = 0; c < GRID_SIZE; c++) {
-                        const x = c * cellSize + cellSize / 2;
-                        const y = r * cellSize + cellSize / 2;
-                        const colorIdx = gameGrid[r][c];
-                        const isCorrect = isTileCorrect(gameGrid, r, c);
-                        const isSelected = gameSelected && gameSelected.r === r && gameSelected.c === c;
-
-                        let glowIntensity = isCorrect ? 0.6 + 0.4 * Math.sin(glowPulse + r + c) : 0.1;
-                        if (isSelected) glowIntensity = 0.9;
-
-                        const shadowColor = glowColors[colorIdx] + (isCorrect ? '0.5' : '0.15') + ')';
-                        ctx.shadowColor = shadowColor;
-                        ctx.shadowBlur = isCorrect ? 25 + 10 * Math.sin(glowPulse + r + c) : 8;
-
-                        const points = 6;
-                        const radius = hexRadius * (isSelected ? 1.08 : 1);
-                        ctx.beginPath();
-                        for (let i = 0; i < points; i++) {
-                            const angle = (i / points) * Math.PI * 2 - Math.PI / 6;
-                            const px = x + radius * Math.cos(angle);
-                            const py = y + radius * Math.sin(angle);
-                            if (i === 0) ctx.moveTo(px, py);
-                            else ctx.lineTo(px, py);
-                        }
-                        ctx.closePath();
-
-                        const fillColor = colors[colorIdx];
-                        const alpha = isCorrect ? 0.95 : 0.6;
-                        ctx.fillStyle = fillColor + Math.round(alpha * 255).toString(16).padStart(2, '0');
-                        ctx.fill();
-
-                        if (isCorrect || isSelected) {
-                            ctx.shadowBlur = 0;
-                            ctx.strokeStyle = isSelected ? '#ffffff' : fillColor;
-                            ctx.lineWidth = isSelected ? 2.5 : 1.5;
-                            ctx.stroke();
-                        }
-
-                        ctx.shadowBlur = 0;
-
-                        if (isCorrect) {
-                            const grad2 = ctx.createRadialGradient(x - radius * 0.2, y - radius * 0.2, 0, x, y, radius);
-                            grad2.addColorStop(0, 'rgba(255,255,255,0.2)');
-                            grad2.addColorStop(1, 'rgba(255,255,255,0)');
-                            ctx.fillStyle = grad2;
-                            ctx.beginPath();
-                            for (let i = 0; i < points; i++) {
-                                const angle = (i / points) * Math.PI * 2 - Math.PI / 6;
-                                const px = x + radius * 0.9 * Math.cos(angle);
-                                const py = y + radius * 0.9 * Math.sin(angle);
-                                if (i === 0) ctx.moveTo(px, py);
-                                else ctx.lineTo(px, py);
-                            }
-                            ctx.closePath();
-                            ctx.fill();
-                        }
-
-                        if (isSelected) {
-                            ctx.shadowColor = 'rgba(255,255,255,0.4)';
-                            ctx.shadowBlur = 30;
-                            ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            for (let i = 0; i < points; i++) {
-                                const angle = (i / points) * Math.PI * 2 - Math.PI / 6;
-                                const px = x + (radius + 4) * Math.cos(angle);
-                                const py = y + (radius + 4) * Math.sin(angle);
-                                if (i === 0) ctx.moveTo(px, py);
-                                else ctx.lineTo(px, py);
-                            }
-                            ctx.closePath();
-                            ctx.stroke();
-                            ctx.shadowBlur = 0;
-                        }
-
-                        if (isCorrect) {
-                            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                            ctx.beginPath();
-                            ctx.arc(x, y, radius * 0.15, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                    }
-                }
-
-                const progress = gameMoves / gameMaxMoves;
-                const barY = size - 8;
-                const barW = size * 0.5;
-                const barX = (size - barW) / 2;
-                ctx.fillStyle = 'rgba(255,255,255,0.04)';
-                ctx.beginPath();
-                ctx.roundRect(barX, barY, barW, 4, 2);
-                ctx.fill();
-                const progColor = progress > 0.85 ? '#ff4444' : progress > 0.6 ? '#ffaa44' : '#44ff88';
-                ctx.fillStyle = progColor + '88';
-                ctx.beginPath();
-                ctx.roundRect(barX, barY, barW * Math.min(progress, 1), 4, 2);
-                ctx.fill();
-
-                ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                ctx.font = `${Math.max(9, size * 0.025)}px sans-serif`;
-                ctx.textAlign = 'right';
-                ctx.fillText(`${gameMoves}/${gameMaxMoves}`, size - 4, barY + 12);
-                ctx.textAlign = 'left';
-                ctx.fillText('MOVES', 4, barY + 12);
-            }
-
-            // -------- CANVAS INTERACTION --------
-            function getGridPos(clientX, clientY) {
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const x = (clientX - rect.left) * scaleX;
-                const y = (clientY - rect.top) * scaleY;
-                const cellSize = canvas.width / GRID_SIZE;
-                const c = Math.floor(x / cellSize);
-                const r = Math.floor(y / cellSize);
-                if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE) {
-                    return { r, c };
-                }
-                return null;
-            }
-
-            canvas.addEventListener('click', (e) => {
-                const pos = getGridPos(e.clientX, e.clientY);
-                if (pos) handleTileClick(pos.r, pos.c);
-            });
-
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const pos = getGridPos(touch.clientX, touch.clientY);
-                if (pos) handleTileClick(pos.r, pos.c);
-            }, { passive: false });
-
-            // -------- UI EVENT BINDING (FIXED PURCHASE) --------
-            // Menu
-            $('menuPlayBtn').addEventListener('click', () => {
-                sfxClick();
-                const nextLevel = getNextUnlockedLevel();
-                state.currentLevel = nextLevel || 1;
-                switchScreen('game');
-                loadLevel(state.currentLevel);
-            });
-
-            $('menuLevelsBtn').addEventListener('click', () => {
-                sfxClick();
-                switchScreen('levels');
-                renderLevelGrid();
-            });
-
-            $('menuShopBtn').addEventListener('click', () => {
-                sfxClick();
-                $('shopCores').textContent = state.cores;
-                $('shopModal').classList.add('show');
-            });
-
-            $('menuSoundBtn').addEventListener('click', function() {
-                state.soundEnabled = !state.soundEnabled;
-                this.textContent = state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF';
-                sfxClick();
-                saveGame();
-            });
-
-            // Level select
-            $('lsBackBtn').addEventListener('click', () => {
-                sfxClick();
-                switchScreen('menu');
-            });
-
-            // Game
-            $('gameBackBtn').addEventListener('click', () => {
-                sfxClick();
-                if (gameComplete) {
-                    switchScreen('levels');
-                    renderLevelGrid();
-                } else {
-                    if (confirm('Exit level? Progress will be lost.')) {
-                        switchScreen('levels');
-                        renderLevelGrid();
-                    }
-                }
-            });
-
-            $('gameHintBtn').addEventListener('click', () => {
-                sfxClick();
-                if (state.cores < 5) {
-                    alert('Not enough Neon Cores! (Need 5)');
-                    return;
-                }
-                if (gameComplete || gameAnimating) return;
-                const misplaced = [];
-                for (let r = 0; r < GRID_SIZE; r++) {
-                    for (let c = 0; c < GRID_SIZE; c++) {
-                        if (gameGrid[r][c] !== levelData.target[r][c]) {
-                            misplaced.push({ r, c });
-                        }
-                    }
-                }
-                if (misplaced.length === 0) {
-                    alert('Already perfect!');
-                    return;
-                }
-                state.cores -= 5;
-                $('hudCores').textContent = state.cores;
-                saveGame();
-                const idx = Math.floor(Math.random() * misplaced.length);
-                const tile = misplaced[idx];
-                gameSelected = { r: tile.r, c: tile.c };
-                drawGame();
-                setTimeout(() => {
-                    tutorialTip.textContent = `💡 Tile at (${tile.r+1}, ${tile.c+1}) needs to be swapped!`;
-                    tutorialTip.style.display = 'block';
-                    setTimeout(() => { tutorialTip.style.display = 'none'; }, 2000);
-                }, 200);
-                sfxMatch();
-            });
-
-            $('gameUndoBtn').addEventListener('click', () => {
-                sfxClick();
-                if (gameComplete || gameAnimating) return;
-                if (gameUndoStack.length === 0) {
-                    alert('No moves to undo!');
-                    return;
-                }
-                if (gameUndoUsed) {
-                    if (state.cores < 2) {
-                        alert('Need 2 cores for extra undo.');
-                        return;
-                    }
-                    state.cores -= 2;
-                    $('hudCores').textContent = state.cores;
-                    saveGame();
-                } else {
-                    gameUndoUsed = true;
-                }
-                const prev = gameUndoStack.pop();
-                gameGrid = prev;
-                gameMoves--;
-                $('hudMoves').textContent = `${gameMoves}/${gameMaxMoves}`;
-                gameSelected = null;
-                drawGame();
-                sfxSlide();
-            });
-
-            overlayBtn.addEventListener('click', () => {
-                sfxClick();
-                if (overlayBtn.dataset.action === 'next') {
-                    const next = state.currentLevel + 1;
-                    if (next > TOTAL_LEVELS) {
-                        alert('🎉 You completed all 100 levels! Congratulations!');
-                        switchScreen('menu');
-                        return;
-                    }
-                    state.currentLevel = next;
-                    loadLevel(next);
-                    drawGame();
-                } else {
-                    loadLevel(state.currentLevel);
-                    drawGame();
-                }
-            });
-
-            // Shop modal
-            $('shopCloseBtn').addEventListener('click', () => {
-                sfxClick();
-                $('shopModal').classList.remove('show');
-            });
-            $('shopHintBtn').addEventListener('click', () => {
-                sfxClick();
-                if (state.cores < 5) { alert('Not enough cores!'); return; }
-                state.cores -= 5;
-                $('hudCores').textContent = state.cores;
-                $('shopCores').textContent = state.cores;
-                saveGame();
-                alert('💡 Hint purchased! Use it in the game.');
-            });
-            $('shopUndoBtn').addEventListener('click', () => {
-                sfxClick();
-                if (state.cores < 2) { alert('Not enough cores!'); return; }
-                state.cores -= 2;
-                $('hudCores').textContent = state.cores;
-                $('shopCores').textContent = state.cores;
-                saveGame();
-                alert('↩ Extra undo purchased!');
-            });
-
-            // ---- FIXED PURCHASE HANDLERS ----
-            // Full unlock from shop
-            $('shopFullUnlockBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                sfxClick();
-                sfxPurchase();
-                console.log('[Shop] Full unlock attempted');
-                if (unlockAllChapters()) {
-                    alert('🔓 All chapters unlocked! Thank you for your purchase!');
-                    $('shopModal').classList.remove('show');
-                    renderLevelGrid();
-                } else {
-                    alert('All chapters are already unlocked.');
-                }
-                saveGame();
-            });
-
-            // Chapter pack from shop
-            $('shopChapterBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                sfxClick();
-                sfxPurchase();
-                let firstLocked = null;
-                for (let i = 4; i <= 10; i++) {
-                    if (!isChapterUnlocked(i)) { firstLocked = i; break; }
-                }
-                console.log(`[Shop] First locked chapter: ${firstLocked}`);
-                if (firstLocked === null) {
-                    alert('All chapters already unlocked!');
-                    return;
-                }
-                if (unlockChapter(firstLocked)) {
-                    alert(`🔓 Chapter ${firstLocked} unlocked!`);
-                    $('shopModal').classList.remove('show');
-                    renderLevelGrid();
-                } else {
-                    alert('Something went wrong. Please try again.');
-                }
-                saveGame();
-            });
-
-            $('shopRestoreBtn').addEventListener('click', () => {
-                sfxClick();
-                let restored = false;
-                for (let i = 4; i <= 10; i++) {
-                    if (!isChapterUnlocked(i)) {
-                        // Simulate restore for chapters 4-6
-                        if (i <= 6) {
-                            unlockChapter(i);
-                            restored = true;
-                        }
-                    }
-                }
-                if (restored) {
-                    alert('↻ Purchases restored!');
-                    renderLevelGrid();
-                } else {
-                    alert('No purchases to restore.');
-                }
-                saveGame();
-            });
-
-            // Chapter modal
-            $('chapterCloseBtn').addEventListener('click', () => {
-                sfxClick();
-                $('chapterModal').classList.remove('show');
-            });
-            $('chapterLaterBtn').addEventListener('click', () => {
-                sfxClick();
-                $('chapterModal').classList.remove('show');
-            });
-
-            // Chapter purchase button (fixed)
-            $('chapterPurchaseBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                sfxClick();
-                sfxPurchase();
-
-                let chapter = parseInt($('chapterModal').dataset.chapter);
-                if (isNaN(chapter) || chapter < 4) chapter = 4; // fallback
-                console.log(`[Chapter] Attempting to unlock chapter ${chapter}`);
-
-                let success = false;
-                if (chapter >= 4) {
-                    success = unlockChapter(chapter);
-                } else {
-                    success = unlockAllChapters();
-                }
-
-                if (success) {
-                    const msg = chapter >= 4 ? `🔓 Chapter ${chapter} unlocked!` : '🔓 All chapters unlocked!';
-                    alert(msg);
-                    $('chapterModal').classList.remove('show');
-                    renderLevelGrid();
-                    loadLevel(state.currentLevel); // reload to reflect unlock
-                    drawGame();
-                } else {
-                    alert('Already unlocked or an error occurred.');
-                }
-                saveGame();
-            });
-
-            // -------- SCREEN MANAGEMENT --------
-            function switchScreen(name) {
-                Object.keys(screens).forEach(key => {
-                    screens[key].classList.toggle('active', key === name);
-                });
-                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
-                if (name === 'game') {
-                    setTimeout(() => drawGame(), 50);
-                }
-            }
-
-            // -------- LEVEL GRID --------
-            function renderLevelGrid() {
-                const grid = $('levelGrid');
-                grid.innerHTML = '';
-                const currentChapter = Math.ceil(state.currentLevel / CHAPTER_LEVELS);
-
-                for (let i = 1; i <= TOTAL_LEVELS; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'ls-cell';
-                    const unlocked = isLevelUnlocked(i);
-                    const completed = isLevelCompleted(i);
-                    const stars = getLevelStars(i);
-                    const isCurrent = i === state.currentLevel;
-
-                    if (completed) {
-                        cell.classList.add('completed');
-                        const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
-                        cell.innerHTML =
-                            `<span class="level-num">${i}</span><span class="star-indicator">${starStr}</span>`;
-                    } else if (unlocked) {
-                        cell.classList.add('unlocked');
-                        if (isCurrent) cell.classList.add('current');
-                        cell.innerHTML = `<span class="level-num">${i}</span>`;
-                    } else {
-                        cell.classList.add('locked');
-                        cell.innerHTML = `<span class="level-num">${i}</span><span class="lock-icon">🔒</span>`;
-                    }
-
-                    cell.addEventListener('click', () => {
-                        sfxClick();
-                        if (unlocked) {
-                            state.currentLevel = i;
-                            switchScreen('game');
-                            loadLevel(i);
-                            drawGame();
-                        } else {
-                            const chapter = Math.ceil(i / CHAPTER_LEVELS);
-                            if (chapter > 3) {
-                                state.currentLevel = i;
-                                showChapterModal();
-                            } else {
-                                alert('This level is locked. Complete previous levels to unlock.');
-                            }
-                        }
-                    });
-
-                    grid.appendChild(cell);
-                }
-            }
-
-            function getNextUnlockedLevel() {
-                for (let i = state.currentLevel; i <= TOTAL_LEVELS; i++) {
-                    if (isLevelUnlocked(i)) return i;
-                }
-                return 1;
-            }
-
-            // -------- ANIMATION LOOP --------
-            function gameLoop() {
-                if (screens.game.classList.contains('active') && !gameComplete) {
-                    glowPulse += 0.025;
-                    drawGame();
-                }
-                requestAnimationFrame(gameLoop);
-            }
-
-            // -------- POLYFILL roundRect --------
-            if (!CanvasRenderingContext2D.prototype.roundRect) {
-                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
-                    const r = typeof radii === 'number' ? radii : (radii || 0);
-                    this.moveTo(x + r, y);
-                    this.arcTo(x + w, y, x + w, y + h, r);
-                    this.arcTo(x + w, y + h, x, y + h, r);
-                    this.arcTo(x, y + h, x, y, r);
-                    this.arcTo(x, y, x + w, y, r);
-                    return this;
-                };
-            }
-
-            // -------- INIT --------
-            function init() {
-                loadGame();
-                [1, 2, 3].forEach(ch => {
-                    if (!state.chaptersUnlocked.includes(ch)) {
-                        state.chaptersUnlocked.push(ch);
-                    }
-                });
-                $('menuSoundBtn').textContent = state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF';
-                switchScreen('menu');
-                loadLevel(state.currentLevel);
-                gameLoop();
-                console.log('🔮 NEON SHIFT loaded — 100 levels, 10 chapters');
-                console.log(`📊 Free: ${FREE_CHAPTERS * CHAPTER_LEVELS} levels · Paid: ${TOTAL_LEVELS - FREE_CHAPTERS * CHAPTER_LEVELS} levels`);
-            }
-
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    if (screens.game.classList.contains('active')) {
-                        drawGame();
-                    }
-                }, 100);
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
-                    if (screens.game.classList.contains('active')) {
-                        switchScreen('levels');
-                        renderLevelGrid();
-                    } else if (screens.levels.classList.contains('active')) {
-                        switchScreen('menu');
-                    }
-                }
-                if (e.key === 'r' && screens.game.classList.contains('active') && gameComplete) {
-                    overlayBtn.click();
-                }
-                if (e.key === 'h' && screens.game.classList.contains('active') && !gameComplete) {
-                    $('gameHintBtn').click();
-                }
-                if (e.key === 'u' && screens.game.classList.contains('active') && !gameComplete) {
-                    $('gameUndoBtn').click();
-                }
-            });
-
-            init();
-        })();
-    </script>
+            hpSpan.textContent = player.hp;
+            continue;
+          }
+          // Keep in bounds (but they are mostly chasing)
+          e.x = clamp(e.x, -20, W + 20);
+          e.y = clamp(e.y, -20, H + 20);
+        }
+
+        // Update particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.98;
+          p.vy *= 0.98;
+          p.life--;
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+
+        // UI update
+        hpSpan.textContent = Math.max(0, player.hp);
+      }
+
+      // -------- Draw --------
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Background grid
+        ctx.strokeStyle = 'rgba(0,240,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 20; i++) {
+          const p = i * 30;
+          ctx.beginPath();
+          ctx.moveTo(p, 0);
+          ctx.lineTo(p, H);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, p);
+          ctx.lineTo(W, p);
+          ctx.stroke();
+        }
+
+        // Draw particles
+        for (const p of particles) {
+          const alpha = p.life / p.maxLife;
+          ctx.globalAlpha = alpha;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius * alpha, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+
+        // Draw enemies
+        for (const e of enemies) {
+          // Glow
+          ctx.shadowColor = e.color;
+          ctx.shadowBlur = 25;
+          ctx.fillStyle = e.color;
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+          ctx.fill();
+          // Health bar
+          ctx.shadowBlur = 0;
+          const hpPct = e.hp / e.maxHp;
+          const barW = e.radius * 1.6;
+          const barH = 4;
+          const barX = e.x - barW / 2;
+          const barY = e.y - e.radius - 8;
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(barX, barY, barW, barH);
+          ctx.fillStyle = hpPct > 0.6 ? '#44ff88' : hpPct > 0.3 ? '#ffaa44' : '#ff4466';
+          ctx.fillRect(barX, barY, barW * hpPct, barH);
+          // Inner highlight
+          ctx.fillStyle = 'rgba(255,255,255,0.1)';
+          ctx.beginPath();
+          ctx.arc(e.x - e.radius * 0.2, e.y - e.radius * 0.2, e.radius * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw bullets
+        for (const b of bullets) {
+          ctx.shadowColor = '#00f0ff';
+          ctx.shadowBlur = 20;
+          ctx.fillStyle = '#00f0ff';
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.fill();
+          // Trail
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = 'rgba(0,240,255,0.3)';
+          ctx.beginPath();
+          ctx.arc(b.x - b.vx * 0.5, b.y - b.vy * 0.5, b.radius * 0.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+
+        // Draw player
+        // Glow
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 40;
+        const grad = ctx.createRadialGradient(player.x, player.y, 0, player.x, player.y, player.radius);
+        grad.addColorStop(0, '#44ddff');
+        grad.addColorStop(0.7, '#0088ff');
+        grad.addColorStop(1, '#003366');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+        ctx.fill();
+        // Inner highlight
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(player.x - player.radius * 0.25, player.y - player.radius * 0.25, player.radius * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        // Shield ring
+        ctx.strokeStyle = 'rgba(0,240,255,0.2)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 8]);
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.radius + 6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // HP bar above player
+        const hpPct2 = player.hp / player.maxHp;
+        const barW2 = 40;
+        const barH2 = 5;
+        const barX2 = player.x - barW2 / 2;
+        const barY2 = player.y - player.radius - 14;
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(barX2, barY2, barW2, barH2);
+        ctx.fillStyle = hpPct2 > 0.6 ? '#44ff88' : hpPct2 > 0.3 ? '#ffaa44' : '#ff4466';
+        ctx.fillRect(barX2, barY2, barW2 * hpPct2, barH2);
+
+        // HUD extras: wave and enemies remaining
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Enemies: ${enemies.length} / ${enemiesPerWave - enemyCount}`, 16, 68);
+        ctx.textAlign = 'right';
+        ctx.fillText(`Wave ${wave}`, W - 16, 68);
+
+        // Crosshair (mouse)
+        if (mouse.x !== undefined) {
+          ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+          ctx.lineWidth = 1;
+          const cx = mouse.x,
+            cy = mouse.y;
+          const size = 10;
+          ctx.beginPath();
+          ctx.moveTo(cx - size, cy);
+          ctx.lineTo(cx + size, cy);
+          ctx.moveTo(cx, cy - size);
+          ctx.lineTo(cx, cy + size);
+          ctx.stroke();
+        }
+
+        // Pause overlay
+        if (gamePaused && !gameOver) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0, 0, W, H);
+          ctx.fillStyle = '#fff';
+          ctx.font = '40px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('⏸ PAUSED', W / 2, H / 2);
+        }
+      }
+
+      // -------- Game loop --------
+      function gameLoop() {
+        update();
+        draw();
+        requestAnimationFrame(gameLoop);
+      }
+
+      // -------- Input handling --------
+      document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w') keys.w = true;
+        if (key === 'a') keys.a = true;
+        if (key === 's') keys.s = true;
+        if (key === 'd') keys.d = true;
+        if (key === 'arrowup') keys.up = true;
+        if (key === 'arrowdown') keys.down = true;
+        if (key === 'arrowleft') keys.left = true;
+        if (key === 'arrowright') keys.right = true;
+        if (key === ' ' || key === 'space') {
+          e.preventDefault();
+          mouse.pressed = true;
+        }
+        if (key === 'p') {
+          togglePause();
+        }
+        if (key === 'r' && gameOver) {
+          resetGame();
+        }
+      });
+      document.addEventListener('keyup', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w') keys.w = false;
+        if (key === 'a') keys.a = false;
+        if (key === 's') keys.s = false;
+        if (key === 'd') keys.d = false;
+        if (key === 'arrowup') keys.up = false;
+        if (key === 'arrowdown') keys.down = false;
+        if (key === 'arrowleft') keys.left = false;
+        if (key === 'arrowright') keys.right = false;
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        mouse.x = (e.clientX - rect.left) * scaleX;
+        mouse.y = (e.clientY - rect.top) * scaleY;
+        mouse.x = clamp(mouse.x, 0, W);
+        mouse.y = clamp(mouse.y, 0, H);
+      });
+
+      canvas.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        if (!gameRunning || gamePaused || gameOver) return;
+        mouse.pressed = true;
+      });
+
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const tx = (touch.clientX - rect.left) * scaleX;
+        const ty = (touch.clientY - rect.top) * scaleY;
+        mouse.x = clamp(tx, 0, W);
+        mouse.y = clamp(ty, 0, H);
+        if (!gameRunning || gamePaused || gameOver) return;
+        mouse.pressed = true;
+        // Also move player towards touch for mobile? We'll keep separate controls.
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const tx = (touch.clientX - rect.left) * scaleX;
+        const ty = (touch.clientY - rect.top) * scaleY;
+        mouse.x = clamp(tx, 0, W);
+        mouse.y = clamp(ty, 0, H);
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        // Not setting mouse.pressed false because we use single-shot on touchstart
+      }, { passive: false });
+
+      // Pause toggle
+      function togglePause() {
+        if (gameOver) return;
+        gamePaused = !gamePaused;
+        pauseBtn.textContent = gamePaused ? '▶ PLAY' : '⏸ PAUSE';
+      }
+      pauseBtn.addEventListener('click', togglePause);
+
+      // Restart
+      restartBtn.addEventListener('click', resetGame);
+
+      // -------- Init --------
+      resetGame();
+      gameLoop();
+
+      // Resize canvas to fit container
+      function resizeCanvas() {
+        const wrapper = document.getElementById('gameWrapper');
+        const maxWidth = window.innerWidth - 32;
+        const maxHeight = window.innerHeight - 32;
+        let size = Math.min(maxWidth, maxHeight, 600);
+        size = Math.max(size, 320);
+        canvas.style.width = size + 'px';
+        canvas.style.height = size + 'px';
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      console.log('🔮 NEON SURVIVOR loaded – survive the waves!');
+    })();
+  </script>
 </body>
-</html>
+        </html>
