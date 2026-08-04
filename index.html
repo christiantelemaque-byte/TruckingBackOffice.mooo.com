@@ -1,803 +1,986 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>NEON SURVIVOR</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none;
-    }
-    body {
-      background: #0a0a1a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      touch-action: none;
-    }
-    #gameWrapper {
-      position: relative;
-      background: #0d0d20;
-      border-radius: 24px;
-      box-shadow: 0 0 60px rgba(0, 240, 255, 0.08), inset 0 0 60px rgba(0, 0, 0, 0.6);
-      padding: 12px;
-    }
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1;
-      background: radial-gradient(circle at center, #141430, #050510);
-      border-radius: 16px;
-      image-rendering: pixelated;
-      touch-action: none;
-      cursor: crosshair;
-    }
-    #ui {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-      color: #aaccff;
-      font-size: 18px;
-      font-weight: 600;
-      text-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
-    }
-    #ui span {
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(4px);
-      padding: 6px 16px;
-      border-radius: 30px;
-      border: 1px solid rgba(0, 240, 255, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    #ui .gold {
-      color: #ffcc00;
-    }
-    #ui .hp {
-      color: #ff4466;
-    }
-    #gameOverlay {
-      position: absolute;
-      inset: 12px;
-      border-radius: 16px;
-      background: rgba(5, 5, 20, 0.8);
-      backdrop-filter: blur(6px);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      pointer-events: auto;
-      z-index: 10;
-    }
-    #gameOverlay.show {
-      display: flex;
-    }
-    #gameOverlay h1 {
-      font-size: 48px;
-      background: linear-gradient(135deg, #ff00e5, #00f0ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    #gameOverlay p {
-      color: #8899cc;
-      font-size: 20px;
-    }
-    #gameOverlay .btn {
-      padding: 14px 44px;
-      border: none;
-      border-radius: 60px;
-      font-size: 22px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #00f0ff, #0066ff);
-      color: #fff;
-      cursor: pointer;
-      box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
-      transition: 0.2s;
-      pointer-events: auto;
-      margin-top: 8px;
-    }
-    #gameOverlay .btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 60px rgba(0, 240, 255, 0.5);
-    }
-    #gameOverlay .btn:active {
-      transform: scale(0.95);
-    }
-    #controls {
-      position: absolute;
-      bottom: 16px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      pointer-events: none;
-    }
-    #controls button {
-      pointer-events: auto;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 40px;
-      padding: 8px 20px;
-      color: #aaccff;
-      font-size: 14px;
-      backdrop-filter: blur(4px);
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    #controls button:hover {
-      background: rgba(0, 240, 255, 0.1);
-      border-color: #00f0ff;
-    }
-    @media (max-width: 500px) {
-      #ui {
-        font-size: 14px;
-        top: 12px;
-        left: 12px;
-        right: 12px;
-      }
-      #ui span {
-        padding: 4px 12px;
-      }
-      #gameOverlay h1 {
-        font-size: 32px;
-      }
-      #gameOverlay .btn {
-        padding: 10px 30px;
-        font-size: 18px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NULL GEOMETRY · 100 Rules of Ruin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: #0a0a12;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+        }
+        .game-wrapper {
+            background: #14141e;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.08);
+            border: 1px solid #2a2a3e;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 16px;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+            background: #10101a;
+            image-rendering: pixelated;
+        }
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding: 12px 18px;
+            background: #1a1a2a;
+            border-radius: 14px;
+            border-left: 4px solid #00ffff;
+            color: #b0b0d0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .info-panel .mission {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+        .info-panel .mission span {
+            color: #00ffff;
+        }
+        .info-panel .rule-name {
+            font-size: 18px;
+            background: #0d0d1a;
+            padding: 4px 16px;
+            border-radius: 40px;
+            border: 1px solid #3a3a5a;
+            color: #ffd700;
+        }
+        .info-panel .rule-desc {
+            font-size: 13px;
+            color: #8888aa;
+            flex: 1;
+            min-width: 150px;
+            text-align: right;
+        }
+        .info-panel .hp {
+            color: #ff5555;
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .controls {
+            margin-top: 10px;
+            color: #555577;
+            font-size: 13px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .controls kbd {
+            background: #22223a;
+            padding: 2px 10px;
+            border-radius: 6px;
+            border: 1px solid #444466;
+            color: #ccccee;
+        }
+        .reset-btn {
+            background: #2a2a44;
+            border: none;
+            color: #aaaacc;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: #3a3a66;
+            color: #ffffff;
+        }
+        .win-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+        .win-overlay.show {
+            display: flex;
+        }
+        .win-box {
+            background: #1a1a2e;
+            padding: 40px 60px;
+            border-radius: 32px;
+            border: 2px solid #ffd700;
+            text-align: center;
+            box-shadow: 0 0 80px rgba(255, 215, 0, 0.2);
+        }
+        .win-box h1 {
+            color: #ffd700;
+            font-size: 48px;
+            letter-spacing: 6px;
+            margin-bottom: 8px;
+        }
+        .win-box p {
+            color: #aaaacc;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .win-box .sub {
+            color: #666688;
+            font-size: 14px;
+        }
+        .win-box button {
+            background: #ffd700;
+            border: none;
+            padding: 12px 48px;
+            border-radius: 60px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #0a0a12;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .win-box button:hover {
+            transform: scale(1.05);
+            background: #ffe44d;
+        }
+    </style>
 </head>
 <body>
-  <div id="gameWrapper">
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
-    <div id="ui">
-      <span>❤️ <span class="hp" id="hpDisplay">100</span></span>
-      <span>⚡ <span id="scoreDisplay">0</span></span>
-      <span>🌊 <span id="waveDisplay">1</span></span>
+
+    <div class="win-overlay" id="winOverlay">
+        <div class="win-box">
+            <h1>✦ NULL GEOMETRY ✦</h1>
+            <p id="winTitle">Mission Complete</p>
+            <div class="sub" id="winSub">You have conquered the dungeon.</div>
+            <br>
+            <button id="winBtn">CONTINUE</button>
+        </div>
     </div>
-    <div id="gameOverlay">
-      <h1 id="overlayTitle">GAME OVER</h1>
-      <p id="overlayScore">Score: 0</p>
-      <button class="btn" id="restartBtn">▶ PLAY AGAIN</button>
+
+    <div class="game-wrapper">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div class="info-panel">
+            <div class="mission">MISSION <span id="missionNum">1</span>/100</div>
+            <div class="hp">❤️ <span id="hpDisplay">5</span></div>
+            <div class="rule-name" id="ruleName">THE DESCENT</div>
+            <div class="rule-desc" id="ruleDesc">standard dungeon crawl</div>
+            <button class="reset-btn" id="resetBtn">↺ RESTART</button>
+        </div>
+        <div class="controls">
+            <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> move &nbsp;·&nbsp; reach the <span style="color:#ffd700;">★</span> to advance
+        </div>
     </div>
-    <div id="controls">
-      <button id="pauseBtn">⏸ PAUSE</button>
-    </div>
-  </div>
 
-  <script>
-    // ================================================================
-    //  NEON SURVIVOR – Full Game (Canvas + ZzFX Sound)
-    // ================================================================
+    <script>
+        // ─── CANVAS SETUP ───────────────────────────────────────────────
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = 600,
+            H = 600;
 
-    (function() {
-      'use strict';
+        // ─── DOM REFS ──────────────────────────────────────────────────
+        const missionNumEl = document.getElementById('missionNum');
+        const hpDisplayEl = document.getElementById('hpDisplay');
+        const ruleNameEl = document.getElementById('ruleName');
+        const ruleDescEl = document.getElementById('ruleDesc');
+        const winOverlay = document.getElementById('winOverlay');
+        const winTitle = document.getElementById('winTitle');
+        const winSub = document.getElementById('winSub');
+        const winBtn = document.getElementById('winBtn');
+        const resetBtn = document.getElementById('resetBtn');
 
-      // -------- DOM refs --------
-      const canvas = document.getElementById('gameCanvas');
-      const ctx = canvas.getContext('2d');
-      const hpSpan = document.getElementById('hpDisplay');
-      const scoreSpan = document.getElementById('scoreDisplay');
-      const waveSpan = document.getElementById('waveDisplay');
-      const overlay = document.getElementById('gameOverlay');
-      const overlayTitle = document.getElementById('overlayTitle');
-      const overlayScore = document.getElementById('overlayScore');
-      const restartBtn = document.getElementById('restartBtn');
-      const pauseBtn = document.getElementById('pauseBtn');
+        // ─── INPUT ─────────────────────────────────────────────────────
+        const keys = { up: false, down: false, left: false, right: false };
+        let movePressed = false;
 
-      // -------- Constants --------
-      const W = 600,
-        H = 600;
-      const PLAYER_RADIUS = 16;
-      const ENEMY_BASE_RADIUS = 12;
-      const PLAYER_SPEED = 4.5;
-      const BULLET_SPEED = 8;
-      const BULLET_RADIUS = 4;
-      const MAX_HP = 100;
-
-      // -------- State --------
-      let player = { x: W / 2, y: H / 2, radius: PLAYER_RADIUS, hp: MAX_HP, maxHp: MAX_HP };
-      let bullets = [];
-      let enemies = [];
-      let particles = [];
-      let score = 0;
-      let wave = 1;
-      let gameRunning = true;
-      let gamePaused = false;
-      let gameOver = false;
-      let frame = 0;
-      let keys = { w: false, a: false, s: false, d: false, up: false, down: false, left: false, right: false };
-      let mouse = { x: W / 2, y: H / 2, pressed: false };
-
-      // Enemy spawning parameters
-      let spawnTimer = 0;
-      let spawnInterval = 60; // frames
-      let enemiesPerWave = 5;
-      let enemySpeed = 1.2;
-      let enemyCount = 0;
-
-      // -------- Sound (ZzFX) --------
-      const zzfx = (...args) => {
-        let zzfxR = 0,
-          zzfxV = 0.3,
-          zzfxQ = 0,
-          zzfxS = 0,
-          zzfxZ = 0,
-          zzfxX = 0,
-          zzfxC = 0,
-          zzfxM = 0,
-          zzfxU = 0,
-          zzfxL = 0,
-          zzfxA = 0,
-          zzfxW = 0,
-          zzfxH = 0,
-          zzfxG = 0;
-        let vol = 0.3,
-          sampleRate = 44100;
-        if (args.length > 0) { zzfxR = args[0] || 0;
-          zzfxV = args[1] || 0.3;
-          zzfxQ = args[2] || 0;
-          zzfxS = args[3] || 0;
-          zzfxZ = args[4] || 0;
-          zzfxX = args[5] || 0;
-          zzfxC = args[6] || 0;
-          zzfxM = args[7] || 0;
-          zzfxU = args[8] || 0;
-          zzfxL = args[9] || 0;
-          zzfxA = args[10] || 0;
-          zzfxW = args[11] || 0;
-          zzfxH = args[12] || 0;
-          zzfxG = args[13] || 0; }
-        let zzfxFreq = 220,
-          zzfxFreqRamp = 0;
-        let sampleCount = Math.floor(zzfxR * sampleRate);
-        let phase = 0;
-        let amp = zzfxV;
-        let buffer = [];
-        for (let i = 0; i < sampleCount; i++) {
-          let t = i / sampleRate;
-          let env = Math.exp(-t * 3) * (1 - t / zzfxR);
-          let freq = zzfxFreq * (1 + zzfxFreqRamp * t / zzfxR);
-          phase += (2 * Math.PI * freq) / sampleRate;
-          let sample = Math.sin(phase) * env * amp;
-          if (zzfxQ > 0.1) {
-            let sq = Math.sign(Math.sin(phase)) * env * amp * 0.3;
-            sample = sample * (1 - zzfxQ) + sq * zzfxQ;
-          }
-          if (zzfxS > 0.01) {
-            let noise = (Math.random() * 2 - 1) * zzfxS * env * amp;
-            sample += noise;
-          }
-          buffer.push(sample);
-        }
-        try {
-          const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-          const buffer2 = audioCtx.createBuffer(1, buffer.length, sampleRate);
-          const data = buffer2.getChannelData(0);
-          for (let i = 0; i < buffer.length; i++) data[i] = buffer[i] * 0.8;
-          const source = audioCtx.createBufferSource();
-          source.buffer = buffer2;
-          const gain = audioCtx.createGain();
-          gain.gain.value = vol * 0.7;
-          source.connect(gain);
-          gain.connect(audioCtx.destination);
-          source.start();
-          setTimeout(() => { try { source.stop(); } catch (e) {} }, zzfxR * 1000 + 200);
-        } catch (e) { /* ignore */ }
-      };
-
-      function sfxShoot() { zzfx(0.05, 0.2, 0, 0, 0.3, 0, 0, 1.5, 0, 0, 0, 0, 0, 0); }
-
-      function sfxHit() { zzfx(0.08, 0.25, 0.2, 0.1, 0.5, 0, 0, 1.2, 0, 0, 0, 0, 0, 0); }
-
-      function sfxEnemyDie() { zzfx(0.12, 0.3, 0.1, 0.05, 0.7, 0, 0, 2.0, 0, 0, 0, 0, 0, 0); }
-
-      function sfxDamage() { zzfx(0.15, 0.35, 0.4, 0.1, 0.2, 0, 0, 0.6, 0, 0, 0, 0, 0, 0); }
-
-      function sfxWave() { zzfx(0.2, 0.3, 0, 0, 0.6, 0, 0, 3.0, 0, 0, 0, 0, 0, 0); }
-
-      // -------- Utility --------
-      function dist(a, b) {
-        return Math.hypot(a.x - b.x, a.y - b.y);
-      }
-
-      function rand(min, max) { return Math.random() * (max - min) + min; }
-
-      function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
-
-      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-      // -------- Particles --------
-      function spawnParticles(x, y, color, count = 15, speed = 4) {
-        for (let i = 0; i < count; i++) {
-          const angle = rand(0, Math.PI * 2);
-          const spd = rand(0.5, speed);
-          particles.push({
-            x,
-            y,
-            vx: Math.cos(angle) * spd,
-            vy: Math.sin(angle) * spd,
-            life: rand(20, 50),
-            maxLife: 50,
-            radius: rand(2, 5),
-            color: color,
-          });
-        }
-      }
-
-      // -------- Spawn enemies --------
-      function spawnEnemy() {
-        const side = randInt(0, 3);
-        let x, y;
-        const margin = 30;
-        if (side === 0) { x = rand(-margin, W + margin);
-          y = -margin; } else if (side === 1) { x = W + margin;
-          y = rand(-margin, H + margin); } else if (side === 2) { x = rand(-margin, W + margin);
-          y = H + margin; } else { x = -margin;
-          y = rand(-margin, H + margin); }
-        const radius = ENEMY_BASE_RADIUS + rand(-3, 5);
-        const speed = enemySpeed + rand(-0.2, 0.4);
-        const hp = 1 + Math.floor(wave / 5);
-        enemies.push({
-          x,
-          y,
-          radius: Math.max(6, radius),
-          speed: Math.max(0.5, speed),
-          hp: hp,
-          maxHp: hp,
-          color: `hsl(${randInt(200, 320)}, 80%, 60%)`,
+        window.addEventListener('keydown', (e) => {
+            const k = e.key;
+            if (k === 'ArrowUp' || k === 'w') { keys.up = true;
+                movePressed = true;
+                e.preventDefault(); }
+            if (k === 'ArrowDown' || k === 's') { keys.down = true;
+                movePressed = true;
+                e.preventDefault(); }
+            if (k === 'ArrowLeft' || k === 'a') { keys.left = true;
+                movePressed = true;
+                e.preventDefault(); }
+            if (k === 'ArrowRight' || k === 'd') { keys.right = true;
+                movePressed = true;
+                e.preventDefault(); }
         });
-      }
+        window.addEventListener('keyup', (e) => {
+            const k = e.key;
+            if (k === 'ArrowUp' || k === 'w') { keys.up = false;
+                e.preventDefault(); }
+            if (k === 'ArrowDown' || k === 's') { keys.down = false;
+                e.preventDefault(); }
+            if (k === 'ArrowLeft' || k === 'a') { keys.left = false;
+                e.preventDefault(); }
+            if (k === 'ArrowRight' || k === 'd') { keys.right = false;
+                e.preventDefault(); }
+        });
 
-      // -------- Wave management --------
-      function startWave() {
-        enemiesPerWave = Math.min(5 + wave * 2, 40);
-        enemySpeed = 1.2 + wave * 0.15;
-        spawnInterval = Math.max(15, 60 - wave * 2);
-        enemyCount = 0;
-        spawnTimer = 0;
-        sfxWave();
-        waveSpan.textContent = wave;
-      }
+        // ─── GAME STATE ────────────────────────────────────────────────
+        let state = {};
 
-      // -------- Reset game --------
-      function resetGame() {
-        player.x = W / 2;
-        player.y = H / 2;
-        player.hp = MAX_HP;
-        bullets = [];
-        enemies = [];
-        particles = [];
-        score = 0;
-        wave = 1;
-        gameOver = false;
-        gameRunning = true;
-        gamePaused = false;
-        frame = 0;
-        spawnTimer = 0;
-        enemySpeed = 1.2;
-        enemiesPerWave = 5;
-        spawnInterval = 60;
-        enemyCount = 0;
-        hpSpan.textContent = player.hp;
-        scoreSpan.textContent = score;
-        waveSpan.textContent = wave;
-        overlay.classList.remove('show');
-        startWave();
-      }
-
-      // -------- Game update --------
-      function update() {
-        if (!gameRunning || gamePaused || gameOver) return;
-        frame++;
-
-        // Player movement
-        let dx = 0,
-          dy = 0;
-        if (keys.w || keys.up) dy = -1;
-        if (keys.s || keys.down) dy = 1;
-        if (keys.a || keys.left) dx = -1;
-        if (keys.d || keys.right) dx = 1;
-        if (dx !== 0 && dy !== 0) {
-          dx *= 0.707;
-          dy *= 0.707;
-        }
-        player.x += dx * PLAYER_SPEED;
-        player.y += dy * PLAYER_SPEED;
-        player.x = clamp(player.x, player.radius, W - player.radius);
-        player.y = clamp(player.y, player.radius, H - player.radius);
-
-        // Shooting (mouse click or space)
-        if (mouse.pressed) {
-          const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
-          bullets.push({
-            x: player.x + Math.cos(angle) * (player.radius + 4),
-            y: player.y + Math.sin(angle) * (player.radius + 4),
-            vx: Math.cos(angle) * BULLET_SPEED,
-            vy: Math.sin(angle) * BULLET_SPEED,
-            radius: BULLET_RADIUS,
-            life: 120,
-          });
-          sfxShoot();
-          mouse.pressed = false; // single shot per click
-        }
-
-        // Update bullets
-        for (let i = bullets.length - 1; i >= 0; i--) {
-          const b = bullets[i];
-          b.x += b.vx;
-          b.y += b.vy;
-          b.life--;
-          if (b.x < -10 || b.x > W + 10 || b.y < -10 || b.y > H + 10 || b.life <= 0) {
-            bullets.splice(i, 1);
-            continue;
-          }
-          // Collision with enemies
-          let hit = false;
-          for (let j = enemies.length - 1; j >= 0; j--) {
-            const e = enemies[j];
-            if (dist(b, e) < b.radius + e.radius) {
-              e.hp--;
-              sfxHit();
-              spawnParticles(b.x, b.y, e.color, 8, 3);
-              if (e.hp <= 0) {
-                // enemy dies
-                sfxEnemyDie();
-                spawnParticles(e.x, e.y, e.color, 20, 5);
-                score += 10 + Math.floor(wave * 2);
-                scoreSpan.textContent = score;
-                enemies.splice(j, 1);
-                enemyCount++;
-                // Check wave completion
-                if (enemyCount >= enemiesPerWave && enemies.length === 0) {
-                  wave++;
-                  startWave();
+        function initState(mission) {
+            const config = createMissionConfig(mission);
+            const size = config.size;
+            const map = generateMaze(size, mission);
+            const player = { x: 1, y: 1, hp: 5, maxHp: 5, invincible: 0 };
+            // place player on first floor tile
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (map[y][x] === 0) { player.x = x;
+                        player.y = y; break; }
                 }
-              }
-              hit = true;
-              break;
+                if (map[player.y] && map[player.y][player.x] === 0) break;
             }
-          }
-          if (hit) {
-            bullets.splice(i, 1);
-          }
-        }
-
-        // Spawn enemies
-        spawnTimer++;
-        if (spawnTimer >= spawnInterval && enemies.length < enemiesPerWave - enemyCount) {
-          spawnEnemy();
-          spawnTimer = 0;
-        }
-
-        // Update enemies
-        for (let i = enemies.length - 1; i >= 0; i--) {
-          const e = enemies[i];
-          const angle = Math.atan2(player.y - e.y, player.x - e.x);
-          e.x += Math.cos(angle) * e.speed;
-          e.y += Math.sin(angle) * e.speed;
-          // Collision with player
-          if (dist(e, player) < e.radius + player.radius) {
-            // Damage player
-            player.hp -= 10 + Math.floor(wave / 3);
-            sfxDamage();
-            spawnParticles(player.x, player.y, '#ff4466', 20, 6);
-            enemies.splice(i, 1);
-            if (player.hp <= 0) {
-              player.hp = 0;
-              gameOver = true;
-              gameRunning = false;
-              overlayTitle.textContent = '💀 GAME OVER';
-              overlayScore.textContent = `Score: ${score}  ·  Wave: ${wave}`;
-              overlay.classList.add('show');
+            // place exit far away
+            let exit = { x: size - 2, y: size - 2 };
+            for (let y = size - 1; y >= 0; y--) {
+                let found = false;
+                for (let x = size - 1; x >= 0; x--) {
+                    if (map[y][x] === 0 && (Math.abs(x - player.x) + Math.abs(y - player.y)) > size * 0.6) {
+                        exit = { x, y };
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
             }
-            hpSpan.textContent = player.hp;
-            continue;
-          }
-          // Keep in bounds (but they are mostly chasing)
-          e.x = clamp(e.x, -20, W + 20);
-          e.y = clamp(e.y, -20, H + 20);
+            // enemies
+            const enemies = [];
+            const eCount = config.enemyCount;
+            let attempts = 0;
+            while (enemies.length < eCount && attempts < 500) {
+                attempts++;
+                const ex = 1 + Math.floor(Math.random() * (size - 2));
+                const ey = 1 + Math.floor(Math.random() * (size - 2));
+                if (map[ey] && map[ey][ex] === 0 && !(ex === player.x && ey === player.y) && !(ex === exit.x && ey === exit
+                        .y)) {
+                    const hp = config.flags.boss ? 20 : 1;
+                    enemies.push({
+                        x: ex,
+                        y: ey,
+                        hp: hp,
+                        maxHp: hp,
+                        cooldown: 0,
+                        split: false
+                    });
+                }
+            }
+            // floor life for crumble
+            let floorLife = null;
+            if (config.flags.floorCrumble) {
+                floorLife = [];
+                for (let y = 0; y < size; y++) {
+                    floorLife[y] = [];
+                    for (let x = 0; x < size; x++) {
+                        floorLife[y][x] = (map[y][x] === 0) ? 3 : 0;
+                    }
+                }
+            }
+
+            state = {
+                mission,
+                config,
+                map,
+                size,
+                player,
+                exit,
+                enemies,
+                floorLife,
+                turn: 0,
+                gameOver: false,
+                won: false,
+                exitPrev: { x: exit.x, y: exit.y },
+                bossPhase: 0,
+                projectiles: [],
+                // fog explored
+                explored: null,
+            };
+            if (config.flags.fog) {
+                state.explored = [];
+                for (let y = 0; y < size; y++) {
+                    state.explored[y] = new Array(size).fill(false);
+                }
+            }
+            // initial camera offset for rotation
+            state.rotationOffset = 0;
+            updateUI();
         }
 
-        // Update particles
-        for (let i = particles.length - 1; i >= 0; i--) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vx *= 0.98;
-          p.vy *= 0.98;
-          p.life--;
-          if (p.life <= 0) {
-            particles.splice(i, 1);
-          }
+        // ─── MISSION CONFIGURATOR (100 unique rules) ──────────────────
+        function createMissionConfig(mission) {
+            const base = {
+                size: 10 + Math.floor(mission / 5),
+                enemyCount: 2 + Math.floor(mission / 4),
+                enemySpeed: 0.6 + (mission / 100) * 1.0,
+                playerSpeed: 3.5,
+                flags: {
+                    reverse: false,
+                    controlExit: false,
+                    floorCrumble: false,
+                    torus: false,
+                    timeOnMove: false,
+                    enemiesShoot: false,
+                    enemiesTeleport: false,
+                    enemiesSplit: false,
+                    fog: false,
+                    rotateMap: false,
+                    gravity: false,
+                    boss: false,
+                },
+                name: "",
+                desc: ""
+            };
+
+            // --- PHASE 1 (1-10) : Standard ---
+            if (mission <= 10) {
+                base.name = "THE DESCENT";
+                base.desc = "classic dungeon crawl";
+            }
+            // --- PHASE 2 (11-20) : Crumbling floor ---
+            else if (mission <= 20) {
+                base.flags.floorCrumble = true;
+                base.name = "QUICKSAND";
+                base.desc = "floors collapse behind you";
+            }
+            // --- PHASE 3 (21-30) : Reverse controls ---
+            else if (mission <= 30) {
+                base.flags.reverse = true;
+                base.name = "MIRROR WORLD";
+                base.desc = "controls are inverted";
+            }
+            // --- PHASE 4 (31-40) : Control the exit ---
+            else if (mission <= 40) {
+                base.flags.controlExit = true;
+                base.name = "PUPPETEER";
+                base.desc = "move the exit, not yourself";
+            }
+            // --- PHASE 5 (41-50) : Torus + shooter enemies ---
+            else if (mission <= 50) {
+                base.flags.torus = true;
+                base.flags.enemiesShoot = true;
+                base.name = "WARP ZONE";
+                base.desc = "world wraps, enemies shoot";
+            }
+            // --- PHASE 6 (51-60) : Time-on-move + split enemies ---
+            else if (mission <= 60) {
+                base.flags.timeOnMove = true;
+                base.flags.enemiesSplit = true;
+                base.name = "FROZEN TIME";
+                base.desc = "time moves only when you do, enemies split";
+            }
+            // --- PHASE 7 (61-70) : Fog + teleporting enemies ---
+            else if (mission <= 70) {
+                base.flags.fog = true;
+                base.flags.enemiesTeleport = true;
+                base.name = "SHADOW REALM";
+                base.desc = "fog of war, teleporting foes";
+            }
+            // --- PHASE 8 (71-80) : Gravity + rotating map ---
+            else if (mission <= 80) {
+                base.flags.gravity = true;
+                base.flags.rotateMap = true;
+                base.name = "TWISTED DIMENSION";
+                base.desc = "gravity shifts, map rotates";
+            }
+            // --- PHASE 9 (81-99) : Chaos combo ---
+            else if (mission <= 99) {
+                base.flags.floorCrumble = true;
+                base.flags.enemiesShoot = true;
+                base.flags.timeOnMove = true;
+                base.flags.enemiesSplit = true;
+                base.name = "CHAOS ENGINE";
+                base.desc = "everything breaks at once";
+                base.enemyCount = 3 + Math.floor(mission / 10);
+            }
+            // --- PHASE 10 (100) : The Boss ---
+            else {
+                base.flags.boss = true;
+                base.flags.controlExit = true;
+                base.flags.torus = true;
+                base.flags.enemiesShoot = true;
+                base.flags.enemiesSplit = true;
+                base.flags.rotateMap = true;
+                base.name = "NULL CORE";
+                base.desc = "the final abomination";
+                base.enemyCount = 1;
+                base.size = 16;
+            }
+
+            // cap size
+            if (base.size > 30) base.size = 30;
+            return base;
         }
 
-        // UI update
-        hpSpan.textContent = Math.max(0, player.hp);
-      }
+        // ─── MAZE GENERATION (Recursive Backtracking) ────────────────
+        function generateMaze(size, seed) {
+            // seeded random for deterministic maps per mission
+            let s = seed * 1337 + 42;
 
-      // -------- Draw --------
-      function draw() {
-        ctx.clearRect(0, 0, W, H);
+            function seededRandom() {
+                s = (s * 9301 + 49297) % 233280;
+                return s / 233280;
+            }
+            const map = [];
+            for (let y = 0; y < size; y++) {
+                map[y] = new Array(size).fill(1);
+            }
 
-        // Background grid
-        ctx.strokeStyle = 'rgba(0,240,255,0.03)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 20; i++) {
-          const p = i * 30;
-          ctx.beginPath();
-          ctx.moveTo(p, 0);
-          ctx.lineTo(p, H);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(0, p);
-          ctx.lineTo(W, p);
-          ctx.stroke();
+            function carve(cx, cy) {
+                map[cy][cx] = 0;
+                const dirs = [
+                    [0, -2],
+                    [0, 2],
+                    [-2, 0],
+                    [2, 0]
+                ];
+                // shuffle with seeded random
+                for (let i = dirs.length - 1; i > 0; i--) {
+                    const j = Math.floor(seededRandom() * (i + 1));
+                    [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
+                }
+                for (let d of dirs) {
+                    const nx = cx + d[0],
+                        ny = cy + d[1];
+                    if (nx > 0 && nx < size - 1 && ny > 0 && ny < size - 1 && map[ny][nx] === 1) {
+                        map[cy + d[1] / 2][cx + d[0] / 2] = 0;
+                        carve(nx, ny);
+                    }
+                }
+            }
+            carve(1, 1);
+            // ensure at least some open space
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (map[y][x] === 1 && Math.random() < 0.15) map[y][x] = 0;
+                }
+            }
+            return map;
         }
 
-        // Draw particles
-        for (const p of particles) {
-          const alpha = p.life / p.maxLife;
-          ctx.globalAlpha = alpha;
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 12;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius * alpha, 0, Math.PI * 2);
-          ctx.fill();
+        // ─── UPDATE LOGIC ──────────────────────────────────────────────
+        function updateState() {
+            if (state.gameOver || state.won) return;
+            const config = state.config;
+            const flags = config.flags;
+            const size = state.size;
+
+            // ---- Turn-based trigger ----
+            if (flags.timeOnMove) {
+                if (!movePressed) return;
+                movePressed = false;
+                state.turn++;
+            }
+
+            // ---- Rotation ----
+            if (flags.rotateMap && state.turn % 8 === 0 && state.turn > 0) {
+                state.rotationOffset = (state.rotationOffset + 1) % 4;
+            }
+
+            // ---- Player movement ----
+            let dx = 0,
+                dy = 0;
+            if (keys.up) dy = -1;
+            if (keys.down) dy = 1;
+            if (keys.left) dx = -1;
+            if (keys.right) dx = 1;
+
+            // gravity
+            if (flags.gravity) {
+                if (dx === 0 && dy === 0) dy = 1; // pull down
+            }
+
+            // reverse
+            if (flags.reverse) { dx = -dx;
+                dy = -dy; }
+
+            // control exit
+            let pdx = dx,
+                pdy = dy;
+            if (flags.controlExit) {
+                // move exit instead
+                let ex = state.exit.x + dx;
+                let ey = state.exit.y + dy;
+                if (flags.torus) {
+                    ex = (ex + size) % size;
+                    ey = (ey + size) % size;
+                }
+                if (ex >= 0 && ex < size && ey >= 0 && ey < size && state.map[ey][ex] === 0) {
+                    state.exitPrev = { x: state.exit.x, y: state.exit.y };
+                    state.exit.x = ex;
+                    state.exit.y = ey;
+                }
+                // player follows exit's previous position
+                const targetX = state.exitPrev.x;
+                const targetY = state.exitPrev.y;
+                if (state.map[targetY] && state.map[targetY][targetX] === 0) {
+                    state.player.x = targetX;
+                    state.player.y = targetY;
+                }
+                // force no movement for player
+                dx = 0;
+                dy = 0;
+            } else {
+                // normal move
+                let nx = state.player.x + dx;
+                let ny = state.player.y + dy;
+                if (flags.torus) {
+                    nx = (nx + size) % size;
+                    ny = (ny + size) % size;
+                }
+                if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                    state.player.x = nx;
+                    state.player.y = ny;
+                }
+            }
+
+            // ---- Floor crumble ----
+            if (flags.floorCrumble && state.floorLife) {
+                const px = state.player.x,
+                    py = state.player.y;
+                if (state.floorLife[py] && state.floorLife[py][px] !== undefined) {
+                    state.floorLife[py][px] -= 1;
+                    if (state.floorLife[py][px] <= 0) {
+                        state.map[py][px] = 1; // becomes wall
+                    }
+                }
+            }
+
+            // ---- Fog exploration ----
+            if (flags.fog && state.explored) {
+                const px = state.player.x,
+                    py = state.player.y;
+                for (let dy = -2; dy <= 2; dy++) {
+                    for (let dx = -2; dx <= 2; dx++) {
+                        const nx = px + dx,
+                            ny = py + dy;
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                            state.explored[ny][nx] = true;
+                        }
+                    }
+                }
+            }
+
+            // ---- Enemies AI ----
+            const enemies = state.enemies;
+            const speed = config.enemySpeed;
+
+            // teleport
+            if (flags.enemiesTeleport && state.turn % 3 === 0) {
+                for (let e of enemies) {
+                    if (e.hp <= 0) continue;
+                    // teleport to random floor near player
+                    for (let attempt = 0; attempt < 10; attempt++) {
+                        const tx = state.player.x + Math.floor(Math.random() * 5) - 2;
+                        const ty = state.player.y + Math.floor(Math.random() * 5) - 2;
+                        if (tx >= 0 && tx < size && ty >= 0 && ty < size && state.map[ty][tx] === 0 && !(tx === state
+                                .player.x && ty === state.player.y)) {
+                            e.x = tx;
+                            e.y = ty;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // enemy movement (chase)
+            for (let e of enemies) {
+                if (e.hp <= 0) continue;
+                // shoot
+                if (flags.enemiesShoot && e.cooldown <= 0 && Math.random() < 0.04) {
+                    const dx = state.player.x - e.x;
+                    const dy = state.player.y - e.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 0 && dist < 8) {
+                        state.projectiles.push({
+                            x: e.x,
+                            y: e.y,
+                            vx: (dx / dist) * 0.15,
+                            vy: (dy / dist) * 0.15,
+                            life: 40
+                        });
+                        e.cooldown = 15;
+                    }
+                }
+                if (e.cooldown > 0) e.cooldown--;
+
+                // move towards player
+                let ex = e.x,
+                    ey = e.y;
+                let bestDist = Infinity;
+                let bestDx = 0,
+                    bestDy = 0;
+                const dirs = [
+                    [0, -1],
+                    [0, 1],
+                    [-1, 0],
+                    [1, 0]
+                ];
+                for (let d of dirs) {
+                    let nx = e.x + d[0],
+                        ny = e.y + d[1];
+                    if (flags.torus) {
+                        nx = (nx + size) % size;
+                        ny = (ny + size) % size;
+                    }
+                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                        const dist = Math.abs(nx - state.player.x) + Math.abs(ny - state.player.y);
+                        if (dist < bestDist) {
+                            bestDist = dist;
+                            bestDx = d[0];
+                            bestDy = d[1];
+                        }
+                    }
+                }
+                if (bestDist < Infinity) {
+                    let nx = e.x + bestDx,
+                        ny = e.y + bestDy;
+                    if (flags.torus) {
+                        nx = (nx + size) % size;
+                        ny = (ny + size) % size;
+                    }
+                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                        e.x = nx;
+                        e.y = ny;
+                    }
+                }
+            }
+
+            // ---- Projectiles ----
+            for (let p of state.projectiles) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                // check hit player
+                if (Math.abs(p.x - state.player.x) < 0.6 && Math.abs(p.y - state.player.y) < 0.6) {
+                    if (state.player.invincible <= 0) {
+                        state.player.hp--;
+                        state.player.invincible = 20;
+                        p.life = 0;
+                    }
+                }
+            }
+            state.projectiles = state.projectiles.filter(p => p.life > 0 && p.x > 0 && p.x < size && p.y > 0 && p.y < size);
+
+            // ---- Enemy collision with player ----
+            for (let e of enemies) {
+                if (e.hp <= 0) continue;
+                if (e.x === state.player.x && e.y === state.player.y) {
+                    if (state.player.invincible <= 0) {
+                        state.player.hp--;
+                        state.player.invincible = 20;
+                        // push enemy back
+                        const dx = e.x - state.player.x;
+                        const dy = e.y - state.player.y;
+                        if (dx === 0 && dy === 0) { e.x += 1;
+                            e.y += 1; } else { e.x += dx;
+                            e.y += dy; }
+                    }
+                }
+            }
+
+            // ---- player invincibility timer ----
+            if (state.player.invincible > 0) state.player.invincible--;
+
+            // ---- check win condition ----
+            if (state.player.x === state.exit.x && state.player.y === state.exit.y) {
+                state.won = true;
+                showWin();
+                return;
+            }
+
+            // ---- check game over ----
+            if (state.player.hp <= 0) {
+                state.gameOver = true;
+                state.player.hp = 0;
+                updateUI();
+                return;
+            }
+
+            // ---- Boss special ----
+            if (flags.boss && enemies.length > 0) {
+                const boss = enemies[0];
+                if (boss.hp > 0 && boss.hp < boss.maxHp * 0.5) {
+                    // spawn adds
+                    if (state.bossPhase === 0) {
+                        state.bossPhase = 1;
+                        for (let i = 0; i < 4; i++) {
+                            const ex = state.player.x + Math.floor(Math.random() * 5) - 2;
+                            const ey = state.player.y + Math.floor(Math.random() * 5) - 2;
+                            if (ex >= 0 && ex < size && ey >= 0 && ey < size && state.map[ey][ex] === 0) {
+                                state.enemies.push({ x: ex, y: ey, hp: 2, maxHp: 2, cooldown: 0, split: false });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ---- enemy split ----
+            if (flags.enemiesSplit) {
+                const toAdd = [];
+                for (let e of enemies) {
+                    if (e.hp <= 0 && !e.split) {
+                        e.split = true;
+                        for (let i = 0; i < 2; i++) {
+                            const nx = e.x + (i === 0 ? 1 : -1);
+                            const ny = e.y + (i === 0 ? 0 : 1);
+                            if (nx >= 0 && nx < size && ny >= 0 && ny < size && state.map[ny][nx] === 0) {
+                                toAdd.push({ x: nx, y: ny, hp: 1, maxHp: 1, cooldown: 0, split: false });
+                            }
+                        }
+                    }
+                }
+                enemies.push(...toAdd);
+            }
+            // remove dead enemies (unless they are split)
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                if (enemies[i].hp <= 0 && enemies[i].split === true) {
+                    enemies.splice(i, 1);
+                }
+            }
+
+            // ---- enemy hp reset for non-boss? no, keep them dead.
+            // clean up projectiles
+            updateUI();
         }
-        ctx.globalAlpha = 1;
-        ctx.shadowBlur = 0;
 
-        // Draw enemies
-        for (const e of enemies) {
-          // Glow
-          ctx.shadowColor = e.color;
-          ctx.shadowBlur = 25;
-          ctx.fillStyle = e.color;
-          ctx.beginPath();
-          ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
-          ctx.fill();
-          // Health bar
-          ctx.shadowBlur = 0;
-          const hpPct = e.hp / e.maxHp;
-          const barW = e.radius * 1.6;
-          const barH = 4;
-          const barX = e.x - barW / 2;
-          const barY = e.y - e.radius - 8;
-          ctx.fillStyle = 'rgba(0,0,0,0.5)';
-          ctx.fillRect(barX, barY, barW, barH);
-          ctx.fillStyle = hpPct > 0.6 ? '#44ff88' : hpPct > 0.3 ? '#ffaa44' : '#ff4466';
-          ctx.fillRect(barX, barY, barW * hpPct, barH);
-          // Inner highlight
-          ctx.fillStyle = 'rgba(255,255,255,0.1)';
-          ctx.beginPath();
-          ctx.arc(e.x - e.radius * 0.2, e.y - e.radius * 0.2, e.radius * 0.4, 0, Math.PI * 2);
-          ctx.fill();
+        // ─── RENDER ────────────────────────────────────────────────────
+        function render() {
+            const { map, size, player, exit, enemies, config, floorLife, explored, projectiles } = state;
+            const flags = config.flags;
+            const cellSize = W / size;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // ---- apply rotation ----
+            let rot = 0;
+            if (flags.rotateMap) {
+                rot = state.rotationOffset * Math.PI / 2;
+            }
+            ctx.save();
+            ctx.translate(W / 2, H / 2);
+            ctx.rotate(rot);
+            ctx.translate(-W / 2, -H / 2);
+
+            // ---- draw floor & walls ----
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    const cx = x * cellSize,
+                        cy = y * cellSize;
+
+                    // fog
+                    if (flags.fog && explored && !explored[y]?.[x]) {
+                        ctx.fillStyle = '#0a0a12';
+                        ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
+                        continue;
+                    }
+
+                    const isWall = map[y][x] === 1;
+                    if (isWall) {
+                        ctx.fillStyle = '#1e1e30';
+                        ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
+                        ctx.strokeStyle = '#2e2e48';
+                        ctx.lineWidth = 0.5;
+                        ctx.strokeRect(cx, cy, cellSize, cellSize);
+                    } else {
+                        // floor
+                        let alpha = 1;
+                        if (floorLife && floorLife[y] && floorLife[y][x] !== undefined) {
+                            alpha = floorLife[y][x] / 3;
+                            if (alpha < 0.2) alpha = 0.2;
+                        }
+                        ctx.fillStyle = `rgba(18, 18, 34, ${alpha})`;
+                        ctx.fillRect(cx, cy, cellSize + 0.5, cellSize + 0.5);
+                        // subtle grid
+                        ctx.strokeStyle = '#22223a';
+                        ctx.lineWidth = 0.5;
+                        ctx.strokeRect(cx, cy, cellSize, cellSize);
+                    }
+                }
+            }
+
+            // ---- draw projectiles ----
+            for (let p of projectiles) {
+                ctx.beginPath();
+                ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, cellSize * 0.2, 0, Math.PI * 2);
+                ctx.fillStyle = '#ff8844';
+                ctx.shadowColor = '#ff8844';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            // ---- draw enemies ----
+            for (let e of enemies) {
+                if (e.hp <= 0) continue;
+                const cx = e.x * cellSize + cellSize / 2;
+                const cy = e.y * cellSize + cellSize / 2;
+                const radius = cellSize * 0.35;
+                const pulse = 1 + 0.15 * Math.sin(Date.now() / 200 + e.x);
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius * pulse, 0, Math.PI * 2);
+                const isBoss = config.flags.boss && e === enemies[0];
+                ctx.fillStyle = isBoss ? '#ff2255' : '#ff3344';
+                ctx.shadowColor = '#ff0000';
+                ctx.shadowBlur = isBoss ? 25 : 12;
+                ctx.fill();
+                // HP bar for boss
+                if (isBoss && e.maxHp > 1) {
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = '#222';
+                    ctx.fillRect(e.x * cellSize + 2, e.y * cellSize - 4, cellSize - 4, 4);
+                    ctx.fillStyle = '#ff2255';
+                    ctx.fillRect(e.x * cellSize + 2, e.y * cellSize - 4, (cellSize - 4) * (e.hp / e.maxHp), 4);
+                }
+                ctx.shadowBlur = 0;
+            }
+
+            // ---- draw exit ----
+            const ex = exit.x * cellSize + cellSize / 2;
+            const ey = exit.y * cellSize + cellSize / 2;
+            const glow = 8 + 4 * Math.sin(Date.now() / 300);
+            ctx.shadowColor = '#ffd700';
+            ctx.shadowBlur = glow;
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.moveTo(ex, ey - cellSize * 0.4);
+            ctx.lineTo(ex + cellSize * 0.4, ey);
+            ctx.lineTo(ex, ey + cellSize * 0.4);
+            ctx.lineTo(ex - cellSize * 0.4, ey);
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // ---- draw player ----
+            if (!state.gameOver) {
+                const px = player.x * cellSize + cellSize / 2;
+                const py = player.y * cellSize + cellSize / 2;
+                const flash = player.invincible > 0 && Math.floor(Date.now() / 100) % 2 === 0;
+                if (!flash) {
+                    ctx.shadowColor = '#00ffff';
+                    ctx.shadowBlur = 20;
+                    ctx.fillStyle = '#00ffff';
+                    ctx.beginPath();
+                    ctx.moveTo(px, py - cellSize * 0.45);
+                    ctx.lineTo(px - cellSize * 0.35, py + cellSize * 0.35);
+                    ctx.lineTo(px + cellSize * 0.35, py + cellSize * 0.35);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+
+            ctx.restore();
+
+            // ---- UI overlay (mission, hp) ----
+            updateUI();
         }
 
-        // Draw bullets
-        for (const b of bullets) {
-          ctx.shadowColor = '#00f0ff';
-          ctx.shadowBlur = 20;
-          ctx.fillStyle = '#00f0ff';
-          ctx.beginPath();
-          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-          ctx.fill();
-          // Trail
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(0,240,255,0.3)';
-          ctx.beginPath();
-          ctx.arc(b.x - b.vx * 0.5, b.y - b.vy * 0.5, b.radius * 0.6, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.shadowBlur = 0;
-
-        // Draw player
-        // Glow
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 40;
-        const grad = ctx.createRadialGradient(player.x, player.y, 0, player.x, player.y, player.radius);
-        grad.addColorStop(0, '#44ddff');
-        grad.addColorStop(0.7, '#0088ff');
-        grad.addColorStop(1, '#003366');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-        ctx.fill();
-        // Inner highlight
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.beginPath();
-        ctx.arc(player.x - player.radius * 0.25, player.y - player.radius * 0.25, player.radius * 0.4, 0, Math.PI * 2);
-        ctx.fill();
-        // Shield ring
-        ctx.strokeStyle = 'rgba(0,240,255,0.2)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 8]);
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, player.radius + 6, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // HP bar above player
-        const hpPct2 = player.hp / player.maxHp;
-        const barW2 = 40;
-        const barH2 = 5;
-        const barX2 = player.x - barW2 / 2;
-        const barY2 = player.y - player.radius - 14;
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(barX2, barY2, barW2, barH2);
-        ctx.fillStyle = hpPct2 > 0.6 ? '#44ff88' : hpPct2 > 0.3 ? '#ffaa44' : '#ff4466';
-        ctx.fillRect(barX2, barY2, barW2 * hpPct2, barH2);
-
-        // HUD extras: wave and enemies remaining
-        ctx.fillStyle = 'rgba(255,255,255,0.2)';
-        ctx.font = '14px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(`Enemies: ${enemies.length} / ${enemiesPerWave - enemyCount}`, 16, 68);
-        ctx.textAlign = 'right';
-        ctx.fillText(`Wave ${wave}`, W - 16, 68);
-
-        // Crosshair (mouse)
-        if (mouse.x !== undefined) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-          ctx.lineWidth = 1;
-          const cx = mouse.x,
-            cy = mouse.y;
-          const size = 10;
-          ctx.beginPath();
-          ctx.moveTo(cx - size, cy);
-          ctx.lineTo(cx + size, cy);
-          ctx.moveTo(cx, cy - size);
-          ctx.lineTo(cx, cy + size);
-          ctx.stroke();
+        // ─── UI UPDATE ──────────────────────────────────────────────────
+        function updateUI() {
+            missionNumEl.textContent = state.mission || 1;
+            hpDisplayEl.textContent = state.player ? state.player.hp : 5;
+            if (state.config) {
+                ruleNameEl.textContent = state.config.name || "UNKNOWN";
+                ruleDescEl.textContent = state.config.desc || "";
+            }
         }
 
-        // Pause overlay
-        if (gamePaused && !gameOver) {
-          ctx.fillStyle = 'rgba(0,0,0,0.5)';
-          ctx.fillRect(0, 0, W, H);
-          ctx.fillStyle = '#fff';
-          ctx.font = '40px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('⏸ PAUSED', W / 2, H / 2);
+        // ─── WIN / LOSE ────────────────────────────────────────────────
+        function showWin() {
+            winOverlay.classList.add('show');
+            if (state.mission >= 100) {
+                winTitle.textContent = '✦ YOU WIN ✦';
+                winSub.textContent = 'You have conquered all 100 layers of Null Geometry.';
+                winBtn.textContent = '★ PLAY AGAIN ★';
+            } else {
+                winTitle.textContent = `MISSION ${state.mission} COMPLETE`;
+                winSub.textContent = `Advancing to Mission ${state.mission + 1} ...`;
+                winBtn.textContent = '▶ CONTINUE';
+            }
         }
-      }
 
-      // -------- Game loop --------
-      function gameLoop() {
-        update();
-        draw();
-        requestAnimationFrame(gameLoop);
-      }
-
-      // -------- Input handling --------
-      document.addEventListener('keydown', (e) => {
-        const key = e.key.toLowerCase();
-        if (key === 'w') keys.w = true;
-        if (key === 'a') keys.a = true;
-        if (key === 's') keys.s = true;
-        if (key === 'd') keys.d = true;
-        if (key === 'arrowup') keys.up = true;
-        if (key === 'arrowdown') keys.down = true;
-        if (key === 'arrowleft') keys.left = true;
-        if (key === 'arrowright') keys.right = true;
-        if (key === ' ' || key === 'space') {
-          e.preventDefault();
-          mouse.pressed = true;
+        function hideWin() {
+            winOverlay.classList.remove('show');
+            if (state.mission >= 100) {
+                // restart from 1
+                state.mission = 0;
+            }
+            state.mission++;
+            if (state.mission > 100) state.mission = 1;
+            initState(state.mission);
+            gameLoop();
         }
-        if (key === 'p') {
-          togglePause();
+
+        winBtn.addEventListener('click', hideWin);
+        resetBtn.addEventListener('click', () => {
+            hideWin();
+            initState(state.mission || 1);
+            gameLoop();
+        });
+
+        // ─── GAME LOOP ──────────────────────────────────────────────────
+        let animationId = null;
+
+        function gameLoop() {
+            if (animationId) cancelAnimationFrame(animationId);
+
+            function loop() {
+                if (!state.won && !state.gameOver) {
+                    updateState();
+                }
+                render();
+                if (state.gameOver) {
+                    // show lose overlay
+                    winTitle.textContent = '☠ YOU DIED ☠';
+                    winSub.textContent = `Failed at Mission ${state.mission} · Press CONTINUE to retry`;
+                    winBtn.textContent = '↻ RETRY';
+                    winOverlay.classList.add('show');
+                }
+                animationId = requestAnimationFrame(loop);
+            }
+            loop();
         }
-        if (key === 'r' && gameOver) {
-          resetGame();
+
+        // ─── START ──────────────────────────────────────────────────────
+        initState(1);
+        gameLoop();
+
+        // ─── HANDLE RESIZE (keep canvas crisp) ────────────────────────
+        function resizeCanvas() {
+            const wrapper = canvas.parentElement;
+            const maxW = window.innerWidth - 60;
+            const maxH = window.innerHeight - 220;
+            let size = Math.min(600, maxW, maxH);
+            size = Math.max(300, size);
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
         }
-      });
-      document.addEventListener('keyup', (e) => {
-        const key = e.key.toLowerCase();
-        if (key === 'w') keys.w = false;
-        if (key === 'a') keys.a = false;
-        if (key === 's') keys.s = false;
-        if (key === 'd') keys.d = false;
-        if (key === 'arrowup') keys.up = false;
-        if (key === 'arrowdown') keys.down = false;
-        if (key === 'arrowleft') keys.left = false;
-        if (key === 'arrowright') keys.right = false;
-      });
-
-      canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        mouse.x = (e.clientX - rect.left) * scaleX;
-        mouse.y = (e.clientY - rect.top) * scaleY;
-        mouse.x = clamp(mouse.x, 0, W);
-        mouse.y = clamp(mouse.y, 0, H);
-      });
-
-      canvas.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        if (!gameRunning || gamePaused || gameOver) return;
-        mouse.pressed = true;
-      });
-
-      canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const tx = (touch.clientX - rect.left) * scaleX;
-        const ty = (touch.clientY - rect.top) * scaleY;
-        mouse.x = clamp(tx, 0, W);
-        mouse.y = clamp(ty, 0, H);
-        if (!gameRunning || gamePaused || gameOver) return;
-        mouse.pressed = true;
-        // Also move player towards touch for mobile? We'll keep separate controls.
-      }, { passive: false });
-
-      canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const tx = (touch.clientX - rect.left) * scaleX;
-        const ty = (touch.clientY - rect.top) * scaleY;
-        mouse.x = clamp(tx, 0, W);
-        mouse.y = clamp(ty, 0, H);
-      }, { passive: false });
-
-      canvas.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        // Not setting mouse.pressed false because we use single-shot on touchstart
-      }, { passive: false });
-
-      // Pause toggle
-      function togglePause() {
-        if (gameOver) return;
-        gamePaused = !gamePaused;
-        pauseBtn.textContent = gamePaused ? '▶ PLAY' : '⏸ PAUSE';
-      }
-      pauseBtn.addEventListener('click', togglePause);
-
-      // Restart
-      restartBtn.addEventListener('click', resetGame);
-
-      // -------- Init --------
-      resetGame();
-      gameLoop();
-
-      // Resize canvas to fit container
-      function resizeCanvas() {
-        const wrapper = document.getElementById('gameWrapper');
-        const maxWidth = window.innerWidth - 32;
-        const maxHeight = window.innerHeight - 32;
-        let size = Math.min(maxWidth, maxHeight, 600);
-        size = Math.max(size, 320);
-        canvas.style.width = size + 'px';
-        canvas.style.height = size + 'px';
-      }
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-
-      console.log('🔮 NEON SURVIVOR loaded – survive the waves!');
-    })();
-  </script>
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
 </body>
-        </html>
+  </html>
